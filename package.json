@@ -1,0 +1,30 @@
+{
+  "name": "frzr",
+  "version": "0.0.1",
+  "description": "Super simple view models inspired by Riot.js 2.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "browserify -s frzr -p bundle-collapser/plugin -g uglifyify lib/index.js | uglifyjs > dist/frzr.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pakastin/frzr"
+  },
+  "author": "Juha Lindstedt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pakastin/frzr/issues"
+  },
+  "homepage": "https://github.com/pakastin/frzr",
+  "dependencies": {
+    "component-emitter": "^1.2.0",
+    "inherits": "^2.0.1"
+  },
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "bundle-collapser": "^1.1.4",
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.4.0"
+  }
+}
