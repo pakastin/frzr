@@ -45,7 +45,12 @@
     <script>
       var output = document.getElementById('output')
       output.addEventListener('load', function () {
-        source1.textContent = output.contentDocument.getElementById('main-tmpl').innerHTML
+        var src = output.contentDocument.getElementById('main-tmpl').innerHTML
+        source1.textContent =
+          '<script id="main-tmpl" type="template/frzr">\n'
+            + src
+            + '\n'
+            + '<\/script>'
       })
     </script>
   </body>
