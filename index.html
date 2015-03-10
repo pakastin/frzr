@@ -44,7 +44,7 @@
     <script>
       var iframe1 = document.getElementById('iframe1')
       iframe1.addEventListener('load', function () {
-        iframe2.innerHTML = iframe1.contentDocument.getElementById('main-tmpl').innerHTML
+        iframe2.textContent = iframe1.contentDocument.getElementById('main-tmpl').innerHTML
       })
     </script>
   </body>
