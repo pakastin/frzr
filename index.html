@@ -16,20 +16,21 @@
       iframe {
         width: 50%;
       }
-      #iframe1 {
+      #output {
         position: absolute;
         top: 0;
         left: 0;
         height: 100%;
       }
-      #iframe2 {
+      #source1 {
         position: absolute;
         top: 0;
         right: 0;
         width: 50%;
         height: 25%;
+        overflow: hidden;
       }
-      #iframe3 {
+      #source2 {
         position: absolute;
         top: 25%;
         right: 0;
@@ -38,13 +39,13 @@
     </style>
   </head>
   <body>
-    <iframe id="iframe1" src="test/test.html"></iframe>
-    <pre id="iframe2"></pre>
-    <iframe id="iframe3" src="test/test.js"></iframe>
+    <iframe id="output" src="test/test.html"></iframe>
+    <pre id="source1"></pre>
+    <iframe id="source2" src="test/test.js"></iframe>
     <script>
-      var iframe1 = document.getElementById('iframe1')
-      iframe1.addEventListener('load', function () {
-        iframe2.textContent = iframe1.contentDocument.getElementById('main-tmpl').innerHTML
+      var output = document.getElementById('output')
+      output.addEventListener('load', function () {
+        source1.textContent = output.contentDocument.getElementById('main-tmpl').innerHTML
       })
     </script>
   </body>
