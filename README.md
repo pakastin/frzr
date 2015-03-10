@@ -32,7 +32,7 @@ Super simple view models inspired by Riot.js 2.0
       title: 'Hello you'
     })
     
-    // note that this method replaces items, because are not equal:
+    // note that this method replaces items, because are not strictly equal:
     mounted2.update([
       {title: 'Hello you'},
       {title2: 'Hello world'}
