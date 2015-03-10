@@ -86,7 +86,6 @@ frzr.tag('main', mainTmpl, function () {
   })
 })
 
-// replace and mount to body
+// mount to body
 
-document.body.innerHTML = ''
 var main = frzr.mount(document.body, 'main')
