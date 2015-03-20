@@ -3,6 +3,23 @@
 <html>
   <head>
     <title>Frzr test</title>
+    <style>
+      .item h2 {
+        display: inline;
+      }
+      .item p {
+        padding: 0 .25rem;
+        display: inline;
+      }
+      .item a {
+        color: blue;
+        cursor: pointer;
+        padding: 0 .25rem;
+      }
+      .item a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <script id="main-tmpl" type="template/frzr">
@@ -26,7 +43,7 @@
         <div class="items"></div>
       </div>
     </script>
-    <script src="dist/frzr.js"></script>
+    <script src="dist/frzr-dev.js"></script>
     <script src="test.js"></script>
   </body>
 </html>

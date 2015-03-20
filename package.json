@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "browserify -s frzr -p bundle-collapser/plugin -g uglifyify lib/index.js | uglifyjs > dist/frzr.js",
+    "dev": "watchify -s frzr lib/index.js -o dist/frzr-dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
