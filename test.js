@@ -1,20 +1,20 @@
 
 'use strict'
 
-// parse template from custom script tag
-var mainTmpl = String(document.getElementById('main-tmpl').innerHTML).trim()
+var itemTmpl = frzr.parse('#item-tmpl')
+var mainTmpl = frzr.parse('#main-tmpl')
 
 // define 'item'
-frzr.tag('item', '<div class="item"><h2></h2><p><a class="up">Up</a><a class="down">Down</a><a class="remove">Remove</a></p></div>', function () {
+frzr.tag('item', itemTmpl, function () {
   var self = this
-  var h2 = self.$find('h2')
-  var up = self.$find('a.up')
-  var down = self.$find('a.down')
-  var remove = self.$find('a.remove')
+  var $title = self.$find('.title')
+  var $up = self.$find('a.up')
+  var $down = self.$find('a.down')
+  var $remove = self.$find('a.remove')
 
-  h2.textContent = self.title
+  $title.textContent = self.title
 
-  remove.addEventListener('click', function () {
+  $remove.addEventListener('click', function () {
     var item = self.$item
     self.$parent.one('update', function (items) {
       var pos = items.indexOf(item)
@@ -23,11 +23,19 @@ frzr.tag('item', '<div class="item"><h2></h2><p><a class="up">Up</a><a class="do
     self.$parent.update()
   })
 
-  up.addEventListener('click', function () {
+  $up.addEventListener('click', function () {
     var item = self.$item
     self.$parent.one('update', function (items) {
       var pos = items.indexOf(item)
       items.splice(pos-1, 0, items.splice(pos, 1)[0])
+    })
+    self.$parent.update()
+  })
+  $down.addEventListener('click', function () {
+    var item = self.$item
+    self.$parent.one('update', function (items) {
+      var pos = items.indexOf(item)
+      items.splice(pos+1, 0, items.splice(pos, 1)[0])
     })
     self.$parent.update()
   })

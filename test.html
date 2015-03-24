@@ -4,19 +4,11 @@
   <head>
     <title>Frzr test</title>
     <style>
-      .item h2 {
-        display: inline;
-      }
-      .item p {
-        padding: 0 .25rem;
-        display: inline;
-      }
-      .item a {
+      a {
         color: blue;
         cursor: pointer;
-        padding: 0 .25rem;
       }
-      .item a:hover {
+      a:hover {
         text-decoration: underline;
       }
     </style>
@@ -40,8 +32,16 @@
 
         <p class="renderTime"></p>
 
-        <div class="items"></div>
+        <ul class="items"></ul>
       </div>
+    </script>
+    <script id="item-tmpl" type="template/frzr">
+      <li>
+        <span class="title"></span>
+        <a class="up">Up</a>
+        <a class="down">Down</a>
+        <a class="remove">Remove</a>
+      </li>
     </script>
     <script src="dist/frzr-dev.js"></script>
     <script src="test.js"></script>
