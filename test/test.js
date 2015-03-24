@@ -1,12 +1,44 @@
 
 'use strict'
 
-// parse template from custom script tag
-var mainTmpl = String(document.getElementById('main-tmpl').innerHTML).trim()
+var itemTmpl = frzr.parse('#item-tmpl')
+var mainTmpl = frzr.parse('#main-tmpl')
 
 // define 'item'
-frzr.tag('item', '<h2></h2>', function () {
-  this.$el.textContent = this.title
+frzr.tag('item', itemTmpl, function () {
+  var self = this
+  var $title = self.$find('.title')
+  var $up = self.$find('a.up')
+  var $down = self.$find('a.down')
+  var $remove = self.$find('a.remove')
+
+  $title.textContent = self.title
+
+  $remove.addEventListener('click', function () {
+    var item = self.$item
+    self.$parent.one('update', function (items) {
+      var pos = items.indexOf(item)
+      items.splice(pos, 1)
+    })
+    self.$parent.update()
+  })
+
+  $up.addEventListener('click', function () {
+    var item = self.$item
+    self.$parent.one('update', function (items) {
+      var pos = items.indexOf(item)
+      items.splice(pos-1, 0, items.splice(pos, 1)[0])
+    })
+    self.$parent.update()
+  })
+  $down.addEventListener('click', function () {
+    var item = self.$item
+    self.$parent.one('update', function (items) {
+      var pos = items.indexOf(item)
+      items.splice(pos+1, 0, items.splice(pos, 1)[0])
+    })
+    self.$parent.update()
+  })
 })
 
 // define 'main'
@@ -33,7 +65,7 @@ frzr.tag('main', mainTmpl, function () {
   }
 
   var $items = this.$find('.items')
-  var Items = frzr.mountAll($items, 'item', items)
+  var Items = this.mountAll($items, 'item', items)
 
   function reverse () {
     items.reverse()
@@ -86,6 +118,7 @@ frzr.tag('main', mainTmpl, function () {
   })
 })
 
-// mount to body
+// replace and mount to body
 
+document.body.innerHTML = ''
 var main = frzr.mount(document.body, 'main')
