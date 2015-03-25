@@ -20,7 +20,8 @@
   "homepage": "https://github.com/pakastin/frzr",
   "dependencies": {
     "component-emitter": "^1.2.0",
-    "inherits": "^2.0.1"
+    "inherits": "^2.0.1",
+    "raf": "^2.0.4"
   },
   "devDependencies": {
     "browserify": "^9.0.3",
