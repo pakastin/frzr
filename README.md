@@ -48,11 +48,13 @@ use it like this:
       title: 'Hello you'
     })
 
-    // or:
+or:
+
     item.title = 'Hello you'
     mounted.update()
 
-    // or:
+or:
+
     mounted.one('update', function () {
         this.title = 'Hello you'
     })
@@ -60,17 +62,20 @@ use it like this:
 
 ## update multiple
 
-    // easiest way:
+easiest way:
+
     items.push({title: 'Hello world'})
-    mounted2.update()
+    mounted2.update(items)
     
-    // ..or like this: (note though that this method replaces items, because are not strictly equal)
+..or like this: (note though that this method recreates items, because are not strictly equal)
+
     mounted2.update([
       {title: 'Hello you'},
       {title2: 'Hello world'}
     ]) 
 
-    // better to do this way:
+..better to do this way:
+
     mounted2.one('update', function (items) {
         items.push({
             title2: 'Hello world'
