@@ -13,31 +13,71 @@ Super simple view models inspired by Riot.js 2.0
       this.$el.textContent = this.title
     })
     
+or with template:
+
+    <script id="item-tmpl" type="text/frzr">
+        <h1></h1>
+    </script>
+
+use it like this:
+
+    var itemTmpl = frzr.parse('#item-tmpl') // or frzr.parse(document.getElementById('#item-tmpl')
+    
+    frzr.tag('item', itemTmpl, function () {
+        ...
+    })
+    
 ## mount
 
-    var mounted = frzr.mount(document.body, 'item', {
-      title: 'Hello world'
-    })
+    var item = {
+        title: 'Hello world'
+    }
+    var mounted = frzr.mount(document.body, 'item', item)
     
 ## mount many
 
-    var mounted2 = frzr.mountAll(document.body, 'item', [
+    var items = [
       {title: 'Hello world'},
       {title: 'Hello you'}
-    ])
+    ]
+    var mounted2 = frzr.mountAll(document.body, 'item', items)
     
 ## update
 
     mounted.update({
       title: 'Hello you'
     })
+
+    // or:
+    item.title = 'Hello you'
+    mounted.update()
+
+    // or:
+    mounted.one('update', function () {
+        this.title = 'Hello you'
+    })
+    mounted.trigger('update')
+
+## update multiple
+
+    // easiest way:
+    items.push({title: 'Hello world'})
+    mounted2.update(items)
     
-    // note that this method replaces items, because are not strictly equal:
+    // ..or like this: (note that this method replaces items, because are not strictly equal)
     mounted2.update([
       {title: 'Hello you'},
       {title2: 'Hello world'}
     ]) 
-    
+
+    // better to do this way:
+    mounted2.one('update', function (items) {
+        items.push({
+            title2: 'Hello world'
+        })
+    })
+    mounter2.trigger('update')
+
 ## listen events
 
     mounted2.one('update', function (items) {
