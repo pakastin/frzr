@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Frzr test</title>
+    <style>
+      a {
+        color: blue;
+        cursor: pointer;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <script id="main-tmpl" type="template/frzr">
+      <div class="container">
+        <select>
+          <option value="1000">1 000</option>
+          <option value="2500">2 500</option>
+          <option value="5000">5 000</option>
+          <option value="10000" selected>10 000</option>
+          <option value="25000">25 000 (extreme!)</option>
+          <option value="50000">50 000 (extreme!)</option>
+          <option value="100000">100 000 (extreme!)</option>
+        </select>
+
+        <button class="randomize">Randomize</button>
+        <button class="reverse">Reverse</button>
+        <button class="sort">Sort</button>
+
+        <p class="renderTime"></p>
+
+        <div class="items"></div>
+      </div>
+    </script>
+    <script id="item-tmpl" type="template/frzr">
+      <p>
+        <span class="title"></span>
+        <a class="up">Up</a>
+        <a class="down">Down</a>
+        <a class="remove">Remove</a>
+      </p>
+    </script>
+    <script src="dist/frzr-dev.js"></script>
+    <script src="test.js"></script>
+  </body>
+</html>
