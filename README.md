@@ -62,9 +62,9 @@ use it like this:
 
     // easiest way:
     items.push({title: 'Hello world'})
-    mounted2.update(items)
+    mounted2.update()
     
-    // ..or like this: (note that this method replaces items, because are not strictly equal)
+    // ..or like this: (note though that this method replaces items, because are not strictly equal)
     mounted2.update([
       {title: 'Hello you'},
       {title2: 'Hello world'}
