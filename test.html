@@ -19,8 +19,8 @@
         <select>
           <option value="1000">1 000</option>
           <option value="2500">2 500</option>
-          <option value="5000">5 000</option>
-          <option value="10000" selected>10 000</option>
+          <option value="5000" selected>5 000</option>
+          <option value="10000">10 000</option>
           <option value="25000">25 000</option>
           <option value="50000">50 000</option>
           <option value="100000">100 000 (extreme!)</option>
@@ -32,16 +32,16 @@
 
         <p class="renderTime"></p>
 
-        <ul class="items"></ul>
+        <div class="items"></div>
       </div>
     </script>
     <script id="item-tmpl" type="template/frzr">
-      <li>
+      <p>
         <span class="title"></span>
         <a class="up">Up</a>
         <a class="down">Down</a>
         <a class="remove">Remove</a>
-      </li>
+      </p>
     </script>
     <script src="dist/frzr-dev.js"></script>
     <script src="test.js"></script>

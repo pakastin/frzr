@@ -55,9 +55,9 @@ frzr.tag('main', mainTmpl, function () {
   $sort.addEventListener('click', sort)
 
   // create items
-  var items = new Array(10000)
+  var items = new Array(5000)
 
-  for (var i = 0; i < 10000; i++) {
+  for (var i = 0; i < 5000; i++) {
     items[i] = {
       i: i,
       title: 'Item ' + i
