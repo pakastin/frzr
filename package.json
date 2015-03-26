@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Super simple view models inspired by Riot.js 2.0",
   "main": "lib/index.js",
   "scripts": {
