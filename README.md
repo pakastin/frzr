@@ -13,7 +13,7 @@ Super simple view models inspired by Riot.js 2.0
       this.$el.textContent = this.title
     })
     
-or with template:
+or from template:
 
     <script id="item-tmpl" type="text/frzr">
         <h1></h1>
