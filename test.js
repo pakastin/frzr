@@ -47,12 +47,14 @@ frzr.tag('main', mainTmpl, function () {
   var $randomize = this.$find('.randomize')
   var $reverse = this.$find('.reverse')
   var $sort = this.$find('.sort')
+  var $unshift = this.$find('.unshift')
   var $renderTime = this.$find('.renderTime')
 
   $itemscount.addEventListener('change', itemscount)
   $randomize.addEventListener('click', randomize)
   $reverse.addEventListener('click', reverse)
   $sort.addEventListener('click', sort)
+  $unshift.addEventListener('click', unshift)
 
   // create items
   var items = new Array(10000)
@@ -82,6 +84,13 @@ frzr.tag('main', mainTmpl, function () {
   function randomize () {
     items.sort(function () {
         return Math.random()*2-1
+    })
+    main.update()
+  }
+
+  function unshift () {
+    items.unshift({
+      title: 'New item'
     })
     main.update()
   }
