@@ -57,9 +57,9 @@ frzr.tag('main', mainTmpl, function () {
   $unshift.addEventListener('click', unshift)
 
   // create items
-  var items = new Array(5000)
+  var items = new Array(10000)
 
-  for (var i = 0; i < 5000; i++) {
+  for (var i = 0; i < 10000; i++) {
     items[i] = {
       i: i,
       title: 'Item ' + i
