@@ -7,14 +7,15 @@ var mainTmpl = frzr.parse('#main-tmpl')
 // define 'item'
 frzr.tag('item', itemTmpl, function () {
   var self = this
-  var $title = self.$find('.title')
-  var $up = self.$find('a.up')
-  var $down = self.$find('a.down')
-  var $remove = self.$find('a.remove')
+  var $title = self.$el.childNodes[0]
+  var $a = self.$findAll('a')
+  var $up = $a[0]
+  var $down = $a[1]
+  var $remove = $a[2]
 
-  $title.textContent = self.title
+  $title.textContent = self.title + ' '
 
-  $remove.addEventListener('click', function () {
+  $remove && $remove.addEventListener('click', function () {
     var item = self.$item
     self.$parent.one('update', function (items) {
       var pos = items.indexOf(item)
@@ -38,6 +39,15 @@ frzr.tag('item', itemTmpl, function () {
       items.splice(pos+1, 0, items.splice(pos, 1)[0])
     })
     self.$parent.update()
+  })
+}, function () {
+  var self = this
+  var $renderTime = self.$parent.$find('.renderTime')
+  self.on('render', function () {
+    var starttime = Date.now()
+    self.one('rendered', function () {
+      $renderTime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+    })
   })
 })
 
@@ -116,14 +126,6 @@ frzr.tag('main', mainTmpl, function () {
   // propagate update event
   this.on('update', function () {
     Items.update()
-  })
-
-  // log performance
-  Items.on('render', function () {
-    var starttime = Date.now()
-    Items.one('rendered', function () {
-      $renderTime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
-    })
   })
 })
 
