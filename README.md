@@ -130,6 +130,7 @@ Parameters:
 Example:
 
     frzr.transition(el, 1.5, {
+        delay: .5,
         from: {
             height: 'auto',
             transform: 'translate(0, 0)'
@@ -137,12 +138,17 @@ Example:
         to: {
             height: 0,
             transform: 'translate(0, 100)'
+        },
+        ease: 'inOutQuart',
+        remove: 'height transform transition',
+        onComplete: function () {
+            console.log('Animation ready!')
         }
     })
 
 
 Easing functions:
 
-- easeInQuad, easeInCubic, easeInQuart, easeInQuint, easeInSine, easeInExpo, easeInCirc, easeInBack
-- easeOutQuad, easeOutCubic, easeOutQuart, easeOutQuint, easeOutSine, easeOutExpo, easeOutCirc, easeOutBack
-- easeInOutQuad, easeInOutCubic, easeInOutQuart, easeInOutQuint, easeInOutSine, easeInOutExpo, easeInOutCirc, easeInOutBack
+- inQuad, inCubic, inQuart, inQuint, inSine, inExpo, inCirc, inBack
+- outQuad, outCubic, outQuart, outQuint, outSine, outExpo, outCirc, outBack
+- inOutQuad, inOutCubic, inOutQuart, inOutQuint, inOutSine, inOutExpo, inOutCirc, inOutBack
