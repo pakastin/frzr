@@ -16,6 +16,7 @@ Frzr.js is different because:
 - You can provide controllers to models themselves.
 - Models/collections can be viewmodels / viewcollections or simple models/collections.
 - Small learning curve: only models and collections!
+- Embraces vanilla JS!
 
 ## model(params)
 
