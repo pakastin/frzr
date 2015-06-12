@@ -76,6 +76,7 @@ Example:
     })
     model.set({a: 2, d: 3})
     model.unset('d')
+    model.mount(document.body)
 
 
 ## collection(params)
@@ -100,6 +101,7 @@ Example:
     ])
     console.log(collection.find('parent', 1))
     console.log(collection.get(2))
+    collection.mount(document.body)
 
 
 Attributes:
