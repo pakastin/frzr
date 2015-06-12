@@ -123,7 +123,7 @@ Parameters:
 - from: Style attributes to animate from (if 'auto', value is calculated automatically)
 - to: Style attributes to animate to (if 'auto', value is calculated automatically)
 - delay: Animation delay
-- ease: What easing to use ()
+- ease: What easing to use (look options from below)
 - remove: Attributes to remove after transition is ready (separated by space)
 - onComplete: What to do when transition is ready
 
