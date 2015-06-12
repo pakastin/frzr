@@ -1,11 +1,9 @@
 {
   "name": "frzr",
   "version": "0.0.7",
-  "description": "Super simple view models inspired by Riot.js 2.0",
+  "description": "Super simple mvc inspired by Riot.js 2.0",
   "main": "lib/index.js",
   "scripts": {
-    "build": "browserify -s frzr -p bundle-collapser/plugin -g uglifyify lib/index.js | uglifyjs > dist/frzr.js",
-    "dev": "watchify -s frzr lib/index.js -o dist/frzr-dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,14 +16,11 @@
     "url": "https://github.com/pakastin/frzr/issues"
   },
   "homepage": "https://github.com/pakastin/frzr",
-  "dependencies": {
-    "component-emitter": "^1.2.0",
-    "inherits": "^2.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "browserify": "^9.0.3",
-    "bundle-collapser": "^1.1.4",
-    "uglify-js": "^2.4.16",
+    "browserify": "^10.2.4",
+    "bundle-collapser": "^1.2.0",
+    "uglify-js": "^2.4.23",
     "watchify": "^2.4.0"
   }
 }
