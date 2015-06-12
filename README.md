@@ -116,7 +116,7 @@ Attributes:
 - mount(target): Mount all models to the DOM
 - unmount(): Unmount all models from DOM
 
-## Transition(el, time, params)
+## transition(el, time, params)
 
 Parameters:
 
