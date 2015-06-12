@@ -8,7 +8,7 @@ chokidar.watch('./lib/**/*.js')
 buildScript()
 
 function buildScript () {
-  exec('browserify lib/index -s frzr | bundle-collapser > dist/frzr-dev.js', function (err, res) {
+  exec('browserify lib/index | bundle-collapser > dist/frzr-dev.js', function (err, res) {
     if (err) {
       return console.error(err)
     }
