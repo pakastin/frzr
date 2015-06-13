@@ -18,6 +18,7 @@ Frzr.js is different because:
 - Small learning curve: only models and collections!
 - Embraces vanilla JS!
 - No HTML mixed in JS or JS mixed in HTML
+- Semi-immutable: if you change only one item, there's no need to check the others
 
 ## model(params)
 
