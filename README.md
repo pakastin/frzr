@@ -55,7 +55,7 @@ Events:
 Inside render:
 - this.$el: DOM element
 - this.$find(query): Shortcut to this.$el.querySelector(query)
-  -> NEW! if you have a DOM node with a special attribute ```<div frzr="test">```, you can find this node superfast by using ```this.$find('$test')```
+  - NEW! if you have a DOM node with a special attribute ```<div frzr="test">```, you can find this node superfast by using ```this.$find('$test')```
 - this.$findAll(query): Shortcut to Array.prototype.slice.call(this.$el.querySelectorAll(query))
 
 Example:
