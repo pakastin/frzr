@@ -55,6 +55,7 @@ Events:
 Inside render:
 - this.$el: DOM element
 - this.$find(query): Shortcut to this.$el.querySelector(query)
+  -> NEW! if you have a DOM node with a special attribute ```<div frzr="test">```, you can find this node superfast by using ```this.$find('$test')```
 - this.$findAll(query): Shortcut to Array.prototype.slice.call(this.$el.querySelectorAll(query))
 
 Example:
@@ -116,6 +117,8 @@ Attributes:
 - set(id, data): Set data by id or index
 - find(key, value): Find all where data[key] === value (key must be indexed)
 - findOne(key, value): Find first one where data[key] === value
+- filter(iterator): Filter collection in place
+- sort(iterator): Sort collection in place
 - unset(id): Unset by id
 - reset(data): Reset data (if key set, inserts/reorders/updates models)
 - mount(target): Mount all models to the DOM
