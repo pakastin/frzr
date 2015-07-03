@@ -9,6 +9,9 @@ Super simple MVC inspired by Riot.js 2.0
 
   or [download from here](http://pakastin.github.io/frzr/dist/frzr.js)
 
+## moving..
+
+Check out latest version [here](http://github.com/frzrjs/frzr)
 ## Why yet another MVC?
 Frzr.js is different because:
 - It's small, really small
