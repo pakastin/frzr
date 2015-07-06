@@ -23,8 +23,8 @@
     "@frzr/inherit": "0.0.1",
     "@frzr/model": "^0.1.4",
     "@frzr/observable": "^0.1.0",
-    "@frzr/prefix": "0.0.2",
-    "@frzr/transition": "0.0.2",
+    "@frzr/prefix": "0.0.3",
+    "@frzr/transition": "0.0.3",
     "@frzr/view": "0.0.2",
     "@frzr/viewcollection": "0.0.4"
   },
