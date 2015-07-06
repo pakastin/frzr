@@ -1,26 +1,39 @@
 {
   "name": "frzr",
-  "version": "0.1.4",
-  "description": "Super simple mvc inspired by Riot.js 2.0",
+  "version": "0.2.4",
+  "description": "Cool javascript framework",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "browserify lib/index | bundle-collapser > dist/frzr.js && npm run build-min",
+    "build-min": "browserify -g uglifyify lib/index | bundle-collapser | uglifyjs -cm > dist/frzr.min.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pakastin/frzr"
+    "url": "https://github.com/frzrjs/frzr"
   },
   "author": "Juha Lindstedt",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pakastin/frzr/issues"
+    "url": "https://github.com/frzrjs/frzr/issues"
   },
-  "homepage": "https://github.com/pakastin/frzr",
-  "dependencies": {},
+  "homepage": "https://github.com/frzrjs/frzr",
+  "dependencies": {
+    "@frzr/collection": "^0.1.2",
+    "@frzr/each": "0.0.2",
+    "@frzr/inherit": "0.0.1",
+    "@frzr/model": "^0.1.4",
+    "@frzr/observable": "^0.1.0",
+    "@frzr/prefix": "0.0.2",
+    "@frzr/transition": "0.0.2",
+    "@frzr/view": "0.0.2",
+    "@frzr/viewcollection": "0.0.4"
+  },
   "devDependencies": {
     "browserify": "^10.2.4",
     "bundle-collapser": "^1.2.0",
+    "chokidar": "^1.0.3",
+    "tape": "^4.0.0",
     "uglify-js": "^2.4.23",
-    "watchify": "^2.4.0"
+    "uglifyify": "^3.0.1"
   }
 }
