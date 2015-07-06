@@ -1,5 +1,5 @@
 # frzr.js
-Cool new javascript framework inspired by Backbone and Riot.js.
+Cool new javascript framework inspired by Backbone and Riot.js 2.x.
 
 ![frzr logo](http://pakastin.fi/frzr.svg)
 
