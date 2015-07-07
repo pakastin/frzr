@@ -11,11 +11,6 @@ npm install frzr
 
 ..or download [here](http://frzrjs.github.io/frzr/dist/frzr.min.js)
 
-## TODO
-- Documentation!
-- More tests
-- Smarter ViewCollection DOM updates
-
 ## modules
 
 - [Model](http://github.com/frzrjs/model): Backbone inspired Model
@@ -29,3 +24,8 @@ npm install frzr
 - [inherit](http://github.com/frzrjs/inherit): class inheritance
 - [prefix](http://github.com/frzrjs/prefix): CSS prefix helper
 - [transition](http://github.com/frzrjs/transition): CSS3D transition helper
+
+## TODO
+- Documentation!
+- More tests
+- Smarter ViewCollection DOM updates
