@@ -22,7 +22,7 @@ npm install frzr
 - [ViewCollection](http://github.com/frzrjs/viewcollection): Views from array of Models
 
 ## utils
-- [each](http://github.com/frzrjs/each): faster array loop
+- [each](http://github.com/frzrjs/each): fast array iteration
 - [inherit](http://github.com/frzrjs/inherit): class inheritance
 - [prefix](http://github.com/frzrjs/prefix): CSS prefix helper
 - [transition](http://github.com/frzrjs/transition): CSS3D transition helper
