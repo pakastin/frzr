@@ -16,7 +16,7 @@ npm install frzr
 - More tests
 - Smarter ViewCollection DOM updates
 
-## components
+## modules
 
 - [Model](http://github.com/frzrjs/model): Backbone inspired Model
 - [Collection](http://github.com/frzrjs/collection): Backbone inspired Collection
