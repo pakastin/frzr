@@ -1285,6 +1285,7 @@ function init (options) {
 
   self.views || (self.views = [])
   self.lookup || (self.lookup = {})
+  self.index || (self.index = {})
 }
 },{}],35:[function(require,module,exports){
 var each = require(8)
@@ -1299,6 +1300,7 @@ function mount (target) {
   })
 }
 },{}],36:[function(require,module,exports){
+var each = require(8)
 var View = require(31)
 
 module.exports = reset
@@ -1308,7 +1310,9 @@ function reset (models) {
 
   self.init()
 
+  var views = self.views
   var lookup = self.lookup
+  var index = self.index
 
   var newViews = []
   var newLookup = {}
@@ -1316,33 +1320,80 @@ function reset (models) {
 
   var _View = self.view || View
 
-  var len = models.length
-  var model, view, id
-  var i
+  var lastOldIndexDefined, lastOldIndex
+  var groups = []
+  var group = {
+    items: []
+  }
 
-  for (i = 0, len = models.length; i < len; i++) {
-    model = models[i]
-    id = (typeof model.id !== 'undefined') ? model.id : i
-    view = lookup[id]
+  each(models, function (model, i) {
+    var id = (typeof model.id !== 'undefined') ? model.id : i
+    newIndex[id] = i
+  })
+  var removed = 0
+  each(views, function (view, i, len) {
+    var id = (typeof view.model.id !== 'undefined') ? view.model.id : i
+    if (typeof newIndex[id] === 'undefined') {
+      view.destroy()
+      i--
+      len--
+      removed++
+    }
+    index[id] -= removed
+  })
+  each(models, function (model, i) {
+    var id = (typeof model.id !== 'undefined') ? model.id : i
+    var view = lookup[id]
+    var oldIndex = index[id]
+    var oldIndexDefined = typeof oldIndex !== 'undefined'
 
     if (typeof view === 'undefined') {
       view = new _View({
         model: model
       })
+      if (!lastOldIndexDefined) {
+        group.items.push(view)
+      } else {
+        if (group.items.length) {
+          groups.push(group)
+        }
+        group = {items: [view], index: i, oldIndex: oldIndex}
+      }
+    } else {
+      if (lastOldIndexDefined && (oldIndex - 1 === lastOldIndex)) {
+        group.items.push(view)
+      } else {
+        if (group.items.length) {
+          groups.push(group)
+        }
+        group = {items: [view], index: i, oldIndex: oldIndex}
+      }
     }
     newViews[i] = view
     newLookup[id] = view
-    newIndex[id] = i
     delete lookup[id]
+    lastOldIndex = oldIndex
+    lastOldIndexDefined = oldIndexDefined
+  })
+  if (group.items.length) {
+    groups.push(group)
   }
-  for (id in lookup) {
-    view = lookup[id]
-    view.destroy()
-  }
+  var moved
+  var added = 0
+  self.root && each(groups, function (group, i) {
+    if (moved || group.index + added !== group.oldIndex) {
+      var frag = document.createDocumentFragment()
+      each(group.items, function (view, j) {
+        frag.appendChild(view.$el)
+        view.$root = self.root
+        moved = true
+        added++
+      })
+      self.root.appendChild(frag)
+    }
+  })
   self.views = newViews
   self.lookup = newLookup
   self.index = newIndex
-
-  self.root && self.mount(self.root)
 }
 },{}]},{},[1]);
