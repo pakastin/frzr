@@ -1270,11 +1270,7 @@ function init (options) {
 
   for (attr in options) {
     value = options[attr]
-    if (attr === 'init') {
-      self.on('init', value)
-    } else if (attr === 'change') {
-      self.on('change', value)
-    } else if (attr === 'add') {
+    if (attr === 'add') {
       self.on('add', value)
     } else if (attr === 'remove') {
       self.on('remove', value)
@@ -1349,8 +1345,12 @@ function reset (models) {
 
     if (typeof view === 'undefined') {
       view = new _View({
+        destroy: function () {
+          self.trigger('remove', view)
+        },
         model: model
       })
+      self.trigger('add', view)
       if (!lastOldIndexDefined) {
         group.items.push(view)
       } else {
