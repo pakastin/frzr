@@ -18,7 +18,7 @@ npm install frzr
 - [Model](http://github.com/frzrjs/model): Backbone inspired Model
 - [Collection](http://github.com/frzrjs/collection): Backbone inspired Collection
 - [Observable](http://github.com/frzrjs/observable): Simple but fast event emitter
-- [View](http://github.com/frzrjs/view): Superfast vanilla JS views from Models
+- [View](http://github.com/frzrjs/view): Superfast vanilla JS view engine
 - [ViewCollection](http://github.com/frzrjs/viewcollection): Views from array of Models
 
 ## utils
