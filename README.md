@@ -30,4 +30,3 @@ npm install frzr
 ## TODO
 - Documentation!
 - More tests
-- Smarter ViewCollection DOM updates
