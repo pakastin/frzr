@@ -10,8 +10,8 @@ npm install frzr
 ```
 
 ..or download:
-- [production](http://frzrjs.github.io/frzr/dist/frzr.min.js) (5 kB gzip)
-- [development](http://frzrjs.github.io/frzr/dist/frzr.js) (7.5 kB gzip)
+- [production](http://frzrjs.github.io/frzr/dist/frzr.min.js) (gzipped 5 kB)
+- [development](http://frzrjs.github.io/frzr/dist/frzr.js) (gzipped 7.5 kB)
 
 ## modules
 
