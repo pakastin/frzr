@@ -1,9 +1,91 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=https://github.com/pakastin/frzr">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Source Sans Pro, sans-serif;
+      }
+      #logo {
+        width: 7.75rem;
+        height: 7.75rem;
+        margin: 2rem auto;
+        text-align: center;
+      }
+      #logo img {
+        width: 100%;
+        height: 100%;
+      }
+      #diagonal {
+        height: 12rem;
+      }
+      #diagonal-bg {
+        width: 200%;
+        height: 100%;
+        margin-left: -50%;
+        background-color: #4A90E2;
+        transform: rotate(-4deg);
+      }
+      .wrapper {
+        overflow-x: hidden;
+      }
+      h2 {
+        transform: translate(0,0);
+        margin: -7rem auto;
+        color: #fff;
+        text-align: center;
+        font-size: 1.8rem;
+        line-height: 2rem;
+        font-weight: 600;
+      }
+      p {
+        text-align: center;
+        margin: 6rem auto;
+        line-height: 1.5;
+        color: #555;
+      }
+      a {
+        text-decoration: none;
+        color: #4A90E2;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      @media (min-width: 1600px) {
+        html {
+          font-size: 112.5%;
+        }
+      }
+      @media (max-width: 800px) {
+        html {
+          font-size: 87.5%;
+        }
+      }
+      @media (max-width: 640px) {
+        html {
+          font-size: 75%;
+        }
+      }
+    </style>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600' rel='stylesheet' type='text/css'>
   </head>
   <body>
-    <p>Redirecting...</p>
+    <div class="wrapper">
+      <div id="logo">
+        <img alt="frzr" src="http://pakastin.fi/frzr.svg">
+      </div>
+      <div id="diagonal">
+        <div id="diagonal-bg"></div>
+        <h2>Cool new javascript framework</h2>
+      </div>
+      <p>
+        Frzr is easy to use, extremely small and really powerful new framework.<br>
+        It is similar to Backbone, but also have blazing fast vanilla js views and CSS3 transitions.
+      </p>
+      <p><a href="http://github.com/frzrjs/frzr">Jump right in!</a></p>
+    </div>
   </body>
 </html>
