@@ -9,7 +9,9 @@ Cool new javascript framework inspired by Backbone and Riot.js 2.x.
 npm install frzr
 ```
 
-..or download [here](http://frzrjs.github.io/frzr/dist/frzr.min.js)
+..or download:
+- development (7.5 kB gzip) [here](http://frzrjs.github.io/frzr/dist/frzr.js)
+- production (5 kB gzip) [here](http://frzrjs.github.io/frzr/dist/frzr.min.js)
 
 ## modules
 
