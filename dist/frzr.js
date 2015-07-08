@@ -1,16 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global){
 
-var each = require(8)
-var inherit = require(9)
-var prefix = require(25)
-var transition = require(27)
+var each = require(17)
+var inherit = require(18)
+var prefix = require(34)
+var transition = require(36)
 
 var Collection = require(3)
-var Model = require(13)
-var Observable = require(19)
-var View = require(31)
-var ViewCollection = require(33)
+var Model = require(22)
+var Observable = require(28)
+var View = require(40)
+var ViewCollection = require(42)
 
 var frzr = {
   each: each,
@@ -38,8 +38,8 @@ function get (id) {
   return self.lookup[id]
 }
 },{}],3:[function(require,module,exports){
-var inherit = require(9)
-var Observable = require(19)
+var inherit = require(18)
+var Observable = require(28)
 
 module.exports = Collection
 
@@ -94,7 +94,7 @@ Collection.extend = function (superOptions) {
 
 
 },{}],4:[function(require,module,exports){
-var each = require(8)
+var each = require(17)
 
 module.exports = init
 
@@ -127,8 +127,8 @@ function init (options) {
   self.index || (self.index = {})
 }
 },{}],5:[function(require,module,exports){
-var each = require(8)
-var Model = require(13)
+var each = require(17)
+var Model = require(11)
 
 module.exports = reset
 
@@ -140,13 +140,8 @@ function reset (items) {
   var lookup = self.lookup
   var index = self.index
 
-  var len = items.length
-  var newModels = new Array(len)
-  var newLookup = {}
-  var newIndex = {}
   var idAttribute = self.idAttribute
   var modelIdAttribute
-  var item, i
   var model, id
   var currentIndex
 
@@ -174,6 +169,9 @@ function reset (items) {
       self.trigger('change', model, self)
     },
     destroy: function (model) {
+      var id = model.id
+      delete lookup[id]
+      delete index[id]
       self.trigger('remove', model, self)
     },
     collection: self
@@ -183,10 +181,21 @@ function reset (items) {
     modelOptions.idAttribute = idAttribute
     ordered = true
   }
-
-  for (i = 0; i < len; i++) {
-    item = items[i]
-
+  var newIndex = {}
+  var newModels = new Array(items.length)
+  each(items, function (item, i) {
+    id = ordered ? item[idAttribute] : i
+    newIndex[id] = i
+  })
+  each(models, function (model, i, len) {
+    var id = model.id
+    if (typeof newIndex[id] === 'undefined') {
+      // model removed
+      model = lookup[id]
+      model.destroy()
+    }
+  })
+  each(items, function (item, i, len) {
     id = ordered ? item[idAttribute] : i
     model = lookup[id]
 
@@ -203,7 +212,7 @@ function reset (items) {
       } else {
         id = i
       }
-      models.push(model)
+      lookup[id] = model
     } else {
       // update model
       model.reset(item)
@@ -214,24 +223,14 @@ function reset (items) {
         self.trigger('move', model, i, currentIndex, self)
       }
     }
+    index[id] = i
     newModels[i] = model
-    newLookup[id] = model
-    newIndex[id] = i
-    delete lookup[id]
-  }
-  for (id in lookup) {
-    // model removed
-    model = lookup[id]
-    model.destroy()
-    delete lookup[id]
-  }
+  })
   self.models = newModels
-  self.lookup = newLookup
-  self.index = newIndex
 }
 },{}],6:[function(require,module,exports){
-var each = require(8)
-var Model = require(13)
+var each = require(17)
+var Model = require(11)
 
 module.exports = set
 
@@ -328,34 +327,6 @@ module.exports = function (id) {
 
 
 },{}],8:[function(require,module,exports){
-'use strict'
-
-module.exports = each
-
-function each (array, iterator) {
-  array = array || []
-
-  var i, len
-
-  for (i = 0, len = array.length; i < len; i++) {
-    iterator(array[i], i, len)
-  }
-}
-},{}],9:[function(require,module,exports){
-module.exports = inherit
-
-function inherit (target, superClass) {
-  target.super = superClass
-
-  target.prototype = Object.create(superClass.prototype, {
-    constructor: {
-      value: target,
-      writable: true,
-      configurable: true
-    }
-  })
-}
-},{}],10:[function(require,module,exports){
 module.exports = changed
 
 function changed (attribute) {
@@ -372,7 +343,7 @@ function changed (attribute) {
     return results
   }
 }
-},{}],11:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = destroy
 
 function destroy () {
@@ -382,7 +353,7 @@ function destroy () {
   self.reset({})
   self.off()
 }
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = get
 
 function get (attribute) {
@@ -394,9 +365,9 @@ function get (attribute) {
     return currentAttributes
   }
 }
-},{}],13:[function(require,module,exports){
-var inherit = require(9)
-var Observable = require(19)
+},{}],11:[function(require,module,exports){
+var inherit = require(18)
+var Observable = require(28)
 
 module.exports = Model
 
@@ -419,17 +390,17 @@ inherit(Model, Observable)
 
 var proto = Model.prototype
 
-proto.init = require(14)
+proto.init = require(12)
 
-proto.get = require(12)
-proto.set = require(17)
-proto.unset = require(18)
-proto.reset = require(16)
+proto.get = require(10)
+proto.set = require(15)
+proto.unset = require(16)
+proto.reset = require(14)
 
-proto.changed = require(10)
-proto.previous = require(15)
+proto.changed = require(8)
+proto.previous = require(13)
 
-proto.destroy = require(11)
+proto.destroy = require(9)
 
 Model.extend = function (superOptions) {
   function ExtendedModel (opts) {
@@ -456,7 +427,7 @@ Model.extend = function (superOptions) {
 }
 
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var cid = 1
 
 module.exports = init
@@ -487,7 +458,7 @@ function init (options) {
     }
   }
 }
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = previous
 
 function previous (attribute) {
@@ -499,7 +470,7 @@ function previous (attribute) {
     return previousAttributes
   }
 }
-},{}],16:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = reset
 
 function reset (attributes) {
@@ -515,8 +486,18 @@ function reset (attributes) {
   var changedAttributes = self.changedAttributes = {}
   var previousAttributes = self.previousAttributes
 
-  var newAttributes = {}
   var attribute, value, prevValue
+
+  for (attribute in currentAttributes) {
+    value = currentAttributes[attribute]
+    if (typeof attributes[attribute] === 'undefined') {
+      // attribute removed
+      previousAttributes[attribute] = value
+      changedAttributes[attribute] = undefined
+      self.trigger('change:', attribute, self, undefined, value)
+      delete currentAttributes[attribute]
+    }
+  }
 
   for (attribute in attributes) {
     value = attributes[attribute]
@@ -526,35 +507,23 @@ function reset (attributes) {
       // attribute changed
       changedAttributes[attribute] = value
 
+      if (typeof attributes[attribute] !== 'undefined') {
+        // set attribute
+        currentAttributes[attribute] = value
+      }
+
       // trigger attribute change event
       self.trigger('change:' + attribute, self, value, prevValue)
     }
 
     // save previous value
     previousAttributes[attribute] = prevValue
-
-    if (typeof attributes[attribute] !== 'undefined') {
-      // set attribute
-      newAttributes[attribute] = value
-    }
-    delete currentAttributes[attribute]
   }
-  for (attribute in currentAttributes) {
-    prevValue = currentAttributes[attribute]
-
-    // attribute removed
-    previousAttributes[attribute] = prevValue
-    changedAttributes[attribute] = undefined
-
-    // trigger attribute change event
-    self.trigger('change:' + attribute, self, undefined, prevValue)
-  }
-  self.attributes = newAttributes
 
   // trigger model change event
   self.trigger('change', self)
 }
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = set
 
 function set (attribute, value) {
@@ -579,11 +548,16 @@ function set (attribute, value) {
 
   var currentAttributes = self.attributes
   var changedAttributes = self.changedAttributes = {}
-  var previousAttributes = self.previousAttributes
-
-  var newAttributes = {}
+  var previousAttributes = self.previousAttributes = {}
 
   var prevValue
+
+  for (attribute in currentAttributes) {
+    if (typeof attributes[attribute] === 'undefined') {
+      // attribute unchanged
+      previousAttributes[attribute] = currentAttributes[attribute]
+    }
+  }
 
   for (attribute in attributes) {
     value = attributes[attribute]
@@ -602,21 +576,14 @@ function set (attribute, value) {
 
     if (typeof value !== 'undefined') {
       // set attribute
-      newAttributes[attribute] = value
+      currentAttributes[attribute] = value
     }
-    delete currentAttributes[attribute]
   }
-  for (attribute in currentAttributes) {
-    // unchanged attribute
-    value = currentAttributes[attribute]
-    newAttributes[attribute] = value
-    previousAttributes[attribute] = value
-  }
-  self.attributes = newAttributes
+
   // trigger model change event
   self.trigger('change', self)
 }
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 module.exports = unset
 
 function unset (attribute) {
@@ -648,21 +615,76 @@ function unset (attribute) {
   // trigger model change event
   self.trigger('change', self)
 }
+},{}],17:[function(require,module,exports){
+'use strict'
+
+module.exports = each
+
+function each (array, iterator) {
+  array = array || []
+
+  var i, len
+
+  for (i = 0, len = array.length; i < len; i++) {
+    iterator(array[i], i, len)
+  }
+}
+},{}],18:[function(require,module,exports){
+module.exports = inherit
+
+function inherit (target, superClass) {
+  target.super = superClass
+
+  target.prototype = Object.create(superClass.prototype, {
+    constructor: {
+      value: target,
+      writable: true,
+      configurable: true
+    }
+  })
+}
 },{}],19:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+
+},{}],20:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+
+},{}],21:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+
+},{}],22:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+
+},{}],23:[function(require,module,exports){
+arguments[4][12][0].apply(exports,arguments)
+
+},{}],24:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+
+},{}],25:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+
+},{}],26:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+
+},{}],27:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+
+},{}],28:[function(require,module,exports){
 module.exports = Observable
 
 function Observable () {}
 
 var proto = Observable.prototype
 
-proto.on = require(21)
-proto.one = require(22)
-proto.trigger = require(23)
-proto.off = require(20)
+proto.on = require(30)
+proto.one = require(31)
+proto.trigger = require(32)
+proto.off = require(29)
 
 
-},{}],20:[function(require,module,exports){
-var each = require(24)
+},{}],29:[function(require,module,exports){
+var each = require(33)
 
 module.exports = off
 
@@ -697,7 +719,7 @@ function off (name, cb) {
     }
   })
 }
-},{}],21:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = on
 
 function on (name, cb, context) {
@@ -728,7 +750,7 @@ function on (name, cb, context) {
   // add listener
   currentListeners.push(listener)
 }
-},{}],22:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 module.exports = one
 
 function one (name, cb, context) {
@@ -756,8 +778,8 @@ function one (name, cb, context) {
   context && (listener.context = context)
   currentListeners.push(listener)
 }
-},{}],23:[function(require,module,exports){
-var each = require(24)
+},{}],32:[function(require,module,exports){
+var each = require(33)
 var slice = Array.prototype.slice
 
 module.exports = trigger
@@ -795,7 +817,7 @@ function trigger (name) {
     }
   })
 }
-},{}],24:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict'
 
 module.exports = each
@@ -810,14 +832,14 @@ function each (array, iterator) {
     iterator(array[i], i)
   }
 }
-},{}],25:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var w = window
 var prefixes = 'webkit moz o ms'.split(' ')
 
 var style = document.createElement('p').style
 var memoized = {}
 
-var each = require(8)
+var each = require(17)
 
 module.exports = prefix
 
@@ -874,7 +896,7 @@ function prefix (parameter) {
     }
   })
 }
-},{}],26:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 module.exports = {
   inQuad: cubicBezier(0.550, 0.085, 0.680, 0.530),
   inCubic: cubicBezier(0.550, 0.055, 0.675, 0.190),
@@ -907,13 +929,13 @@ module.exports = {
 function cubicBezier (a, b, c, d) {
   return 'cubic-bezier(' + a + ', ' + b + ', ' + c + ', ' + d + ')'
 }
-},{}],27:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var w = window
 
-var each = require(8)
-var eases = require(26)
+var each = require(17)
+var eases = require(35)
 
-var prefix = require(25)
+var prefix = require(34)
 var _transition = prefix('transition')
 var _transitionend = prefix('transitionend')
 
@@ -993,7 +1015,7 @@ function nextTick (cb) {
   }
   tickQueue.push(cb)
 }
-},{}],28:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = addListener
 
 function addListener (target, name, cb) {
@@ -1013,7 +1035,7 @@ function addListener (target, name, cb) {
   self.domListeners.push(domlistener)
   target.addEventListener(name, cb)
 }
-},{}],29:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = find
 
 function find (target, query) {
@@ -1033,7 +1055,7 @@ function find (target, query) {
   result = target.querySelector(query)
   return result
 }
-},{}],30:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 module.exports = findAll
 
 function findAll (target, query) {
@@ -1053,15 +1075,15 @@ function findAll (target, query) {
   result = target.querySelectorAll(query)
   return Array.prototype.slice.call(result)
 }
-},{}],31:[function(require,module,exports){
-var each = require(8)
-var inherit = require(9)
-var Observable = require(19)
+},{}],40:[function(require,module,exports){
+var each = require(17)
+var inherit = require(18)
+var Observable = require(28)
 
-var $find = require(29)
-var $findAll = require(30)
+var $find = require(38)
+var $findAll = require(39)
 
-var tmpl = require(32)
+var tmpl = require(41)
 
 if (typeof exports === 'object') {
   module.exports = View
@@ -1118,7 +1140,7 @@ proto.$findAll = function (query) {
   return $findAll(this.$el, query)
 }
 
-proto.addListener = require(28)
+proto.addListener = require(37)
 proto.mount = mount
 proto.unmount = unmount
 proto.destroy = destroy
@@ -1172,8 +1194,8 @@ function getChildPath (target, childpath) {
   })
   return target
 }
-},{}],32:[function(require,module,exports){
-var each = require(8)
+},{}],41:[function(require,module,exports){
+var each = require(17)
 var memoize = {}
 
 module.exports = tmpl
@@ -1218,9 +1240,9 @@ function iterate (target, keypath, find) {
     iterate(child, keypath + i + '.', find)
   })
 }
-},{}],33:[function(require,module,exports){
-var inherit = require(9)
-var Observable = require(19)
+},{}],42:[function(require,module,exports){
+var inherit = require(18)
+var Observable = require(28)
 
 module.exports = ViewCollection
 
@@ -1241,9 +1263,9 @@ inherit(ViewCollection, Observable)
 
 var proto = ViewCollection.prototype
 
-proto.init = require(34)
-proto.reset = require(36)
-proto.mount = require(35)
+proto.init = require(43)
+proto.reset = require(45)
+proto.mount = require(44)
 
 ViewCollection.extend = function (superOptions) {
   function ExtendedViewCollection (opts) {
@@ -1268,7 +1290,7 @@ ViewCollection.extend = function (superOptions) {
 }
 
 
-},{}],34:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 module.exports = init
 
 function init (options) {
@@ -1290,8 +1312,8 @@ function init (options) {
   self.lookup || (self.lookup = {})
   self.index || (self.index = {})
 }
-},{}],35:[function(require,module,exports){
-var each = require(8)
+},{}],44:[function(require,module,exports){
+var each = require(17)
 
 module.exports = mount
 
@@ -1302,9 +1324,9 @@ function mount (target) {
     view.mount(target)
   })
 }
-},{}],36:[function(require,module,exports){
-var each = require(8)
-var View = require(31)
+},{}],45:[function(require,module,exports){
+var each = require(17)
+var View = require(40)
 
 module.exports = reset
 
