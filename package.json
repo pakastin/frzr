@@ -18,15 +18,15 @@
   },
   "homepage": "https://github.com/frzrjs/frzr",
   "dependencies": {
-    "@frzr/collection": "^0.1.2",
+    "@frzr/collection": "^0.1.3",
     "@frzr/each": "0.0.2",
     "@frzr/inherit": "0.0.1",
-    "@frzr/model": "^0.1.4",
+    "@frzr/model": "^0.1.5",
     "@frzr/observable": "^0.1.0",
     "@frzr/prefix": "0.0.3",
     "@frzr/transition": "0.0.3",
     "@frzr/view": "0.0.3",
-    "@frzr/viewcollection": "0.0.8"
+    "@frzr/viewcollection": "0.0.9"
   },
   "devDependencies": {
     "browserify": "^10.2.4",
