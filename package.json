@@ -25,8 +25,8 @@
     "@frzr/observable": "^0.1.0",
     "@frzr/prefix": "0.0.3",
     "@frzr/transition": "0.0.3",
-    "@frzr/view": "0.0.2",
-    "@frzr/viewcollection": "0.0.6"
+    "@frzr/view": "0.0.3",
+    "@frzr/viewcollection": "0.0.8"
   },
   "devDependencies": {
     "browserify": "^10.2.4",
