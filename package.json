@@ -21,7 +21,7 @@
     "@frzr/collection": "^0.1.6",
     "@frzr/each": "0.0.2",
     "@frzr/inherit": "0.0.1",
-    "@frzr/list": "0.0.3",
+    "@frzr/list": "0.0.4",
     "@frzr/model": "^0.1.7",
     "@frzr/observable": "^0.1.0",
     "@frzr/prefix": "0.0.4",

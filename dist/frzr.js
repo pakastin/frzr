@@ -707,7 +707,6 @@ List.extend = function (superOptions) {
 }
 },{}],20:[function(require,module,exports){
 var each = require(17)
-var List = require(19)
 
 module.exports = reset
 
@@ -746,11 +745,6 @@ function reset (newItems) {
 
     var newPos = newIndex[id]
 
-    if (pos === newPos) {
-      // equal items -> do nothing and don't continue to checkNew
-      return false
-    }
-
     // calculate true pos (after changes)
     var truePos = pos + added - removed
 
@@ -777,17 +771,18 @@ function reset (newItems) {
       return true
     }
 
-    if (truePos < newPos) {
-      // item sorted to later place -> mark lifted
-      lifted[id] = {
-        item: item,
-        added: added,
-        removed: removed + 1
+    if (truePos !== newPos) {
+      if (truePos < newPos) {
+        // item sorted to later place -> mark lifted
+        lifted[id] = {
+          item: item,
+          added: added,
+          removed: removed + 1
+        }
       }
       // mark internally as removed
       removed++
-      // update index
-      index[id] = newPos
+      len++
     }
     // continue to checkNew
     return true
@@ -819,7 +814,6 @@ function reset (newItems) {
 
       // update lookup
       lookup[id] = newItem
-
       return
     }
 
@@ -827,23 +821,12 @@ function reset (newItems) {
     var truePos = pos + added - removed
 
     if (truePos !== newPos) {
-      if (truePos < newPos) {
-        // was lifted, calculate new true pos (after changes)
-        var lift = lifted[id]
-        truePos = truePos + (added - lift.added) - (removed - lift.removed)
-        if (truePos !== newPos) {
-          // if really moved, trigger sort
-          items.splice(truePos, 1)
-          items.splice(newPos, 0, newItem)
-          self.trigger('sort', id, newItem, newPos, truePos)
-        }
-        return
-      }
       // sorted item: mark internally as added and trigger event
       items.splice(truePos, 1)
       items.splice(newPos, 0, newItem)
       self.trigger('sort', id, newItem, newPos, truePos)
       added++
+      len++
     }
   }
 }
@@ -1530,128 +1513,5 @@ proto.reset = function (items) {
 },{}],46:[function(require,module,exports){
 arguments[4][19][0].apply(exports,arguments)
 },{}],47:[function(require,module,exports){
-var each = require(17)
-
-module.exports = reset
-
-function reset (newItems) {
-  var self = this
-
-  var newIndex = {}
-
-  each(newItems, function (item, i) {
-    var id = item.id
-    newIndex[id] = i
-  })
-
-  var items = self.items
-  var index = self.index
-  var lookup = self.lookup
-
-  var added = 0
-  var removed = 0
-  var lifted = {}
-
-  for (var i = 0, len = Math.max(items.length, newItems.length); i < len; i++) {
-    checkCurrent(i) && checkNew(i)
-  }
-
-  function checkCurrent (pos) {
-    // check current item
-    var item = items[pos]
-
-    if (typeof item === 'undefined') {
-      // no item -> do nothing, but continue to checkNew
-      return true
-    }
-
-    var id = item.id
-
-    var newPos = newIndex[id]
-
-    // calculate true pos (after changes)
-    var truePos = pos + added - removed
-
-    if (typeof newPos === 'undefined') {
-      // removed item -> remove item
-      items.splice(truePos, 1)
-
-      // trigger event
-      self.trigger('remove', id, item, truePos)
-
-      // mark internally as removed
-      removed++
-
-      // remove from lookup and index
-      delete lookup[id]
-      delete index[id]
-
-      // continue to checkNew
-      return true
-    }
-
-    if (typeof lifted[id] !== 'undefined') {
-      // already lifted -> continue to checkNew
-      return true
-    }
-
-    if (truePos !== newPos) {
-      if (truePos < newPos) {
-        // item sorted to later place -> mark lifted
-        lifted[id] = {
-          item: item,
-          added: added,
-          removed: removed + 1
-        }
-      }
-      // mark internally as removed
-      removed++
-      len++
-    }
-    // continue to checkNew
-    return true
-  }
-
-  function checkNew (newPos) {
-    var newItem = newItems[newPos]
-
-    if (typeof newItem === 'undefined') {
-      // no item: do nothing
-      return
-    }
-
-    var id = newItem.id
-
-    var pos = index[id]
-
-    index[id] = newPos
-
-    if (typeof pos === 'undefined') {
-      // added item: add item
-      items.splice(newPos, 0, newItem)
-
-      // trigger event
-      self.trigger('add', id, newItem, newPos)
-
-      // mark internally as added
-      added++
-
-      // update lookup
-      lookup[id] = newItem
-      return
-    }
-
-    // calculate true position (after changes)
-    var truePos = pos + added - removed
-
-    if (truePos !== newPos) {
-      // sorted item: mark internally as added and trigger event
-      items.splice(truePos, 1)
-      items.splice(newPos, 0, newItem)
-      self.trigger('sort', id, newItem, newPos, truePos)
-      added++
-      len++
-    }
-  }
-}
+arguments[4][20][0].apply(exports,arguments)
 },{}]},{},[1]);
