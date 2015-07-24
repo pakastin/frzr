@@ -20,7 +20,7 @@ npm install frzr
 - [List](http://github.com/frzrjs/list): Ordered list of Models
 - [Observable](http://github.com/frzrjs/observable): Simple but fast event emitter
 - [View](http://github.com/frzrjs/view): Superfast vanilla JS view engine
-- [ViewList](http://github.com/frzrjs/viewlist): Views from List
+- [ViewList](http://github.com/frzrjs/viewlist): Ordered list of Views
 
 ## utils
 - [each](http://github.com/frzrjs/each): fast array iteration
