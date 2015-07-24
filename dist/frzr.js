@@ -3,14 +3,15 @@
 
 var each = require(17)
 var inherit = require(18)
-var prefix = require(34)
-var transition = require(36)
+var prefix = require(36)
+var transition = require(38)
 
 var Collection = require(3)
-var Model = require(22)
-var Observable = require(28)
-var View = require(40)
-var ViewCollection = require(42)
+var Model = require(24)
+var List = require(19)
+var Observable = require(30)
+var View = require(43)
+var ViewList = require(45)
 
 var frzr = {
   each: each,
@@ -19,17 +20,19 @@ var frzr = {
   transition: transition,
   Collection: Collection,
   Model: Model,
+  List: List,
   Observable: Observable,
   View: View,
-  ViewCollection: ViewCollection
+  ViewList: ViewList
 }
+
+frzr.ListView = frzr.ViewList
 
 module.exports = frzr
 
 global.frzr = frzr
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],2:[function(require,module,exports){
 module.exports = get
 
@@ -39,7 +42,7 @@ function get (id) {
 }
 },{}],3:[function(require,module,exports){
 var inherit = require(18)
-var Observable = require(28)
+var Observable = require(30)
 
 module.exports = Collection
 
@@ -91,8 +94,6 @@ Collection.extend = function (superOptions) {
 
   return ExtendedCollection
 }
-
-
 },{}],4:[function(require,module,exports){
 var each = require(17)
 
@@ -324,8 +325,6 @@ module.exports = function (id) {
     return model
   }
 }
-
-
 },{}],8:[function(require,module,exports){
 module.exports = changed
 
@@ -367,7 +366,7 @@ function get (attribute) {
 }
 },{}],11:[function(require,module,exports){
 var inherit = require(18)
-var Observable = require(28)
+var Observable = require(30)
 
 module.exports = Model
 
@@ -425,8 +424,6 @@ Model.extend = function (superOptions) {
 
   return ExtendedModel
 }
-
-
 },{}],12:[function(require,module,exports){
 var cid = 1
 
@@ -494,7 +491,7 @@ function reset (attributes) {
       // attribute removed
       previousAttributes[attribute] = value
       changedAttributes[attribute] = undefined
-      self.trigger('change:', attribute, self, undefined, value)
+      self.trigger('change:' + attribute, self, undefined, value)
       delete currentAttributes[attribute]
     }
   }
@@ -644,47 +641,243 @@ function inherit (target, superClass) {
   })
 }
 },{}],19:[function(require,module,exports){
-arguments[4][8][0].apply(exports,arguments)
+var inherit = require(18)
+var Observable = require(30)
 
+module.exports = List
+
+function List (opts) {
+  var self = this
+  var isList = self instanceof List
+
+  if (!isList) {
+    return new List(opts)
+  }
+
+  self.items = []
+  self.lookup = {}
+  self.index = {}
+
+  if (!opts) {
+    return
+  }
+
+  var key, value
+
+  for (key in opts) {
+    value = opts[key]
+    if (key === 'add') {
+      self.on('add', value)
+    } else if (key === 'remove') {
+      self.on('remove', value)
+    } else if (key === 'sort') {
+      self.on('sort', value)
+    } else {
+      self[key] = value
+    }
+  }
+}
+
+inherit(List, Observable)
+
+List.prototype.reset = require(20)
+
+List.extend = function (superOptions) {
+  function ExtendedList (opts) {
+    var self = this
+    opts || (opts = {})
+    var option
+
+    for (option in superOptions) {
+      if (option === 'add') {
+        self.on('add', superOptions.add)
+      } else if (opts[option] === 'sort') {
+        self.on('sort', superOptions.sort)
+      } else if (opts[option] === 'remove') {
+        self.on('remove', superOptions.remove)
+      } else if (typeof opts[option] === 'undefined') {
+        opts[option] = superOptions[option]
+      }
+    }
+    List.call(self, opts)
+  }
+  inherit(ExtendedList, List)
+
+  return ExtendedList
+}
 },{}],20:[function(require,module,exports){
-arguments[4][9][0].apply(exports,arguments)
+var each = require(17)
+var List = require(19)
 
+module.exports = reset
+
+function reset (newItems) {
+  var self = this
+
+  var newIndex = {}
+
+  each(newItems, function (item, i) {
+    var id = item.id
+    newIndex[id] = i
+  })
+
+  var items = self.items
+  var index = self.index
+  var lookup = self.lookup
+
+  var added = 0
+  var removed = 0
+  var lifted = {}
+
+  for (var i = 0, len = Math.max(items.length, newItems.length); i < len; i++) {
+    checkCurrent(i) && checkNew(i)
+  }
+
+  function checkCurrent (pos) {
+    // check current item
+    var item = items[pos]
+
+    if (typeof item === 'undefined') {
+      // no item -> do nothing, but continue to checkNew
+      return true
+    }
+
+    var id = item.id
+
+    var newPos = newIndex[id]
+
+    if (pos === newPos) {
+      // equal items -> do nothing and don't continue to checkNew
+      return false
+    }
+
+    // calculate true pos (after changes)
+    var truePos = pos + added - removed
+
+    if (typeof newPos === 'undefined') {
+      // removed item -> remove item
+      items.splice(truePos, 1)
+
+      // trigger event
+      self.trigger('remove', id, item, truePos)
+
+      // mark internally as removed
+      removed++
+
+      // remove from lookup and index
+      delete lookup[id]
+      delete index[id]
+
+      // continue to checkNew
+      return true
+    }
+
+    if (typeof lifted[id] !== 'undefined') {
+      // already lifted -> continue to checkNew
+      return true
+    }
+
+    if (truePos < newPos) {
+      // item sorted to later place -> mark lifted
+      lifted[id] = {
+        item: item,
+        added: added,
+        removed: removed + 1
+      }
+      // mark internally as removed
+      removed++
+      // update index
+      index[id] = newPos
+    }
+    // continue to checkNew
+    return true
+  }
+
+  function checkNew (newPos) {
+    var newItem = newItems[newPos]
+
+    if (typeof newItem === 'undefined') {
+      // no item: do nothing
+      return
+    }
+
+    var id = newItem.id
+
+    var pos = index[id]
+
+    index[id] = newPos
+
+    if (typeof pos === 'undefined') {
+      // added item: add item
+      items.splice(newPos, 0, newItem)
+
+      // trigger event
+      self.trigger('add', id, newItem, newPos)
+
+      // mark internally as added
+      added++
+
+      // update lookup
+      lookup[id] = newItem
+
+      return
+    }
+
+    // calculate true position (after changes)
+    var truePos = pos + added - removed
+
+    if (truePos !== newPos) {
+      if (truePos < newPos) {
+        // was lifted, calculate new true pos (after changes)
+        var lift = lifted[id]
+        truePos = truePos + (added - lift.added) - (removed - lift.removed)
+        if (truePos !== newPos) {
+          // if really moved, trigger sort
+          items.splice(truePos, 1)
+          items.splice(newPos, 0, newItem)
+          self.trigger('sort', id, newItem, newPos, truePos)
+        }
+        return
+      }
+      // sorted item: mark internally as added and trigger event
+      items.splice(truePos, 1)
+      items.splice(newPos, 0, newItem)
+      self.trigger('sort', id, newItem, newPos, truePos)
+      added++
+    }
+  }
+}
 },{}],21:[function(require,module,exports){
-arguments[4][10][0].apply(exports,arguments)
-
+arguments[4][8][0].apply(exports,arguments)
 },{}],22:[function(require,module,exports){
-arguments[4][11][0].apply(exports,arguments)
-
+arguments[4][9][0].apply(exports,arguments)
 },{}],23:[function(require,module,exports){
-arguments[4][12][0].apply(exports,arguments)
-
+arguments[4][10][0].apply(exports,arguments)
 },{}],24:[function(require,module,exports){
-arguments[4][13][0].apply(exports,arguments)
-
+arguments[4][11][0].apply(exports,arguments)
 },{}],25:[function(require,module,exports){
-arguments[4][14][0].apply(exports,arguments)
-
+arguments[4][12][0].apply(exports,arguments)
 },{}],26:[function(require,module,exports){
-arguments[4][15][0].apply(exports,arguments)
-
+arguments[4][13][0].apply(exports,arguments)
 },{}],27:[function(require,module,exports){
-arguments[4][16][0].apply(exports,arguments)
-
+arguments[4][14][0].apply(exports,arguments)
 },{}],28:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{}],29:[function(require,module,exports){
+arguments[4][16][0].apply(exports,arguments)
+},{}],30:[function(require,module,exports){
 module.exports = Observable
 
 function Observable () {}
 
 var proto = Observable.prototype
 
-proto.on = require(30)
-proto.one = require(31)
-proto.trigger = require(32)
-proto.off = require(29)
-
-
-},{}],29:[function(require,module,exports){
-var each = require(33)
+proto.on = require(32)
+proto.one = require(33)
+proto.trigger = require(34)
+proto.off = require(31)
+},{}],31:[function(require,module,exports){
+var each = require(35)
 
 module.exports = off
 
@@ -719,7 +912,7 @@ function off (name, cb) {
     }
   })
 }
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 module.exports = on
 
 function on (name, cb, context) {
@@ -750,7 +943,7 @@ function on (name, cb, context) {
   // add listener
   currentListeners.push(listener)
 }
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 module.exports = one
 
 function one (name, cb, context) {
@@ -778,8 +971,8 @@ function one (name, cb, context) {
   context && (listener.context = context)
   currentListeners.push(listener)
 }
-},{}],32:[function(require,module,exports){
-var each = require(33)
+},{}],34:[function(require,module,exports){
+var each = require(35)
 var slice = Array.prototype.slice
 
 module.exports = trigger
@@ -817,7 +1010,7 @@ function trigger (name) {
     }
   })
 }
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict'
 
 module.exports = each
@@ -832,9 +1025,9 @@ function each (array, iterator) {
     iterator(array[i], i)
   }
 }
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var w = window
-var prefixes = 'webkit moz o ms'.split(' ')
+var prefixes = 'webkit Moz ms O'.split(' ')
 
 var style = document.createElement('p').style
 var memoized = {}
@@ -888,15 +1081,18 @@ function prefix (parameter) {
     memoized[parameter] = defaultParameter
     return memoized[parameter]
   }
+  var found
   each(prefixes, function (prefix, i) {
     if (typeof style[prefix + parameter] !== 'undefined') {
       // vendor prefix found
       memoized[parameter] = prefix + parameter
-      return memoized[parameter]
+      found = memoized[parameter]
+      return
     }
   })
+  return found
 }
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 module.exports = {
   inQuad: cubicBezier(0.550, 0.085, 0.680, 0.530),
   inCubic: cubicBezier(0.550, 0.055, 0.675, 0.190),
@@ -929,13 +1125,13 @@ module.exports = {
 function cubicBezier (a, b, c, d) {
   return 'cubic-bezier(' + a + ', ' + b + ', ' + c + ', ' + d + ')'
 }
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var w = window
 
 var each = require(17)
-var eases = require(35)
+var eases = require(37)
 
-var prefix = require(34)
+var prefix = require(39)
 var _transition = prefix('transition')
 var _transitionend = prefix('transitionend')
 
@@ -1015,7 +1211,9 @@ function nextTick (cb) {
   }
   tickQueue.push(cb)
 }
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{}],40:[function(require,module,exports){
 module.exports = addListener
 
 function addListener (target, name, cb) {
@@ -1035,7 +1233,7 @@ function addListener (target, name, cb) {
   self.domListeners.push(domlistener)
   target.addEventListener(name, cb)
 }
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = find
 
 function find (target, query) {
@@ -1055,7 +1253,7 @@ function find (target, query) {
   result = target.querySelector(query)
   return result
 }
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 module.exports = findAll
 
 function findAll (target, query) {
@@ -1075,15 +1273,15 @@ function findAll (target, query) {
   result = target.querySelectorAll(query)
   return Array.prototype.slice.call(result)
 }
-},{}],40:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 var each = require(17)
 var inherit = require(18)
-var Observable = require(28)
+var Observable = require(30)
 
-var $find = require(38)
-var $findAll = require(39)
+var $find = require(41)
+var $findAll = require(42)
 
-var tmpl = require(41)
+var tmpl = require(44)
 
 if (typeof exports === 'object') {
   module.exports = View
@@ -1140,7 +1338,7 @@ proto.$findAll = function (query) {
   return $findAll(this.$el, query)
 }
 
-proto.addListener = require(37)
+proto.addListener = require(40)
 proto.mount = mount
 proto.unmount = unmount
 proto.destroy = destroy
@@ -1194,7 +1392,7 @@ function getChildPath (target, childpath) {
   })
   return target
 }
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var each = require(17)
 var memoize = {}
 
@@ -1240,190 +1438,220 @@ function iterate (target, keypath, find) {
     iterate(child, keypath + i + '.', find)
   })
 }
-},{}],42:[function(require,module,exports){
-var inherit = require(18)
-var Observable = require(28)
-
-module.exports = ViewCollection
-
-function ViewCollection (options) {
-  var self = this
-  var isViewCollection = self instanceof ViewCollection
-
-  if (!isViewCollection) {
-    return new ViewCollection(options)
-  }
-
-  options && self.init(options)
-
-  self.trigger('init')
-}
-
-inherit(ViewCollection, Observable)
-
-var proto = ViewCollection.prototype
-
-proto.init = require(43)
-proto.reset = require(45)
-proto.mount = require(44)
-
-ViewCollection.extend = function (superOptions) {
-  function ExtendedViewCollection (opts) {
-    var self = this
-    opts || (opts = {})
-    var option
-
-    for (option in superOptions) {
-      if (option === 'add') {
-        self.on('add', superOptions[option])
-      } else if (opts[option] === 'remove') {
-        self.on('remove', superOptions[option])
-      } else if (typeof opts[option] === 'undefined') {
-        opts[option] = superOptions[option]
-      }
-    }
-    ViewCollection.call(self, opts)
-  }
-  inherit(ExtendedViewCollection, ViewCollection)
-
-  return ExtendedViewCollection
-}
-
-
-},{}],43:[function(require,module,exports){
-module.exports = init
-
-function init (options) {
-  var self = this
-  var attr, value
-
-  for (attr in options) {
-    value = options[attr]
-    if (attr === 'add') {
-      self.on('add', value)
-    } else if (attr === 'remove') {
-      self.on('remove', value)
-    } else {
-      self[attr] = value
-    }
-  }
-
-  self.views || (self.views = [])
-  self.lookup || (self.lookup = {})
-  self.index || (self.index = {})
-}
-},{}],44:[function(require,module,exports){
-var each = require(17)
-
-module.exports = mount
-
-function mount (target) {
-  var self = this
-  self.root = target
-  each(self.views, function (view) {
-    view.mount(target)
-  })
-}
 },{}],45:[function(require,module,exports){
 var each = require(17)
-var View = require(40)
+var List = require(46)
+
+module.exports = ViewList
+
+function ViewList (opts) {
+  var self = this
+  var isViewList = self instanceof ViewList
+
+  if (!isViewList) {
+    return new ViewList(opts)
+  }
+
+  opts = opts || {}
+  var View = opts.view || require(43)
+
+  var views = self.views = []
+  var lookup = self.lookup = {}
+
+  var list = self.list = new List()
+
+  list.on('add', function (id, item, pos) {
+    var view = new View({
+      model: item
+    })
+    if (self.root) {
+      if (views[pos]) {
+        self.root.insertBefore(view.$el, views[pos].$el)
+      } else {
+        self.root.appendChild(view.$el)
+      }
+    }
+    views.splice(pos, 0, view)
+    lookup[id] = view
+  })
+  list.on('sort', function (id, item, pos, oldPos) {
+    var view = lookup[id]
+    views.splice(oldPos, 1)
+    if (self.root) {
+      if (views[pos]) {
+        self.root.insertBefore(view.$el, views[pos].$el)
+      } else {
+        self.root.appendChild(view.$el)
+      }
+    }
+    views.splice(pos, 0, view)
+  })
+  list.on('remove', function (id, item, pos) {
+    if (self.root) {
+      self.root.removeChild(lookup[id].$el)
+    }
+    views.splice(pos, 1)
+    delete lookup[id]
+  })
+}
+
+var proto = ViewList.prototype
+
+proto.mount = function (target) {
+  var self = this
+  var views = self.views
+
+  each(views, function (view) {
+    target.appendChild(view.$el)
+  })
+
+  self.root = target
+}
+
+proto.unmount = function () {
+  var self = this
+  var views = self.views
+  var root = self.root
+
+  if (typeof root === 'undefined') {
+    return
+  }
+
+  each(views, function (view) {
+    root.removeChild(view)
+  })
+
+  delete self.root
+}
+
+proto.reset = function (items) {
+  this.list.reset(items)
+}
+},{}],46:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{}],47:[function(require,module,exports){
+var each = require(17)
 
 module.exports = reset
 
-function reset (models) {
+function reset (newItems) {
   var self = this
 
-  self.init()
-
-  var views = self.views
-  var lookup = self.lookup
-  var index = self.index
-
-  var newViews = []
-  var newLookup = {}
   var newIndex = {}
 
-  var _View = self.view || View
-
-  var lastOldIndexDefined, lastOldIndex
-  var groups = []
-  var group = {
-    items: []
-  }
-
-  each(models, function (model, i) {
-    var id = (typeof model.id !== 'undefined') ? model.id : i
+  each(newItems, function (item, i) {
+    var id = item.id
     newIndex[id] = i
   })
-  var removed = 0
-  each(views, function (view, i, len) {
-    var id = (typeof view.model.id !== 'undefined') ? view.model.id : i
-    if (typeof newIndex[id] === 'undefined') {
-      view.destroy()
-      i--
-      len--
-      removed++
-    }
-    index[id] -= removed
-  })
-  each(models, function (model, i) {
-    var id = (typeof model.id !== 'undefined') ? model.id : i
-    var view = lookup[id]
-    var oldIndex = index[id]
-    var oldIndexDefined = typeof oldIndex !== 'undefined'
 
-    if (typeof view === 'undefined') {
-      view = new _View({
-        destroy: function () {
-          self.trigger('remove', view)
-        },
-        collection: self,
-        model: model
-      })
-      self.trigger('add', view)
-      if (!lastOldIndexDefined) {
-        group.items.push(view)
-      } else {
-        if (group.items.length) {
-          groups.push(group)
-        }
-        group = {items: [view], index: i, oldIndex: oldIndex}
-      }
-    } else {
-      if (lastOldIndexDefined && (oldIndex - 1 === lastOldIndex)) {
-        group.items.push(view)
-      } else {
-        if (group.items.length) {
-          groups.push(group)
-        }
-        group = {items: [view], index: i, oldIndex: oldIndex}
-      }
-    }
-    newViews[i] = view
-    newLookup[id] = view
-    delete lookup[id]
-    lastOldIndex = oldIndex
-    lastOldIndexDefined = oldIndexDefined
-  })
-  if (group.items.length) {
-    groups.push(group)
-  }
-  var moved
+  var items = self.items
+  var index = self.index
+  var lookup = self.lookup
+
   var added = 0
-  self.root && each(groups, function (group, i) {
-    if (moved || group.index + added !== group.oldIndex) {
-      var frag = document.createDocumentFragment()
-      each(group.items, function (view, j) {
-        frag.appendChild(view.$el)
-        view.$root = self.root
-        moved = true
-        added++
-      })
-      self.root.appendChild(frag)
+  var removed = 0
+  var lifted = {}
+
+  for (var i = 0, len = Math.max(items.length, newItems.length); i < len; i++) {
+    checkCurrent(i) && checkNew(i)
+  }
+
+  function checkCurrent (pos) {
+    // check current item
+    var item = items[pos]
+
+    if (typeof item === 'undefined') {
+      // no item -> do nothing, but continue to checkNew
+      return true
     }
-  })
-  self.views = newViews
-  self.lookup = newLookup
-  self.index = newIndex
+
+    var id = item.id
+
+    var newPos = newIndex[id]
+
+    // calculate true pos (after changes)
+    var truePos = pos + added - removed
+
+    if (typeof newPos === 'undefined') {
+      // removed item -> remove item
+      items.splice(truePos, 1)
+
+      // trigger event
+      self.trigger('remove', id, item, truePos)
+
+      // mark internally as removed
+      removed++
+
+      // remove from lookup and index
+      delete lookup[id]
+      delete index[id]
+
+      // continue to checkNew
+      return true
+    }
+
+    if (typeof lifted[id] !== 'undefined') {
+      // already lifted -> continue to checkNew
+      return true
+    }
+
+    if (truePos !== newPos) {
+      if (truePos < newPos) {
+        // item sorted to later place -> mark lifted
+        lifted[id] = {
+          item: item,
+          added: added,
+          removed: removed + 1
+        }
+      }
+      // mark internally as removed
+      removed++
+      len++
+    }
+    // continue to checkNew
+    return true
+  }
+
+  function checkNew (newPos) {
+    var newItem = newItems[newPos]
+
+    if (typeof newItem === 'undefined') {
+      // no item: do nothing
+      return
+    }
+
+    var id = newItem.id
+
+    var pos = index[id]
+
+    index[id] = newPos
+
+    if (typeof pos === 'undefined') {
+      // added item: add item
+      items.splice(newPos, 0, newItem)
+
+      // trigger event
+      self.trigger('add', id, newItem, newPos)
+
+      // mark internally as added
+      added++
+
+      // update lookup
+      lookup[id] = newItem
+      return
+    }
+
+    // calculate true position (after changes)
+    var truePos = pos + added - removed
+
+    if (truePos !== newPos) {
+      // sorted item: mark internally as added and trigger event
+      items.splice(truePos, 1)
+      items.splice(newPos, 0, newItem)
+      self.trigger('sort', id, newItem, newPos, truePos)
+      added++
+      len++
+    }
+  }
 }
 },{}]},{},[1]);

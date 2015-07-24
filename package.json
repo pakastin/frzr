@@ -21,19 +21,20 @@
     "@frzr/collection": "^0.1.6",
     "@frzr/each": "0.0.2",
     "@frzr/inherit": "0.0.1",
+    "@frzr/list": "0.0.3",
     "@frzr/model": "^0.1.7",
     "@frzr/observable": "^0.1.0",
     "@frzr/prefix": "0.0.4",
     "@frzr/transition": "0.0.4",
     "@frzr/view": "0.0.3",
-    "@frzr/viewcollection": "0.0.11"
+    "@frzr/viewlist": "0.0.1"
   },
   "devDependencies": {
-    "browserify": "^10.2.6",
-    "bundle-collapser": "^1.2.0",
-    "chokidar": "^1.0.3",
-    "tape": "^4.0.0",
-    "uglify-js": "^2.4.23",
+    "browserify": "^11.0.0",
+    "bundle-collapser": "^1.2.1",
+    "chokidar": "^1.0.5",
+    "tape": "^4.0.1",
+    "uglify-js": "^2.4.24",
     "uglifyify": "^3.0.1"
   }
 }
