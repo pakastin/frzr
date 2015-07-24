@@ -1423,7 +1423,9 @@ function iterate (target, keypath, find) {
 }
 },{}],45:[function(require,module,exports){
 var each = require(17)
-var List = require(46)
+var inherit = require(18)
+var List = require(19)
+var Observable = require(30)
 
 module.exports = ViewList
 
@@ -1436,6 +1438,25 @@ function ViewList (opts) {
   }
 
   opts = opts || {}
+
+  var key, value
+
+  for (key in opts) {
+    value = opts[key]
+
+    if (key === 'add') {
+      self.on('add', value)
+    } else if (key === 'sort') {
+      self.on('sort', value)
+    } else if (key === 'remove') {
+      self.on('remove', value)
+    } else if (key === 'view') {
+      continue
+    } else {
+      self[key] = value
+    }
+  }
+
   var View = opts.view || require(43)
 
   var views = self.views = []
@@ -1455,6 +1476,7 @@ function ViewList (opts) {
       }
     }
     views.splice(pos, 0, view)
+    self.trigger('add', id, view, pos)
     lookup[id] = view
   })
   list.on('sort', function (id, item, pos, oldPos) {
@@ -1468,15 +1490,20 @@ function ViewList (opts) {
       }
     }
     views.splice(pos, 0, view)
+    self.trigger('sort', id, view, pos, oldPos)
   })
   list.on('remove', function (id, item, pos) {
+    var view = lookup[id]
     if (self.root) {
       self.root.removeChild(lookup[id].$el)
     }
     views.splice(pos, 1)
     delete lookup[id]
+    self.trigger('remove', id, view, pos)
   })
 }
+
+inherit(ViewList, Observable)
 
 var proto = ViewList.prototype
 
@@ -1510,8 +1537,28 @@ proto.unmount = function () {
 proto.reset = function (items) {
   this.list.reset(items)
 }
-},{}],46:[function(require,module,exports){
-arguments[4][19][0].apply(exports,arguments)
-},{}],47:[function(require,module,exports){
-arguments[4][20][0].apply(exports,arguments)
+
+ViewList.extend = function (superOptions) {
+  function ExtendedViewList (opts) {
+    var self = this
+    opts || (opts = {})
+    var option
+
+    for (option in superOptions) {
+      if (option === 'add') {
+        self.on('add', superOptions.add)
+      } else if (opts[option] === 'sort') {
+        self.on('sort', superOptions.sort)
+      } else if (opts[option] === 'remove') {
+        self.on('remove', superOptions.remove)
+      } else if (typeof opts[option] === 'undefined') {
+        opts[option] = superOptions[option]
+      }
+    }
+    List.call(self, opts)
+  }
+  inherit(ExtendedViewList, ViewList)
+
+  return ExtendedViewList
+}
 },{}]},{},[1]);
