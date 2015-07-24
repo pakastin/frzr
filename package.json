@@ -27,7 +27,7 @@
     "@frzr/prefix": "0.0.4",
     "@frzr/transition": "0.0.4",
     "@frzr/view": "0.0.3",
-    "@frzr/viewlist": "0.0.1"
+    "@frzr/viewlist": "0.0.2"
   },
   "devDependencies": {
     "browserify": "^11.0.0",
