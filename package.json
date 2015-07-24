@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Cool javascript framework",
   "main": "lib/index.js",
   "scripts": {
