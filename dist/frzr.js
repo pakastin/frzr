@@ -713,121 +713,108 @@ module.exports = reset
 function reset (newItems) {
   var self = this
 
+  var newLookup = {}
   var newIndex = {}
 
   each(newItems, function (item, i) {
     var id = item.id
+    newLookup[id] = item
     newIndex[id] = i
   })
 
   var items = self.items
   var index = self.index
   var lookup = self.lookup
+  var moving = {}
 
-  var added = 0
-  var removed = 0
-  var lifted = {}
+  var i = 0
+  var len = items.length
+  var lenNew = newItems.length
+  var offset = 0
 
-  for (var i = 0, len = Math.max(items.length, newItems.length); i < len; i++) {
-    checkCurrent(i) && checkNew(i)
+  for (;i < len || i < lenNew;) {
+    check(i)
   }
 
-  function checkCurrent (pos) {
-    // check current item
+  self.index = newIndex
+  self.lookup = newLookup
+
+  function check (pos) {
     var item = items[pos]
+    var newItem
+    var newPos
+    var truePos
+    var id
 
-    if (typeof item === 'undefined') {
-      // no item -> do nothing, but continue to checkNew
-      return true
-    }
+    if (typeof item !== 'undefined') {
+      id = item.id
+      newItem = newLookup[id]
 
-    var id = item.id
-
-    var newPos = newIndex[id]
-
-    // calculate true pos (after changes)
-    var truePos = pos + added - removed
-
-    if (typeof newPos === 'undefined') {
-      // removed item -> remove item
-      items.splice(truePos, 1)
-
-      // trigger event
-      self.trigger('remove', id, item, truePos)
-
-      // mark internally as removed
-      removed++
-
-      // remove from lookup and index
-      delete lookup[id]
-      delete index[id]
-
-      // continue to checkNew
-      return true
-    }
-
-    if (typeof lifted[id] !== 'undefined') {
-      // already lifted -> continue to checkNew
-      return true
-    }
-
-    if (truePos !== newPos) {
-      if (truePos < newPos) {
-        // item sorted to later place -> mark lifted
-        lifted[id] = {
-          item: item,
-          added: added,
-          removed: removed + 1
-        }
+      if (moving[id]) {
+        items.splice(pos, 1)
+        offset--
+        delete moving[id]
+        len--
+        return
       }
-      // mark internally as removed
-      removed++
-      len++
+
+      if (typeof newItem === 'undefined') {
+        // item removed
+        self.trigger('remove', id, pos)
+        items.splice(pos, 1)
+        delete index[id]
+        delete lookup[id]
+        len--
+        return
+      }
     }
-    // continue to checkNew
-    return true
-  }
-
-  function checkNew (newPos) {
-    var newItem = newItems[newPos]
-
+    newPos = pos
+    newItem = newItems[newPos]
     if (typeof newItem === 'undefined') {
-      // no item: do nothing
+      i++
       return
     }
-
-    var id = newItem.id
-
-    var pos = index[id]
-
-    index[id] = newPos
-
-    if (typeof pos === 'undefined') {
-      // added item: add item
-      items.splice(newPos, 0, newItem)
-
-      // trigger event
+    var newId = newItem.id
+    if (newId === id) {
+      i++
+      return
+    }
+    id = newId
+    item = lookup[id]
+    if (typeof item === 'undefined') {
+      // item added
+      id = newItem.id
       self.trigger('add', id, newItem, newPos)
-
-      // mark internally as added
-      added++
-
-      // update lookup
-      lookup[id] = newItem
+      items.splice(newPos, 0, newItem)
+      index[id] = newPos
+      lookup[id] = newPos
+      offset++
+      i++
+      len++
       return
     }
-
-    // calculate true position (after changes)
-    var truePos = pos + added - removed
-
-    if (truePos !== newPos) {
-      // sorted item: mark internally as added and trigger event
-      items.splice(truePos, 1)
+    pos = index[id]
+    truePos = pos + offset
+    if (newPos < truePos) {
+      if (newPos >= truePos) {
+        i++
+        return
+      }
+      // item moved
+      moving[id] = {
+        item: newItem,
+        id: id,
+        newPos: newPos,
+        pos: pos
+      }
+      self.trigger('reorder', id, newItem, newPos)
       items.splice(newPos, 0, newItem)
-      self.trigger('sort', id, newItem, newPos, truePos)
-      added++
+      index[id] = newPos
+      offset++
       len++
     }
+    index[id] = newPos
+    i++
   }
 }
 },{}],21:[function(require,module,exports){
@@ -1323,6 +1310,7 @@ proto.$findAll = function (query) {
 
 proto.addListener = require(40)
 proto.mount = mount
+proto.mountBefore = mountBefore
 proto.unmount = unmount
 proto.destroy = destroy
 
@@ -1354,14 +1342,20 @@ function mount (target) {
   self.$root.appendChild(self.$el)
 }
 
+function mountBefore (target, before) {
+  var self = this
+  self.$root = target
+  self.$root.insertBefore(self.$el, before)
+}
+
 function unmount () {
   var self = this
-  self.$root.removeChild(self.$el)
+  self.$root && self.$root.removeChild(self.$el)
 }
 
 function destroy () {
   var self = this
-  self.$root.removeChild(self.$el)
+  self.$root && self.$root.removeChild(self.$el)
   self.domListeners && each(self.domListeners, function (listener) {
     listener.target.removeEventListener(listener.name, listener.cb)
   })
@@ -1424,7 +1418,7 @@ function iterate (target, keypath, find) {
 },{}],45:[function(require,module,exports){
 var each = require(17)
 var inherit = require(18)
-var List = require(19)
+var List = require(46)
 var Observable = require(30)
 
 module.exports = ViewList
@@ -1457,10 +1451,9 @@ function ViewList (opts) {
     }
   }
 
-  var View = opts.view || require(43)
+  var View = opts.view || require(51)
 
-  var views = self.views = []
-  var lookup = self.lookup = {}
+  var views = self.views = {}
 
   var list = self.list = new List()
 
@@ -1468,37 +1461,33 @@ function ViewList (opts) {
     var view = new View({
       model: item
     })
+    views[id] = view
     if (self.root) {
-      if (views[pos]) {
-        self.root.insertBefore(view.$el, views[pos].$el)
+      var $nextElement = self.root.childNodes[pos]
+      if ($nextElement) {
+        view.mountBefore(self.root, $nextElement)
       } else {
-        self.root.appendChild(view.$el)
+        view.mount(self.root)
       }
     }
-    views.splice(pos, 0, view)
     self.trigger('add', id, view, pos)
-    lookup[id] = view
   })
-  list.on('sort', function (id, item, pos, oldPos) {
-    var view = lookup[id]
-    views.splice(oldPos, 1)
+  list.on('reorder', function (id, item, pos) {
+    var view = views[id]
     if (self.root) {
-      if (views[pos]) {
-        self.root.insertBefore(view.$el, views[pos].$el)
+      var $nextElement = self.root.childNodes[pos]
+      if ($nextElement) {
+        view.mountBefore(self.root, $nextElement)
       } else {
-        self.root.appendChild(view.$el)
+        view.mount(self.root)
       }
     }
-    views.splice(pos, 0, view)
-    self.trigger('sort', id, view, pos, oldPos)
+    self.trigger('sort', id, view, pos)
   })
   list.on('remove', function (id, item, pos) {
-    var view = lookup[id]
-    if (self.root) {
-      self.root.removeChild(lookup[id].$el)
-    }
-    views.splice(pos, 1)
-    delete lookup[id]
+    var view = views[id]
+    view.destroy()
+    delete views[id]
     self.trigger('remove', id, view, pos)
   })
 }
@@ -1510,9 +1499,11 @@ var proto = ViewList.prototype
 proto.mount = function (target) {
   var self = this
   var views = self.views
+  var list = self.list
 
-  each(views, function (view) {
-    target.appendChild(view.$el)
+  each(list, function (item) {
+    var view = views[item.id]
+    view.mount(target)
   })
 
   self.root = target
@@ -1521,14 +1512,16 @@ proto.mount = function (target) {
 proto.unmount = function () {
   var self = this
   var views = self.views
+  var list = self.list
   var root = self.root
 
   if (typeof root === 'undefined') {
     return
   }
 
-  each(views, function (view) {
-    root.removeChild(view)
+  each(list, function (item) {
+    var view = views[item.id]
+    view.unmount()
   })
 
   delete self.root
@@ -1561,4 +1554,18 @@ ViewList.extend = function (superOptions) {
 
   return ExtendedViewList
 }
+},{}],46:[function(require,module,exports){
+arguments[4][19][0].apply(exports,arguments)
+},{}],47:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{}],48:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{}],49:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{}],50:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{}],51:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{}],52:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
 },{}]},{},[1]);
