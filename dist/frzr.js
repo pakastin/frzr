@@ -328,7 +328,7 @@
       });
       self.views = views;
       self.mount();
-      return;
+      return self;
     }
 
     var lookup = {};
