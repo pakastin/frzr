@@ -7,8 +7,9 @@ Cool new vanilla js framework
 
 [Development](http://frzrjs.github.io/frzr/dist/frzr.js) (~10 kb uncompressed)
 
-## simple example
+## simple examples
 [Create & reverse 10 000 DOM elements with reordering](http://jsfiddle.net/pc1pn6q3/)
+[Create & reverse 10 000 DOM elements without reordering](http://jsfiddle.net/gwyoajap/)
 
 ## documentation
 0.3.x documentation coming soon..
