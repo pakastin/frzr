@@ -1,11 +1,13 @@
 {
   "name": "frzr",
-  "version": "0.2.16",
-  "description": "Cool javascript framework",
-  "main": "lib/index.js",
+  "version": "0.3.0",
+  "description": "Cool new javascript framework",
+  "main": "dist/frzr.js",
   "scripts": {
-    "build": "browserify lib/index | bundle-collapser > dist/frzr.js && npm run build-min",
-    "build-min": "browserify -g uglifyify lib/index | bundle-collapser | uglifyjs -cm > dist/frzr.min.js"
+    "dev": "node watch",
+    "prepublish": "mkdir -p dist && npm run build-js",
+    "build-js": "esperanto -s -b -t umd -n frzr -i lib/index.js | babel --blacklist strict -o dist/frzr.js && npm run uglify-js",
+    "uglify-js": "uglifyjs dist/frzr.js -cm -o dist/frzr.min.js"
   },
   "repository": {
     "type": "git",
@@ -13,28 +15,12 @@
   },
   "author": "Juha Lindstedt",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/frzrjs/frzr/issues"
-  },
-  "homepage": "https://github.com/frzrjs/frzr",
   "dependencies": {
-    "@frzr/collection": "^0.1.6",
-    "@frzr/each": "0.0.2",
-    "@frzr/inherit": "0.0.1",
-    "@frzr/list": "0.0.7",
-    "@frzr/model": "^0.1.7",
-    "@frzr/observable": "^0.1.0",
-    "@frzr/prefix": "0.0.4",
-    "@frzr/transition": "0.0.4",
-    "@frzr/view": "0.0.4",
-    "@frzr/viewlist": "0.0.3"
+    "babel": "^5.8.21",
+    "esperanto": "^0.7.4",
+    "uglify-js": "^2.4.24"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
-    "bundle-collapser": "^1.2.1",
-    "chokidar": "^1.0.5",
-    "tape": "^4.0.1",
-    "uglify-js": "^2.4.24",
-    "uglifyify": "^3.0.1"
+    "chokidar": "^1.0.5"
   }
 }
