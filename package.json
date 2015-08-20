@@ -1,7 +1,7 @@
 {
   "name": "frzr",
   "version": "0.3.0",
-  "description": "Cool new javascript framework",
+  "description": "Cool new vanilla js framework",
   "main": "dist/frzr.js",
   "scripts": {
     "dev": "node watch",
