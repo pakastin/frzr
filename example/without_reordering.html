@@ -5,7 +5,7 @@
     <script src="http://frzrjs.github.io/frzr/dist/frzr.min.js"></script>
   </head>
   <body>
-    <h1>With reordering</h1>
+    <h1>Without reordering</h1>
     <script>
       var View = frzr.View
       var ViewList = frzr.ViewList
@@ -39,7 +39,7 @@
 
       var starttime = Date.now()
 
-      var itemList = ViewList(Item, 'id')
+      var itemList = ViewList(Item)
         .reset(items)
         .mount($items)
 
