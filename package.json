@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cool new vanilla js framework",
   "main": "dist/frzr.js",
   "scripts": {
