@@ -164,10 +164,7 @@
   function lib_view__reset(data) {
     var self = this;
     self.trigger('update', self, data, self.data);
-
-    forIn(data, function (value, key) {
-      self.data[key] = value;
-    });
+    self.data = data;
 
     return self;
   }
