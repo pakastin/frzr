@@ -1,6 +1,8 @@
 # FRZR
 Cool new javascript view library
 
+![FRZR logo](https://frzr.js.org/img/logo.svg)
+
 ## download
 
 [Development](http://frzrjs.github.io/frzr/dist/frzr.js) (~10 kb uncompressed)
