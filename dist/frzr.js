@@ -191,6 +191,7 @@ var frzr = (function () {
     options && this.setOptions(options);
     this.trigger('init', this);
     data && this.set(data);
+    this.trigger('inited', this);
   }
 
   inherits(View, Observable);
@@ -214,13 +215,41 @@ var frzr = (function () {
   };
 
   View.prototype.mount = function (target, sync) {
-    var $el = this.$el;
+    var self = this;
+    var $el = self.$el;
 
-    this.root = target;
+    self.root = target;
 
     batchAnimationFrame(function () {
+      self.trigger('mount');
       target.appendChild($el);
+      self.trigger('mounted');
     });
+  };
+
+  View.prototype.unmount = function () {
+    var self = this;
+    var $el = self.$el;
+
+    if (!self.root) {
+      return;
+    }
+
+    batchAnimationFrame(function () {
+      self.trigger('unmount');
+      self.root.removeChild($el);
+      self.root = null;
+      self.trigger('unmounted');
+    });
+  };
+
+  View.prototype.destroy = function () {
+    var self = this;
+
+    self.trigger('destroy');
+    self.off();
+    self.unmount();
+    self.trigger('destroyed');
   };
 
   View.prototype.mountBefore = function (target, before) {
@@ -242,11 +271,18 @@ var frzr = (function () {
   };
 
   View.prototype.set = function (data) {
-    this.trigger('update', data);
+    var self = this;
+    batchAnimationFrame(function () {
+      self.trigger('render');
+    });
+    self.trigger('update', data);
     for (var key in data) {
-      this.data[key] = data[key];
+      self.data[key] = data[key];
     }
-    this.trigger('updated');
+    self.trigger('updated');
+    batchAnimationFrame(function () {
+      self.trigger('rendered');
+    });
   };
 
   View.prototype.setOptions = function (options) {
