@@ -22,7 +22,7 @@ Also check out my little open source vanilla js Deck of Cards: https://deck-of-c
 I challenge you to do a similar bench with your favourite framework x ;)
 
 ## documentation
-I know it's still missing details – will add them soon..
+Still missing details – will add them soon..
 
 ### View
 
