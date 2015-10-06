@@ -1,96 +1,144 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta property="og:image" content="http://pakastin.fi/frzr.png" />
-    <title>frzr – Cool new javascript view library</title>
+    <title>frzr test</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: Source Sans Pro, sans-serif;
-      }
-      #logo {
-        width: 7.75rem;
-        height: 7.75rem;
-        margin: 2rem auto;
-        text-align: center;
-      }
-      #logo img {
-        width: 100%;
-        height: 100%;
-      }
-      #diagonal {
-        height: 12rem;
-      }
-      #diagonal-bg {
-        width: 200%;
-        height: 100%;
-        margin-left: -50%;
-        background-color: #4A90E2;
-        transform: rotate(-4deg);
-        -webkit-transform: rotate(-4deg);
-        -ms-transform: rotate(-4deg);
-      }
-      .wrapper {
-        overflow-x: hidden;
-      }
-      h2 {
-        transform: translate(0,0);
-        -webkit-transform: translate(0,0);
-        -ms-transform: translate(0,0);
-        margin: -7rem auto;
-        color: #fff;
-        text-align: center;
-        font-size: 1.8rem;
-        line-height: 2rem;
-        font-weight: 600;
-      }
       p {
-        text-align: center;
-        margin: 6rem auto;
-        line-height: 1.5;
-        color: #555;
-      }
-      a {
-        text-decoration: none;
-        color: #4A90E2;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      @media (min-width: 1600px) {
-        html {
-          font-size: 112.5%;
-        }
-      }
-      @media (max-width: 800px) {
-        html {
-          font-size: 87.5%;
-        }
-      }
-      @media (max-width: 640px) {
-        html {
-          font-size: 75%;
-        }
+        margin: .25rem 0;
       }
     </style>
-    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600' rel='stylesheet' type='text/css'>
   </head>
   <body>
-    <div class="wrapper">
-      <div id="logo">
-        <img alt="frzr" src="http://pakastin.fi/frzr.svg">
-      </div>
-      <div id="diagonal">
-        <div id="diagonal-bg"></div>
-        <h2>Cool new javascript view library</h2>
-      </div>
-      <p>Frzr is easy to use, extremely small and really powerful new vanilla js view library.</p>
-      <p><a href="http://github.com/frzrjs/frzr">Jump right in!</a><br><br>
-      Performance demonstration: create & reverse <br>10 000 DOM elements <a href="http://frzr.js.org/example/with_reordering.html">with reordering</a> / <a href="http://frzr.js.org/example/without_reordering.html">without reordering</a></p>
-    </div>
+    <p id="rendertime"></p>
+    <button>Shift 1000 items (with reorder)</button>
+    <button>Shift 1000 items (without reorder)</button><br>
+    <button>Push 1000 items to middle (with reorder)</button>
+    <button>Push 1000 items to middle (without reorder)</button><br>
+    <button>Shuffle items (with reorder)</button>
+    <button>Shuffle items (without reorder)</button><br>
+    <button>Sort items (with reorder)</button>
+    <button>Sort items (without reorder)</button><br>
+    <button>Reverse items (with reorder)</button>
+    <button>Reverse items (without reorder)</button><br>
+    <script src="http://frzr.js.org/dist/frzr.min.js"></script>
+    <script>
+      var $buttons = document.getElementsByTagName('button')
+      var $rendertime = document.getElementById('rendertime')
+
+      $buttons[0].addEventListener('click', function () {
+        shiftItems(1000, true)
+      })
+
+      $buttons[1].addEventListener('click', function () {
+        shiftItems(1000)
+      })
+
+      $buttons[2].addEventListener('click', function () {
+        pushItems(1000, true)
+      })
+
+      $buttons[3].addEventListener('click', function () {
+        pushItems(1000)
+      })
+
+      $buttons[4].addEventListener('click', function () {
+        shuffleItems(true)
+      })
+
+      $buttons[5].addEventListener('click', function () {
+        shuffleItems()
+      })
+
+      $buttons[6].addEventListener('click', function () {
+        sortItems(true)
+      })
+
+      $buttons[7].addEventListener('click', function () {
+        sortItems()
+      })
+
+      $buttons[8].addEventListener('click', function () {
+        reverseItems(1000, true)
+      })
+
+      $buttons[9].addEventListener('click', function () {
+        reverseItems(1000)
+      })
+
+      var items = []
+      var renderer = frzr.renderer
+      var View = frzr.View
+      var Views = frzr.Views
+
+      var starttime
+
+      renderer.on('render', timeStart)
+      renderer.on('rendered', timeEnd)
+
+      var ChildView = View.extend('p', {
+        class: 'view',
+        style: {
+          color: 'red'
+        },
+        update: function (options) {
+          this.textContent('Item ' + options.id)
+        }
+      })
+
+      var views = new Views(ChildView, 'div', {
+        class: 'views'
+      })
+      views.mount(document.body)
+
+      function timeStart () {
+        starttime = Date.now()
+      }
+
+      function timeEnd () {
+        $rendertime.textContent = 'Rendering took: ' + (Date.now() - starttime) + ' ms'
+      }
+
+      function sortItems (reordering) {
+        items.sort(function (a, b) {
+          return a.id - b.id
+        })
+        views.reset(items, reordering && 'id')
+      }
+
+      function shuffleItems (reordering) {
+        frzr.fisheryates(items)
+        views.reset(items, reordering && 'id')
+      }
+
+      function reverseItems (reordering) {
+        items.reverse()
+        views.reset(items, reordering && 'id')
+      }
+
+      function createItems (n) {
+        var len = items.length
+        var newItems = new Array(n)
+        var j = 0
+
+        for (var i = len; i < len + n; i++) {
+          newItems[j++] = {
+            id: i,
+            title: 'Item ' + i
+          }
+        }
+        return newItems
+      }
+
+      function shiftItems (n, reordering) {
+        Array.prototype.unshift.apply(items, createItems(n))
+        views.reset(items, reordering && 'id')
+      }
+
+      function pushItems (n, reordering) {
+        Array.prototype.splice.apply(items, [items.length / 2 | 0, 0].concat(createItems(n)))
+        views.reset(items, reordering && 'id')
+      }
+
+    </script>
   </body>
 </html>
