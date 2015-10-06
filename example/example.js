@@ -81,7 +81,7 @@ function sortItems (reordering) {
 }
 
 function shuffleItems (reordering) {
-  frzr.fisheryates(items)
+  frzr.shuffle(items)
   views.reset(items, reordering && 'id')
 }
 

@@ -138,10 +138,14 @@ var frzr = (function () {
     return results;
   }
 
-  function fisheryates(array) {
+  function shuffle(array) {
+    if (!array || !array.length) {
+      return array;
+    }
+
     var rnd, temp;
 
-    for (var i = array.length - 1; i; i--) {
+    for (var i = array.length - 1; i > 0; i--) {
       rnd = Math.random() * i | 0;
       temp = array[i];
       array[i] = array[rnd];
@@ -429,7 +433,7 @@ var frzr = (function () {
     });
   };
 
-  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, fisheryates: fisheryates, inherits: inherits, map: map, renderer: renderer, SVGelement: SVGelement, View: View, Views: Views };
+  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, inherits: inherits, map: map, shuffle: shuffle, renderer: renderer, SVGelement: SVGelement, View: View, Views: Views };
 
   return bundle;
 })();
