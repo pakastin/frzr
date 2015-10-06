@@ -1,4 +1,6 @@
-/* global frzr */
+/*
+Sorry for the mess here – will add some comments and refactor soon!
+*/
 
 var $buttons = document.getElementsByTagName('button')
 var $rendertime = document.getElementById('rendertime')
