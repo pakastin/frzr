@@ -30,7 +30,7 @@ Still missing details – will add them soon..
 npm install frzr
 ```
 
-### Requiring View & Views
+### Requiring View, Views...
 
 #### ES6
 Supports [rollup](https://github.com/rollup/rollup/wiki/jsnext:main)
@@ -178,4 +178,18 @@ views.unmount()
 #### reset(data, key)
 ```js
 views.reset([{title: 2}, {title: 3}, {title: 4}], 'title')
+```
+
+### Observable
+
+Basic stuff:
+
+```js
+var observable = new Observable()
+```
+
+and:
+
+```js
+inherits(YourClass, Observable)
 ```
