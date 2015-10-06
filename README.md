@@ -17,7 +17,7 @@ Also check out my little open source vanilla js Deck of Cards: https://deck-of-c
 [Production](http://frzrjs.github.io/frzr/dist/frzr.min.js) (~5 kb uncompressed & minified)
 
 ## example
-[performance demonstration](http://frzr.js.org/example/index.html)
+[Performance demonstration](http://frzr.js.org/example/index.html)
 
 I challenge you to do a similar bench with your favourite framework x ;)
 
