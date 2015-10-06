@@ -1,26 +1,29 @@
 {
   "name": "frzr",
-  "version": "0.3.1",
-  "description": "Cool new vanilla js framework",
+  "version": "0.4.0",
+  "description": "Cool new vanilla js view library",
   "main": "dist/frzr.js",
+  "main:jsnext": "lib/index.js",
   "scripts": {
-    "dev": "node watch",
-    "prepublish": "mkdir -p dist && npm run build-js",
-    "build-js": "esperanto -s -b -t umd -n frzr -i lib/index.js | babel --blacklist strict -o dist/frzr.js && npm run uglify-js",
-    "uglify-js": "uglifyjs dist/frzr.js -cm -o dist/frzr.min.js"
+    "build-js": "rollup -f iife --name frzr lib/bundle.js | babel -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
+    "start": "node watch",
+    "postinstall": "mkdir -p dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/frzrjs/frzr"
+    "url": "git+https://github.com/pakastin/frzr.git"
   },
   "author": "Juha Lindstedt",
-  "license": "MIT",
-  "dependencies": {
-    "babel": "^5.8.21",
-    "esperanto": "^0.7.4",
-    "uglify-js": "^2.4.24"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pakastin/frzr/issues"
   },
+  "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "chokidar": "^1.0.5"
+    "babel": "^5.8.23",
+    "chokidar": "^1.2.0",
+    "rollup": "^0.17.3",
+    "uglify-js": "^2.4.24"
   }
 }

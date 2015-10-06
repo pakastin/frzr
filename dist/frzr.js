@@ -1,446 +1,132 @@
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) : typeof define === 'function' && define.amd ? define(['exports'], factory) : factory(global.frzr = {});
-})(this, function (exports) {
+'use strict';
+
+var frzr = (function () {
   'use strict';
 
-  function Emitter() {
-    var self = this;
-    var isEmitter = self instanceof Emitter;
+  function element(type, attrs) {
+    var $el = document.createElement(type);
 
-    if (!isEmitter) {
-      return new Emitter();
+    if (typeof attrs !== 'undefined') {
+      for (var attr in attrs) {
+        $el.setAttribute(attr, attrs[attr]);
+      }
     }
 
-    self.listeners = {};
-
-    return self;
+    return $el;
   }
 
-  var emitterProto = Emitter.prototype;
+  function SVGelement(type, attrs) {
+    var $el = document.createElementNS('http://www.w3.org/2000/svg', type);
 
-  emitterProto.on = on;
-  emitterProto.off = off;
-  emitterProto.trigger = trigger;
+    for (var attr in attrs) {
+      $el.setAttribute(attrs, attrs[attr]);
+    }
 
-  function on(name, cb, ctx) {
-    var self = this;
-    var listeners = self.listeners[name] || (self.listeners[name] = []);
+    return $el;
+  }
 
-    listeners.push({
+  function Observable() {
+    this.listeners = {};
+  }
+
+  Observable.prototype.on = function (name, cb, ctx, once) {
+    this.listeners[name] || (this.listeners[name] = []);
+    this.listeners[name].push({
+      once: once || false,
       cb: cb,
-      ctx: ctx
+      ctx: ctx || this
     });
+  };
 
-    return self;
-  }
+  Observable.prototype.one = function (name, cb, ctx) {
+    this.on(name, cb, ctx, true);
+  };
 
-  function trigger(name) {
+  Observable.prototype.trigger = function (name) {
     var self = this;
-    var args = slice(arguments, 1);
     var listeners = self.listeners[name];
+    var len = arguments.length - 1;
+    var args = new Array(len);
+
+    for (var i = 0; i < len; i++) {
+      args[i] = arguments[i + 1];
+    }
 
     if (!listeners) {
-      return self;
+      return;
     }
-    each(listeners, function (listener) {
+
+    var listener;
+
+    for (i = 0; i < listeners.length; i++) {
+      listener = listeners[i];
       listener.cb.apply(listener.ctx || self, args);
-    });
-
-    return self;
-  }
-
-  function off(name, cb) {
-    var self = this;
-    var listeners;
-    if (cb) {
-      listeners = self.listeners[name];
-
-      if (!listeners) {
-        return self;
+      if (listener.once) {
+        listeners.splice(i--, 1);
+        len--;
       }
-      self.listeners = filter(listeners, function (listener) {
-        return listener.cb === cb;
-      });
-      return self;
     }
-    if (name) {
-      delete listeners[name];
-      return self;
+  };
+
+  var ticking = [];
+  var requestAnimationFrame = window.requestAnimationFrame || function (cb) {
+    setTimeout(cb, 1000 / 60);
+  };
+
+  var renderer = new Observable();
+
+  function batchAnimationFrame(cb) {
+    if (!ticking.length) {
+      renderer.trigger('render');
+      requestAnimationFrame(tick);
     }
-    self.listeners = {};
-    return self;
+    ticking.push(cb);
   }
 
-  exports.Emitter = Emitter;
-
-  function View(type) {
-    var self = this;
-    var isView = self instanceof View;
-
-    if (!isView) {
-      return new View(type);
+  function tick() {
+    var cbs = ticking.splice(0, ticking.length);
+    for (var i = 0, len = cbs.length; i < len; i++) {
+      cbs[i]();
     }
-
-    View['super'].call(this);
-
-    self.data = {};
-    self.$el = document.createElement(type || 'div');
-  }
-
-  inherit(View, Emitter);
-
-  var viewProto = View.prototype;
-
-  viewProto.mount = lib_view__mount;
-  viewProto.unmount = unmount;
-  viewProto.text = text;
-  viewProto.html = html;
-  viewProto.addClass = addClass;
-  viewProto.removeClass = removeClass;
-  viewProto.reset = lib_view__reset;
-  viewProto.destroy = destroy;
-
-  View.extend = lib_view__extend;
-
-  function lib_view__mount(root) {
-    var self = this;
-    self.root = root;
-
-    if (root instanceof View) {
-      root = root.$el;
-    }
-
-    root.appendChild(self.$el);
-
-    return self;
-  }
-
-  function unmount() {
-    var self = this;
-    var root = self.root;
-    if (!root) {
+    if (ticking.length === 0) {
+      renderer.trigger('rendered');
       return;
     }
-    if (root instanceof View) {
-      root = root.$el;
-    }
-    root.removeChild(self.$el);
-
-    return self;
+    tick();
   }
-
-  function text(text) {
-    var self = this;
-
-    self.$el.textContent = text;
-
-    return self;
-  }
-
-  function html(html) {
-    var self = this;
-
-    self.$el.innerHTML = html;
-
-    return self;
-  }
-
-  function addClass(className) {
-    var self = this;
-
-    self.$el.classList.add(className);
-
-    return self;
-  }
-
-  function removeClass(className) {
-    var self = this;
-
-    self.$el.classList.remove(className);
-
-    return self;
-  }
-
-  function lib_view__reset(data) {
-    var self = this;
-    self.trigger('update', self, data, self.data);
-    self.data = data;
-
-    return self;
-  }
-
-  function destroy() {
-    var self = this;
-    self.trigger('destroy', self);
-    self.off();
-    self.unmount();
-
-    return self;
-  }
-
-  function lib_view__extend(extendedType) {
-    var emitter = new Emitter();
-    var classes = [];
-    var classLookup = {};
-    var params = {};
-
-    function ExtendedView(type) {
-      var view = new View(type || extendedType);
-
-      view.listeners = emitter.listeners;
-
-      each(classes, function (className) {
-        view.addClass(className);
-      });
-
-      if (params.root) {
-        view.mount(params.root);
-      }
-
-      view.trigger('init', view);
-
-      return view;
-    }
-    ExtendedView.mount = function mount(root) {
-      params.root = root;
-
-      return ExtendedView;
-    };
-    ExtendedView.unmount = function mount(_root) {
-      delete params.root;
-
-      return ExtendedView;
-    };
-    ExtendedView.addClass = function addClass(className) {
-      if (classLookup[className]) {
-        return ExtendedView;
-      }
-      classes.push(className);
-      classLookup[className] = true;
-
-      return ExtendedView;
-    };
-    ExtendedView.removeClass = function addClass(className) {
-      if (classLookup[className]) {
-        classes = filter(classes, function (_className) {
-          return _className !== className;
-        });
-        delete classLookup[className];
-      }
-
-      return ExtendedView;
-    };
-    ExtendedView.on = function on(name, cb, ctx) {
-      emitter.on(name, cb, ctx);
-      return ExtendedView;
-    };
-    ExtendedView.off = function off(name, cb, ctx) {
-      emitter.off(name, cb, ctx);
-      return ExtendedView;
-    };
-
-    return ExtendedView;
-  }
-
-  exports.View = View;
-
-  function ViewList(view, idAttribute) {
-    var self = this;
-    var isViewList = self instanceof ViewList;
-
-    if (!isViewList) {
-      return new ViewList(view, idAttribute);
-    }
-    self.idAttribute = idAttribute;
-    self.View = view || View;
-    self.views = [];
-    self.lookup = {};
-
-    return self;
-  }
-
-  inherit(ViewList, Emitter);
-
-  var ViewListProto = ViewList.prototype;
-
-  ViewListProto.mount = viewlist__mount;
-  ViewListProto.reset = viewlist__reset;
-
-  ViewList.extend = viewlist__extend;
-
-  function viewlist__mount(root) {
-    var self = this;
-
-    root = root || self.root;
-
-    if (!root) {
-      return;
-    }
-
-    if (root instanceof View) {
-      root = root.$el;
-    }
-
-    // Update items
-    var traverse = root.firstChild;
-
-    each(self.views, function (view, i) {
-      if (traverse === view.$el) {
-        traverse = traverse.nextSibling;
-        return;
-      }
-      if (traverse) {
-        root.insertBefore(view.$el, traverse);
-      } else {
-        root.appendChild(view.$el);
-      }
-    });
-    var next;
-    while (traverse) {
-      next = traverse.nextSibling;
-      root.removeChild(traverse);
-      traverse = next;
-    }
-    self.root = root;
-    return self;
-  }
-
-  function viewlist__reset(items) {
-    var self = this;
-    var idAttribute = self.idAttribute;
-
-    var views;
-
-    if (idAttribute == null) {
-      views = reduce(items, new Array(items.length), function (init, item, i) {
-        var view = self.views[i];
-
-        if (!view) {
-          view = new self.View();
-        }
-        view.reset(item);
-        init[i] = view;
-
-        return init;
-      });
-      self.views = views;
-      self.mount();
-      return self;
-    }
-
-    var lookup = {};
-
-    views = reduce(items, [], function (init, item, i) {
-      var id = item[idAttribute];
-      var currentView = self.lookup[id];
-      if (!currentView) {
-        currentView = new self.View();
-      }
-      currentView.reset(item);
-      init[i] = lookup[id] = currentView;
-      return init;
-    });
-
-    each(self.views, function (view, i) {
-      var id = view[idAttribute];
-
-      if (!lookup[id]) {
-        view.destroy();
-        delete lookup[id];
-      }
-    });
-
-    self.views = views;
-    self.lookup = lookup;
-
-    self.mount();
-
-    return self;
-  }
-
-  function viewlist__extend(extendedIdAttribute, extendedView) {
-    var emitter = new Emitter();
-    var params = {};
-
-    function ExtendedViewList(idAttribute, view) {
-      var ViewList = new ViewList(idAttribute || extendedIdAttribute, view || extendedView);
-      ViewList.listeners = emitter.listeners;
-
-      if (params.root) {
-        ViewList.mount(params.root);
-      }
-
-      return ViewList;
-    }
-
-    ExtendedViewList.mount = function (root) {
-      params.root = root;
-
-      return ExtendedViewList;
-    };
-
-    ExtendedViewList.unmount = function () {
-      delete params.root;
-
-      return ExtendedViewList;
-    };
-
-    ExtendedViewList.on = function (name, cb, ctx) {
-      emitter.on(name, cb, ctx);
-
-      return ExtendedViewList;
-    };
-
-    return ExtendedViewList;
-  }
-
-  exports.ViewList = ViewList;
 
   function each(array, iterator) {
-    for (var i = 0, len = array.length; i < len; i++) {
-      iterator(array[i], i);
+    var len = array.length;
+
+    for (var i = 0; i < len; i++) {
+      iterator(array[i], i, len);
     }
   }
 
   function filter(array, iterator) {
     var results = [];
+    var len = array.length;
+    var item;
 
-    each(array, function (item, i) {
-      if (iterator(item, i)) {
-        results.push(item);
-      }
-    });
+    for (var i = 0; i < len; i++) {
+      item = array[i];
+      iterator(item, i, len) && results.push(item);
+    }
 
     return results;
   }
 
-  function slice(array, start, end) {
-    var len = array.length;
+  function fisheryates(array) {
+    var rnd, temp;
 
-    if (start == null) {
-      start = 0;
+    for (var i = array.length - 1; i; i--) {
+      rnd = Math.random() * i | 0;
+      temp = array[i];
+      array[i] = array[rnd];
+      array[rnd] = temp;
     }
 
-    if (end == null) {
-      end = len;
-    }
-
-    if (start < 0) {
-      start = len + start;
-    }
-
-    if (end < 0) {
-      end = len + end;
-    }
-
-    len = end - start;
-
-    var results = new Array(len);
-
-    for (var i = 0; i < len; i++) {
-      results[i] = array[start + i];
-    }
-    return results;
+    return array;
   }
 
   function map(array, iterator) {
@@ -448,61 +134,281 @@
     var results = new Array(len);
 
     for (var i = 0; i < len; i++) {
-      results[i] = iterator(array[i], i);
+      results[i] = iterator(array[i], i, len);
     }
 
     return results;
   }
 
-  function timesMap(len, iterator) {
-    var results = new Array(len);
-
-    for (var i = 0; i < len; i++) {
-      results[i] = iterator(i);
-    }
-
-    return results;
-  }
-
-  function reduce(array, init, iterator) {
-    each(array, function (item, i) {
-      init = iterator(init, item, i);
-    });
-    return init;
-  }
-
-  exports.each = each;
-  exports.filter = filter;
-  exports.map = map;
-  exports.slice = slice;
-  exports.timesMap = timesMap;
-  exports.reduce = reduce;
-
-  function inherit(target, superClass) {
-    var prototype = superClass && superClass.prototype || null;
-
-    target['super'] = superClass;
-
-    target.prototype = Object.create(prototype, {
+  function inherits(targetClass, superClass) {
+    targetClass['super'] = superClass;
+    targetClass.prototype = Object.create(superClass.prototype, {
       constructor: {
         configurable: true,
-        value: target,
+        value: targetClass,
         writable: true
       }
     });
-
-    return target.prototype;
   }
 
-  exports.inherit = inherit;
+  function View(type, options, data) {
+    var attrs = options && options.attrs || {};
+    var svg = options && options.svg || false;
 
-  function forIn(object, iterator) {
+    View['super'].call(this); // init Observable
+
+    this.$el = svg ? SVGelement(type, attrs) : element(type, attrs);
+    this.attrs = {};
+    this['class'] = {};
+    this.data = {};
+    this.style = {};
+
+    options && this.setOptions(options);
+    this.trigger('init', this);
+    data && this.set(data);
+  }
+
+  inherits(View, Observable);
+
+  View.extend = function (superType, superOptions) {
+    return function ExtendedView(type, options) {
+      if (!options) {
+        return new View(type || superType, superOptions);
+      }
+      var currentOptions = {};
+
+      for (var key in superOptions) {
+        currentOptions[key] = superOptions[key];
+      }
+
+      for (key in options) {
+        currentOptions[key] = options[key];
+      }
+      return new View(type || superType, currentOptions);
+    };
+  };
+
+  View.prototype.mount = function (target, sync) {
+    var $el = this.$el;
+
+    this.root = target;
+
+    batchAnimationFrame(function () {
+      target.appendChild($el);
+    });
+  };
+
+  View.prototype.mountBefore = function (target, before) {
+    var $el = this.$el;
+
+    this.root = target;
+
+    batchAnimationFrame(function () {
+      target.insertBefore($el, before);
+    });
+  };
+
+  View.prototype.mountBeforeSync = function (target, before) {
+    var $el = this.$el;
+
+    this.root = target;
+
+    target.insertBefore($el, before);
+  };
+
+  View.prototype.set = function (data) {
+    this.trigger('update', data);
+    for (var key in data) {
+      this.data[key] = data[key];
+    }
+    this.trigger('updated');
+  };
+
+  View.prototype.setOptions = function (options) {
+    if (!options) {
+      return;
+    }
     var key;
 
-    for (key in object) {
-      iterator(object[key], key);
+    for (key in options) {
+      if (key === 'attrs') {
+        this.setAttributes(options.attrs);
+      } else if (key === 'style') {
+        if (typeof options.style === 'string') {
+          this.setAttributes({
+            style: options.style
+          });
+          continue;
+        }
+        this.setStyle(options.style);
+      } else if (key === 'class') {
+        if (typeof options['class'] === 'string') {
+          this.setAttributes({
+            'class': options['class']
+          });
+          continue;
+        }
+        this.setClass(options['class']);
+      } else if (key === 'textContent') {
+        this.textContent(options.textContent);
+      } else if (key === 'init') {
+        this.on('init', options.init);
+      } else if (key === 'update') {
+        this.on('update', options.update);
+      } else {
+        this[key] = options[key];
+      }
     }
+  };
+
+  View.prototype.textContent = function (text) {
+    var self = this;
+    var $el = self.$el;
+
+    if (text !== self.text) {
+      self.text = text;
+
+      batchAnimationFrame(function () {
+        if (text === self.text) {
+          $el.textContent = text;
+        }
+      });
+    }
+  };
+
+  View.prototype.setClass = function (classes) {
+    var self = this;
+    var $el = self.$el;
+    var key, value;
+
+    for (key in classes) {
+      value = classes[key];
+      if (self['class'][key] !== value) {
+        self['class'][key] = value;
+        batchAnimationFrame(function () {
+          if (self['class'][key] === value) {
+            if (value) {
+              $el.classList.add(key);
+            } else {
+              $el.classList.remove(key);
+            }
+          }
+        });
+      }
+    }
+  };
+
+  View.prototype.setStyle = function (style) {
+    var self = this;
+    var $el = self.$el;
+    var key, value;
+
+    for (key in style) {
+      value = style[key];
+      if (self.style[key] !== value) {
+        self.style[key] = value;
+        batchAnimationFrame(function () {
+          if (self.style[key] === style[key]) {
+            $el.style[key] = value;
+          }
+        });
+      }
+    }
+  };
+
+  View.prototype.setAttributes = function (attrs) {
+    var self = this;
+    var $el = self.$el;
+    var currentAttrs = self.attrs;
+    var value, attr;
+
+    for (attr in attrs) {
+      value = attrs[attr];
+      if (value !== currentAttrs[attr]) {
+        self.attrs[attr] = value;
+
+        if (value === self.attrs[attr]) {
+          batchAnimationFrame(function () {
+            $el.setAttribute(attr, value);
+          });
+        }
+      }
+    }
+  };
+
+  function Views(ChildView, type, options) {
+    this.view = new View(type, options);
+    this.views = [];
+    this.lookup = {};
+    this.ChildView = ChildView || View;
   }
 
-  exports.forIn = forIn;
-});
+  inherits(Views, Observable);
+
+  Views.prototype.mount = function (target) {
+    this.mounted = true;
+    this.view.mount(target);
+  };
+
+  Views.prototype.reset = function (data, key) {
+    var self = this;
+    var ChildView = self.ChildView;
+
+    var views = new Array(data.length);
+    var lookup = {};
+    var currentLookup = self.lookup;
+
+    each(data, function (item, i) {
+      var id_or_i = key ? item[key] : i;
+      var view = currentLookup[id_or_i];
+
+      if (!view) {
+        view = new ChildView();
+      }
+      lookup[id_or_i] = view;
+      view.set(item);
+      views[i] = view;
+    });
+    for (var id in currentLookup) {
+      if (!lookup[id]) {
+        lookup[id].destroy();
+      }
+    }
+    self.views = views;
+    self.lookup = lookup;
+    self.reorder();
+  };
+
+  Views.prototype.reorder = function () {
+    var self = this;
+    var root = self.view.$el;
+
+    batchAnimationFrame(function () {
+      var traverse = root.firstChild;
+
+      each(self.views, function (view, i) {
+        if (traverse === view.$el) {
+          traverse = traverse.nextSibling;
+          return;
+        }
+        if (traverse) {
+          view.root = root;
+          root.insertBefore(view.$el, traverse);
+        } else {
+          view.root = root;
+          root.appendChild(view.$el);
+        }
+      });
+      var next;
+      while (traverse) {
+        next = traverse.nextSibling;
+        root.removeChild(traverse);
+        traverse = next;
+      }
+    });
+  };
+
+  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, fisheryates: fisheryates, inherits: inherits, map: map, renderer: renderer, SVGelement: SVGelement, View: View, Views: Views };
+
+  return bundle;
+})();
