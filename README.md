@@ -3,6 +3,8 @@ Cool new javascript view library.
 
 [![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
 
+Also check out my little open source vanilla js Deck of Cards: https://deck-of-cards.js.org
+
 ## download
 
 [Development](http://frzrjs.github.io/frzr/dist/frzr.js) (~10 kb uncompressed)
