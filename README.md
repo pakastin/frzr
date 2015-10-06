@@ -24,6 +24,27 @@ I challenge you to do a similar bench with your favourite framework x ;)
 ## documentation
 Still missing details – will add them soon..
 
+### Installing from NPM
+(You can also just [download](https://github.com/pakastin/frzr#download))
+```
+npm install frzr
+```
+
+### Requiring View & Views
+
+#### ES6
+Supports [rollup](https://github.com/rollup/rollup/wiki/jsnext:main)
+```js
+import {View, Views} from 'frzr'
+```
+
+#### ES5
+
+```js
+var View = frzr.View
+var Views = frzr.Views
+```
+
 ### View
 
 #### constructor(type, options)
