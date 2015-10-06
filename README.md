@@ -13,7 +13,7 @@ Cool new javascript view library
 [performance demonstration](http://frzr.js.org/example/index.html)
 
 ## documentation
-Not completely there yet. Will open up these soon..
+Not completely there yet. Will add more details here soon..
 
 ### View
 
