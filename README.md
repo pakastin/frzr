@@ -1,7 +1,7 @@
 # FRZR
 Cool new javascript view library.
 
-Made with ES6.
+Made with ♥ + ES6.
 
 [![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
 
