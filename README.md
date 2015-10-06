@@ -8,7 +8,7 @@ Made with ♥ + ES6.
 
 [![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
 
-Also check out my little open source vanilla js Deck of Cards: https://deck-of-cards.js.org
+Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org)
 
 ## download
 
