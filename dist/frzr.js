@@ -18,8 +18,10 @@ var frzr = (function () {
   function SVGelement(type, attrs) {
     var $el = document.createElementNS('http://www.w3.org/2000/svg', type);
 
-    for (var attr in attrs) {
-      $el.setAttribute(attrs, attrs[attr]);
+    if (typeof attrs !== 'undefined') {
+      for (var attr in attrs) {
+        $el.setAttribute(attrs, attrs[attr]);
+      }
     }
 
     return $el;
@@ -42,9 +44,29 @@ var frzr = (function () {
     this.on(name, cb, ctx, true);
   };
 
+  Observable.prototype.off = function (name, cb) {
+    if (typeof name === 'undefined') {
+      this.listeners = {};
+      return;
+    }
+    if (typeof cb === 'undefined') {
+      this.listeners[name] = [];
+      return;
+    }
+    var listeners = this.listeners[name];
+    if (!listeners) {
+      return;
+    }
+    for (var i = 0, len = listeners.length; i < len; i++) {
+      if (listeners[i].cb === cb) {
+        listeners.splice(i--, 1);
+        len--;
+      }
+    }
+  };
+
   Observable.prototype.trigger = function (name) {
-    var self = this;
-    var listeners = self.listeners[name];
+    var listeners = this.listeners[name];
     var len = arguments.length - 1;
     var args = new Array(len);
 
@@ -60,7 +82,7 @@ var frzr = (function () {
 
     for (i = 0; i < listeners.length; i++) {
       listener = listeners[i];
-      listener.cb.apply(listener.ctx || self, args);
+      listener.cb.apply(listener.ctx || this, args);
       if (listener.once) {
         listeners.splice(i--, 1);
         len--;
@@ -152,12 +174,11 @@ var frzr = (function () {
   }
 
   function View(type, options, data) {
-    var attrs = options && options.attrs || {};
     var svg = options && options.svg || false;
 
     View['super'].call(this); // init Observable
 
-    this.$el = svg ? SVGelement(type, attrs) : element(type, attrs);
+    this.$el = svg ? SVGelement(type) : element(type);
     this.attrs = {};
     this['class'] = {};
     this.data = {};
