@@ -1,5 +1,5 @@
 # frzr
-Cool new vanilla js view library
+Cool new javascript view library
 
 ## download
 
