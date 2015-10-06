@@ -61,6 +61,8 @@ view.set({
 })
 ```
 
+If you need SVG element, please use ```{svg: true}``` option
+
 #### View.extend(type, options)
 ```js
 var CustomView = View.extend('p', {
