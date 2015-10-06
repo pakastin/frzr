@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "description": "Cool new javascript view library",
   "main": "dist/frzr.js",
-  "main:jsnext": "lib/index.js",
+  "jsnext:main": "lib/index.js",
   "scripts": {
     "build-js": "rollup -f iife --name frzr lib/bundle.js | babel -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
     "start": "node watch",
