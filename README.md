@@ -31,6 +31,7 @@ npm install frzr
 ```
 
 ### Requiring View, Views...
+[Here's what you can use](https://github.com/pakastin/frzr/blob/master/lib/index.js)
 
 #### ES6
 Supports [rollup](https://github.com/rollup/rollup/wiki/jsnext:main)
