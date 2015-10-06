@@ -16,6 +16,8 @@ Also check out my little open source vanilla js Deck of Cards: https://deck-of-c
 ## example
 [performance demonstration](http://frzr.js.org/example/index.html)
 
+I challenge you to do a similar bench with your favourite framework x ;)
+
 ## documentation
 Not completely there yet. Will add more details here soon..
 
