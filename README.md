@@ -1,4 +1,4 @@
-# frzr
+# FRZR
 Cool new javascript view library
 
 ## download
