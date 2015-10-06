@@ -214,7 +214,7 @@ var frzr = (function () {
     };
   };
 
-  View.prototype.mount = function (target, sync) {
+  View.prototype.mount = function (target) {
     var self = this;
     var $el = self.$el;
 
@@ -260,14 +260,6 @@ var frzr = (function () {
     batchAnimationFrame(function () {
       target.insertBefore($el, before);
     });
-  };
-
-  View.prototype.mountBeforeSync = function (target, before) {
-    var $el = this.$el;
-
-    this.root = target;
-
-    target.insertBefore($el, before);
   };
 
   View.prototype.set = function (data) {
@@ -407,8 +399,15 @@ var frzr = (function () {
   inherits(Views, Observable);
 
   Views.prototype.mount = function (target) {
-    this.mounted = true;
     this.view.mount(target);
+  };
+
+  Views.prototype.mountBefore = function (target, before) {
+    this.view.mountBefore(target, before);
+  };
+
+  Views.prototype.unmount = function () {
+    this.view.unmount();
   };
 
   Views.prototype.reset = function (data, key) {
