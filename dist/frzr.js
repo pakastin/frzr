@@ -305,7 +305,7 @@ var frzr = (function () {
       } else if (key === 'textContent') {
         this.textContent(options.textContent);
       } else if (key === 'listen') {
-        this.addListeners(value);
+        this.addListeners(options.listen);
       } else if (key === 'init') {
         this.on('init', options.init);
       } else if (key === 'update') {
