@@ -304,6 +304,8 @@ var frzr = (function () {
         this.setClass(options['class']);
       } else if (key === 'textContent') {
         this.textContent(options.textContent);
+      } else if (key === 'listen') {
+        this.addListeners(value);
       } else if (key === 'init') {
         this.on('init', options.init);
       } else if (key === 'update') {
@@ -325,6 +327,23 @@ var frzr = (function () {
         if (text === self.text) {
           $el.textContent = text;
         }
+      });
+    }
+  };
+
+  View.prototype.addListeners = function (listeners) {
+    var self = this;
+    var $el = self.$el;
+    var key, value;
+
+    for (key in listeners) {
+      value = listeners[key];
+      addListener(key, value);
+    }
+    function addListener(key, value) {
+      self.on(key, value);
+      $el.addEventListener(key, function (e) {
+        self.trigger(key, e);
       });
     }
   };
@@ -398,6 +417,9 @@ var frzr = (function () {
       batchAnimationFrame(function () {
         if (value === self.attrs[attr]) {
           $el.setAttribute(attr, value);
+          if (attr === 'autofocus' && value === true) {
+            $el.focus();
+          }
         }
       });
     }
