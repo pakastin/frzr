@@ -19,7 +19,8 @@ Also check out my little open source vanilla js [HTML5 Deck of Cards](https://de
 [Production](http://frzrjs.github.io/frzr/dist/frzr.min.js) (~5 kb uncompressed & minified)
 
 ## example
-[Performance demonstration](http://frzr.js.org/example/index.html)
+[Todo example project](https://github.com/pakastin/frzr-todo)
+[Performance bench](http://frzr.js.org/example/index.html)
 
 I challenge you to do a similar bench with your favourite framework x ;)
 
