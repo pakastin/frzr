@@ -36,7 +36,7 @@ npm install frzr
 [Here's what you can use](https://github.com/pakastin/frzr/blob/master/lib/index.js)
 
 #### ES6
-Supports [rollup](https://github.com/rollup/rollup/wiki/jsnext:main)
+Supports [rollup](https://github.com/rollup/rollup/wiki/jsnext:main) – only import what you need
 ```js
 import {View, Views} from 'frzr'
 ```
