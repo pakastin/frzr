@@ -8,6 +8,8 @@ Made with ♥ + ES6.
 
 [![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
 
+[FRZR reversed 100 000 items with DOM reorder on iPhone in less than 2 seconds!](https://twitter.com/pakastin/status/651581181910208512)
+
 Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org)
 
 ## download
