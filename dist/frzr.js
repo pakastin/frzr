@@ -218,7 +218,7 @@ var frzr = (function () {
     var self = this;
     var $el = self.$el;
 
-    self.root = target;
+    self.$root = target;
 
     batchAnimationFrame(function () {
       self.trigger('mount');
@@ -231,14 +231,14 @@ var frzr = (function () {
     var self = this;
     var $el = self.$el;
 
-    if (!self.root) {
+    if (!self.$root) {
       return;
     }
 
     batchAnimationFrame(function () {
       self.trigger('unmount');
-      self.root.removeChild($el);
-      self.root = null;
+      self.$root.removeChild($el);
+      self.$root = null;
       self.trigger('unmounted');
     });
   };
@@ -255,7 +255,7 @@ var frzr = (function () {
   View.prototype.mountBefore = function (target, before) {
     var $el = this.$el;
 
-    this.root = target;
+    this.$root = target;
 
     batchAnimationFrame(function () {
       target.insertBefore($el, before);
@@ -482,10 +482,10 @@ var frzr = (function () {
 
   Views.prototype.reorder = function () {
     var self = this;
-    var root = self.view.$el;
+    var $root = self.view.$el;
 
     batchAnimationFrame(function () {
-      var traverse = root.firstChild;
+      var traverse = $root.firstChild;
 
       each(self.views, function (view, i) {
         if (traverse === view.$el) {
@@ -493,17 +493,17 @@ var frzr = (function () {
           return;
         }
         if (traverse) {
-          view.root = root;
-          root.insertBefore(view.$el, traverse);
+          view.$root = $root;
+          $root.insertBefore(view.$el, traverse);
         } else {
-          view.root = root;
-          root.appendChild(view.$el);
+          view.$root = $root;
+          $root.appendChild(view.$el);
         }
       });
       var next;
       while (traverse) {
         next = traverse.nextSibling;
-        root.removeChild(traverse);
+        $root.removeChild(traverse);
         traverse = next;
       }
     });
