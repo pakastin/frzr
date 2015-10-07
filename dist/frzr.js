@@ -416,8 +416,13 @@ var frzr = (function () {
     function setAttribute(attr, value) {
       batchAnimationFrame(function () {
         if (value === self.attrs[attr]) {
+          if (!value) {
+            $el.removeAttribute(attr);
+            return;
+          }
           $el.setAttribute(attr, value);
-          if (attr === 'autofocus' && value === true) {
+
+          if (attr === 'autofocus') {
             $el.focus();
           }
         }
