@@ -464,7 +464,7 @@ var frzr = (function () {
       var view = currentLookup[id_or_i];
 
       if (!view) {
-        view = new ChildView();
+        view = new ChildView(null, { parent: self.view });
       }
       lookup[id_or_i] = view;
       view.set(item);
@@ -472,7 +472,7 @@ var frzr = (function () {
     });
     for (var id in currentLookup) {
       if (!lookup[id]) {
-        lookup[id].destroy();
+        currentLookup[id].destroy();
       }
     }
     self.views = views;
