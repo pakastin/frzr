@@ -396,7 +396,7 @@ var frzr = (function () {
 
     function setAttribute(attr, value) {
       batchAnimationFrame(function () {
-        if (value !== self.attrs[attr]) {
+        if (value === self.attrs[attr]) {
           $el.setAttribute(attr, value);
         }
       });
