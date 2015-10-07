@@ -338,16 +338,20 @@ var frzr = (function () {
       value = classes[key];
       if (self['class'][key] !== value) {
         self['class'][key] = value;
-        batchAnimationFrame(function () {
-          if (self['class'][key] === value) {
-            if (value) {
-              $el.classList.add(key);
-            } else {
-              $el.classList.remove(key);
-            }
-          }
-        });
+        setClass(key, value);
       }
+    }
+
+    function setClass(key, value) {
+      batchAnimationFrame(function () {
+        if (self['class'][key] === value) {
+          if (value) {
+            $el.classList.add(key);
+          } else {
+            $el.classList.remove(key);
+          }
+        }
+      });
     }
   };
 
@@ -360,12 +364,16 @@ var frzr = (function () {
       value = style[key];
       if (self.style[key] !== value) {
         self.style[key] = value;
-        batchAnimationFrame(function () {
-          if (self.style[key] === style[key]) {
-            $el.style[key] = value;
-          }
-        });
+        setStyle(key, value);
       }
+    }
+
+    function setStyle(key, value) {
+      batchAnimationFrame(function () {
+        if (self.style[key] === style[key]) {
+          $el.style[key] = value;
+        }
+      });
     }
   };
 
@@ -381,11 +389,17 @@ var frzr = (function () {
         self.attrs[attr] = value;
 
         if (value === self.attrs[attr]) {
-          batchAnimationFrame(function () {
-            $el.setAttribute(attr, value);
-          });
+          setAttribute(attr, value);
         }
       }
+    }
+
+    function setAttribute(attr, value) {
+      batchAnimationFrame(function () {
+        if (value !== self.attrs[attr]) {
+          $el.setAttribute(attr, value);
+        }
+      });
     }
   };
 
@@ -468,7 +482,7 @@ var frzr = (function () {
     });
   };
 
-  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, inherits: inherits, map: map, shuffle: shuffle, renderer: renderer, SVGelement: SVGelement, View: View, Views: Views };
+  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, inherits: inherits, map: map, shuffle: shuffle, renderer: renderer, Observable: Observable, SVGelement: SVGelement, View: View, Views: Views };
 
   return bundle;
 })();
