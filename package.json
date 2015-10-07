@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Cool new javascript view library",
   "main": "dist/frzr.js",
   "jsnext:main": "lib/index.js",
