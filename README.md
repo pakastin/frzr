@@ -20,6 +20,7 @@ Also check out my little open source vanilla js [HTML5 Deck of Cards](https://de
 
 ## example
 [Todo example project](https://github.com/pakastin/frzr-todo)
+
 [Performance bench](http://frzr.js.org/example/index.html)
 
 I challenge you to do a similar bench with your favourite framework x ;)
