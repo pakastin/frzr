@@ -45,7 +45,7 @@
         view.reset(list, 'id')
         requestAnimationFrame(function () {
           $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
-        }, 0)
+        })
       }
 
       requestAnimationFrame(function () {
