@@ -5,6 +5,14 @@
       var starttime = Date.now()
     </script>
     <script src="https://frzr.js.org/dist/frzr.min.js"></script>
+    <style>
+      body {
+        padding: 1.5rem;
+      }
+      p {
+        margin: .5rem 0;
+      }
+    </style>
   </head>
   <body>
     <p id="rendertime"></p>
@@ -20,14 +28,14 @@
       var $rendertime = document.getElementById('rendertime')
       var $container = document.getElementById('container').firstChild
 
-      var Item = View.extend('li', {update: function (data) {
+      var Item = View.extend('p', {update: function (data) {
         this.textContent('Item ' + data.id)
       }})
 
       var button = new View('button', {listen: {click: reverse}, textContent: 'Reverse'})
-      var view = new Views(Item, 'ul')
+      var view = new Views(Item, 'div')
 
-      var list = new Array(50000)
+      var list = new Array(100000)
 
       for (var i = 0, len = list.length; i < len; i++) {
         list[i] = {

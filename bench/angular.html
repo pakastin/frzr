@@ -5,6 +5,14 @@
       var starttime = Date.now()
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+    <style>
+      body {
+        padding: 1.5rem;
+      }
+      p {
+        margin: .5rem 0;
+      }
+    </style>
   </head>
   <body ng-controller="testCtrl as test">
     <p id="rendertime"></p>
@@ -15,8 +23,8 @@
     <button ng-click="test.reverse()">Reverse</button>
     <div id="container">
       <div>
-        <ul>
-          <li ng-repeat="item in test.list track by item.id">Item {{item.id}}</li>
+        <div>
+          <p ng-repeat="item in test.list track by item.id">Item {{item.id}}</p>
         </ul>
       </div>
     </div>
@@ -25,7 +33,7 @@
 
       angular.module('testApp', [])
         .controller('testCtrl', function () {
-          this.list = new Array(50000)
+          this.list = new Array(100000)
 
           this.reverse = function () {
             var starttime = Date.now()
