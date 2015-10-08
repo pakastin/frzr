@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      var starttime = Date.now()
+    </script>
+    <script src="https://frzr.js.org/dist/frzr.min.js"></script>
+  </head>
+  <body>
+    <p id="rendertime"></p>
+    <script>
+      var View = frzr.View
+      var Views = frzr.Views
+
+      var $rendertime = document.getElementById('rendertime')
+
+      var Item = View.extend('li', {update: function (data) {
+        this.textContent('Item ' + data.id)
+      }})
+
+      var button = new View('button', {listen: {click: reverse}, textContent: 'Reverse'})
+      var view = new Views(Item, 'ul')
+
+      var list = new Array(100000)
+
+      for (var i = 0, len = list.length; i < len; i++) {
+        list[i] = {
+          id: i
+        }
+      }
+      view.reset(list, 'id')
+
+      button.mount(document.body)
+      view.mount(document.body)
+
+      function reverse () {
+        starttime = Date.now()
+        list.reverse()
+        view.reset(list, 'id')
+        requestAnimationFrame(function () {
+          $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+        }, 0)
+      }
+
+      requestAnimationFrame(function () {
+        $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+      })
+    </script>
+  </body>
+</html>

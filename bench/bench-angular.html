@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html ng-app="testApp">
+  <head>
+    <script>
+      var starttime = Date.now()
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+  </head>
+  <body ng-controller="testCtrl as test">
+    <p id="rendertime"></p>
+    <button ng-click="test.reverse()">Reverse</button>
+    <ul>
+      <li ng-repeat="item in test.list track by item.id">Item {{item.id}}</li>
+    </ul>
+    <script>
+      var $rendertime = document.getElementById('rendertime')
+
+      angular.module('testApp', [])
+        .controller('testCtrl', function () {
+          this.list = new Array(100000)
+
+          this.reverse = function () {
+            var starttime = Date.now()
+            this.list.reverse()
+            requestAnimationFrame(function () {
+              $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+            })
+          }
+
+          for (var i = 0, len = this.list.length; i < len; i++) {
+            this.list[i] = {
+              id: i
+            }
+          }
+        })
+
+      requestAnimationFrame(function () {
+        $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      var starttime = Date.now()
+    </script>
+    <script src="https://fb.me/react-0.14.0.min.js"></script>
+    <script src="https://fb.me/react-dom-0.14.0.min.js"></script>
+  </head>
+  <body>
+    <p id="rendertime"></p>
+    <div id="container"></div>
+    <script>
+      var $rendertime = document.getElementById('rendertime')
+
+      var TestList = React.createClass({
+        displayName: 'TestList',
+
+        render: function render() {
+          var createItem = function createItem(data, index) {
+            return React.createElement(
+              'li',
+              { key: data.id },
+              'Item ' + data.id
+            );
+          };
+          return React.createElement(
+            'ul',
+            null,
+            this.props.items.map(createItem)
+          );
+        }
+      });
+
+      var list = new Array(100000)
+
+      for (var i = 0, len = list.length; i < len; i++) {
+        list[i] = {
+          id: i
+        }
+      }
+
+      var Button = React.createClass({
+        displayName: 'Button',
+
+        render: function render () {
+          return React.createElement('button', this.props, 'Reverse')
+        }
+      })
+
+      var TestApp = React.createClass({
+        displayName: 'TestApp',
+
+        getInitialState: function getInitialState() {
+          return { items: list };
+        },
+        reverse: function reverse (e) {
+          starttime = Date.now()
+          list.reverse()
+          this.setState({items: list})
+          requestAnimationFrame(function () {
+            $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+          })
+        },
+        render: function render() {
+          return React.createElement(
+            'div',
+            null,
+            React.createElement(Button, {onClick: this.reverse}),
+            React.createElement(TestList, { items: this.state.items })
+          )
+        }
+      });
+
+      ReactDOM.render(React.createElement(TestApp, null), document.getElementById('container'));
+
+      requestAnimationFrame(function () {
+        $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
+      })
+    </script>
+  </body>
+</html>
