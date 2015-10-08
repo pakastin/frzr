@@ -8,11 +8,17 @@
   </head>
   <body>
     <p id="rendertime"></p>
+    <p>
+      <a href="bench-angular.html">Angular</a>
+      <a href="bench-react.html">React</a>
+    </p>
+    <div id="container"><div></div></div>
     <script>
       var View = frzr.View
       var Views = frzr.Views
 
       var $rendertime = document.getElementById('rendertime')
+      var $container = document.getElementById('container').firstChild
 
       var Item = View.extend('li', {update: function (data) {
         this.textContent('Item ' + data.id)
@@ -30,8 +36,8 @@
       }
       view.reset(list, 'id')
 
-      button.mount(document.body)
-      view.mount(document.body)
+      button.mount($container)
+      view.mount($container)
 
       function reverse () {
         starttime = Date.now()

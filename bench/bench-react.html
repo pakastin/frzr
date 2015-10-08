@@ -9,9 +9,14 @@
   </head>
   <body>
     <p id="rendertime"></p>
+    <p>
+      <a href="bench-angular.html">Angular</a>
+      <a href="bench-frzr.html">FRZR</a>
+    </p>
     <div id="container"></div>
     <script>
       var $rendertime = document.getElementById('rendertime')
+      var $container = document.getElementById('container')
 
       var TestList = React.createClass({
         displayName: 'TestList',
@@ -72,7 +77,7 @@
         }
       });
 
-      ReactDOM.render(React.createElement(TestApp, null), document.getElementById('container'));
+      ReactDOM.render(React.createElement(TestApp, null), $container);
 
       requestAnimationFrame(function () {
         $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'

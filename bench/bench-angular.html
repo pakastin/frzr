@@ -8,10 +8,18 @@
   </head>
   <body ng-controller="testCtrl as test">
     <p id="rendertime"></p>
+    <p>
+      <a href="bench-frzr.html">FRZR</a>
+      <a href="bench-react.html">React</a>
+    </p>
     <button ng-click="test.reverse()">Reverse</button>
-    <ul>
-      <li ng-repeat="item in test.list track by item.id">Item {{item.id}}</li>
-    </ul>
+    <div id="container">
+      <div>
+        <ul>
+          <li ng-repeat="item in test.list track by item.id">Item {{item.id}}</li>
+        </ul>
+      </div>
+    </div>
     <script>
       var $rendertime = document.getElementById('rendertime')
 
