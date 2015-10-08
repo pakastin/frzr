@@ -218,7 +218,7 @@ var frzr = (function () {
     var self = this;
     var $el = self.$el;
 
-    self.root = target;
+    self.$root = target;
 
     batchAnimationFrame(function () {
       self.trigger('mount');
@@ -231,14 +231,14 @@ var frzr = (function () {
     var self = this;
     var $el = self.$el;
 
-    if (!self.root) {
+    if (!self.$root) {
       return;
     }
 
     batchAnimationFrame(function () {
       self.trigger('unmount');
-      self.root.removeChild($el);
-      self.root = null;
+      self.$root.removeChild($el);
+      self.$root = null;
       self.trigger('unmounted');
     });
   };
@@ -255,7 +255,7 @@ var frzr = (function () {
   View.prototype.mountBefore = function (target, before) {
     var $el = this.$el;
 
-    this.root = target;
+    this.$root = target;
 
     batchAnimationFrame(function () {
       target.insertBefore($el, before);
@@ -304,6 +304,8 @@ var frzr = (function () {
         this.setClass(options['class']);
       } else if (key === 'textContent') {
         this.textContent(options.textContent);
+      } else if (key === 'listen') {
+        this.addListeners(options.listen);
       } else if (key === 'init') {
         this.on('init', options.init);
       } else if (key === 'update') {
@@ -325,6 +327,23 @@ var frzr = (function () {
         if (text === self.text) {
           $el.textContent = text;
         }
+      });
+    }
+  };
+
+  View.prototype.addListeners = function (listeners) {
+    var self = this;
+    var $el = self.$el;
+    var key, value;
+
+    for (key in listeners) {
+      value = listeners[key];
+      addListener(key, value);
+    }
+    function addListener(key, value) {
+      self.on(key, value);
+      $el.addEventListener(key, function (e) {
+        self.trigger(key, e);
       });
     }
   };
@@ -397,7 +416,15 @@ var frzr = (function () {
     function setAttribute(attr, value) {
       batchAnimationFrame(function () {
         if (value === self.attrs[attr]) {
+          if (!value) {
+            $el.removeAttribute(attr);
+            return;
+          }
           $el.setAttribute(attr, value);
+
+          if (attr === 'autofocus') {
+            $el.focus();
+          }
         }
       });
     }
@@ -437,7 +464,7 @@ var frzr = (function () {
       var view = currentLookup[id_or_i];
 
       if (!view) {
-        view = new ChildView();
+        view = new ChildView(null, { parent: self.view });
       }
       lookup[id_or_i] = view;
       view.set(item);
@@ -445,7 +472,7 @@ var frzr = (function () {
     });
     for (var id in currentLookup) {
       if (!lookup[id]) {
-        lookup[id].destroy();
+        currentLookup[id].destroy();
       }
     }
     self.views = views;
@@ -455,10 +482,10 @@ var frzr = (function () {
 
   Views.prototype.reorder = function () {
     var self = this;
-    var root = self.view.$el;
+    var $root = self.view.$el;
 
     batchAnimationFrame(function () {
-      var traverse = root.firstChild;
+      var traverse = $root.firstChild;
 
       each(self.views, function (view, i) {
         if (traverse === view.$el) {
@@ -466,17 +493,17 @@ var frzr = (function () {
           return;
         }
         if (traverse) {
-          view.root = root;
-          root.insertBefore(view.$el, traverse);
+          view.$root = $root;
+          $root.insertBefore(view.$el, traverse);
         } else {
-          view.root = root;
-          root.appendChild(view.$el);
+          view.$root = $root;
+          $root.appendChild(view.$el);
         }
       });
       var next;
       while (traverse) {
         next = traverse.nextSibling;
-        root.removeChild(traverse);
+        $root.removeChild(traverse);
         traverse = next;
       }
     });
