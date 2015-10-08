@@ -17,11 +17,12 @@
   </head>
   <body ng-controller="testCtrl as test">
     <p id="rendertime"></p>
+    <p id="rendertime2"></p>
     <p>
-      My results:<br>
-      FRZR: init 1252 ms, reverse 1839 ms<br>
-      Angular: init 6956 ms, reverse 2506 ms<br>
-      React: init 1659 ms, reverse 44131 ms
+      My results (render times):<br>
+      1) FRZR: init 1252 ms, reverse 1839 ms, total 3091 ms<br>
+      2) Angular: init <b>6956 ms</b>, reverse 2506 ms, total 9462 ms<br>
+      3) React: init 1659 ms, reverse <b>44131 ms</b>, total 45790 ms
     </p>
     <p>
       <a href="frzr.html">FRZR</a>
@@ -37,6 +38,7 @@
     </div>
     <script>
       var $rendertime = document.getElementById('rendertime')
+      var $rendertime2 = document.getElementById('rendertime2')
 
       angular.module('testApp', [])
         .controller('testCtrl', function () {
@@ -48,6 +50,9 @@
             requestAnimationFrame(function () {
               $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
             })
+            setTimeout(function () {
+              $rendertime2.textContent = 'DOM ready after ' + (Date.now() - starttime) + ' ms'
+            }, 0)
           }
 
           for (var i = 0, len = this.list.length; i < len; i++) {
@@ -60,6 +65,9 @@
       requestAnimationFrame(function () {
         $rendertime.textContent = 'Rendering took ' + (Date.now() - starttime) + ' ms'
       })
+      setTimeout(function () {
+        $rendertime2.textContent = 'DOM ready after ' + (Date.now() - starttime) + ' ms'
+      }, 0)
     </script>
   </body>
 </html>
