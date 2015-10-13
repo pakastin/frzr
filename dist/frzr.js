@@ -29,6 +29,8 @@ var frzr = (function () {
     return $el;
   }
 
+  // This is just a very basic inheritable Observable class, like node.js's but with jQuery's API style
+
   function Observable() {
     this.listeners = {};
   }
@@ -72,6 +74,9 @@ var frzr = (function () {
     var len = arguments.length - 1;
     var args = new Array(len);
 
+    // V8 optimization
+    // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+
     for (var i = 0; i < len; i++) {
       args[i] = arguments[i + 1];
     }
@@ -93,6 +98,7 @@ var frzr = (function () {
   };
 
   var ticking = [];
+  // very simple polyfill for requestAnimationFrame
   var requestAnimationFrame = window.requestAnimationFrame || function (cb) {
     setTimeout(cb, 1000 / 60);
   };
@@ -100,7 +106,9 @@ var frzr = (function () {
   var renderer = new Observable();
 
   function batchAnimationFrame(cb) {
+    // batchAnimationFrame collects multiple requestAnimationFrame calls to a single call
     if (!ticking.length) {
+      // render cycle starts
       renderer.trigger('render');
       requestAnimationFrame(tick);
     }
@@ -113,6 +121,7 @@ var frzr = (function () {
       cbs[i]();
     }
     if (ticking.length === 0) {
+      // render cycle ends
       renderer.trigger('rendered');
       return;
     }
@@ -190,8 +199,9 @@ var frzr = (function () {
     this.data = {};
     this.style = {};
 
+    options && this.setOptions(options, true);
     this.trigger('init', this);
-    options && this.setOptions(options);
+    options.data && this.set(options.data);
     this.trigger('inited', this);
   }
 
@@ -277,7 +287,7 @@ var frzr = (function () {
     });
   };
 
-  View.prototype.setOptions = function (options) {
+  View.prototype.setOptions = function (options, skipData) {
     if (!options) {
       return;
     }
@@ -287,7 +297,9 @@ var frzr = (function () {
       if (key === 'attrs') {
         this.setAttributes(options.attrs);
       } else if (key === 'data') {
-        this.set(options.data);
+        if (!skipData) {
+          this.set(options.data);
+        }
       } else if (key === 'style') {
         if (typeof options.style === 'string') {
           this.setAttributes({
