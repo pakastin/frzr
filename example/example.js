@@ -53,14 +53,16 @@ var starttime
 renderer.on('render', timeStart)
 renderer.on('rendered', timeEnd)
 
-var ChildView = View.extend('p', {
+var ChildView = View.extend({
+  el: 'p',
   class: 'view',
   update: function (options) {
     this.textContent('Item ' + options.id)
   }
 })
 
-var views = new Views(ChildView, 'div', {
+var views = new Views(ChildView, {
+  el: 'div',
   class: 'views'
 })
 views.mount(document.body)

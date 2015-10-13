@@ -4,6 +4,7 @@ var frzr = (function () {
   'use strict';
 
   function element(type, attrs) {
+    // Just a simple helper for creating DOM elements
     var $el = document.createElement(type);
 
     if (typeof attrs !== 'undefined') {
@@ -16,6 +17,7 @@ var frzr = (function () {
   }
 
   function SVGelement(type, attrs) {
+    // Just a simple helper for creating SVG DOM elements
     var $el = document.createElementNS('http://www.w3.org/2000/svg', type);
 
     if (typeof attrs !== 'undefined') {
@@ -177,40 +179,38 @@ var frzr = (function () {
     });
   }
 
-  function View(type, options, data) {
+  function View(options) {
     var svg = options && options.svg || false;
 
     View['super'].call(this); // init Observable
 
-    this.$el = svg ? SVGelement(type) : element(type);
+    this.$el = svg ? SVGelement(options.el || 'svg') : element(options.el || 'div');
     this.attrs = {};
     this['class'] = {};
     this.data = {};
     this.style = {};
 
-    options && this.setOptions(options);
     this.trigger('init', this);
-    data && this.set(data);
+    options && this.setOptions(options);
     this.trigger('inited', this);
   }
 
   inherits(View, Observable);
 
-  View.extend = function (superType, superOptions) {
-    return function ExtendedView(type, options) {
+  View.extend = function (superOptions) {
+    return function ExtendedView(options) {
       if (!options) {
-        return new View(type || superType, superOptions);
+        return new View(superOptions);
       }
       var currentOptions = {};
 
       for (var key in superOptions) {
         currentOptions[key] = superOptions[key];
       }
-
       for (key in options) {
         currentOptions[key] = options[key];
       }
-      return new View(type || superType, currentOptions);
+      return new View(currentOptions);
     };
   };
 
@@ -286,6 +286,8 @@ var frzr = (function () {
     for (key in options) {
       if (key === 'attrs') {
         this.setAttributes(options.attrs);
+      } else if (key === 'data') {
+        this.set(options.data);
       } else if (key === 'style') {
         if (typeof options.style === 'string') {
           this.setAttributes({
@@ -430,8 +432,8 @@ var frzr = (function () {
     }
   };
 
-  function Views(ChildView, type, options) {
-    this.view = new View(type, options);
+  function Views(ChildView, options) {
+    this.view = new View(options);
     this.views = [];
     this.lookup = {};
     this.ChildView = ChildView || View;
@@ -509,7 +511,20 @@ var frzr = (function () {
     });
   };
 
-  var bundle = { batchAnimationFrame: batchAnimationFrame, each: each, element: element, filter: filter, inherits: inherits, map: map, shuffle: shuffle, renderer: renderer, Observable: Observable, SVGelement: SVGelement, View: View, Views: Views };
+  var bundle = {
+    batchAnimationFrame: batchAnimationFrame,
+    each: each,
+    element: element,
+    filter: filter,
+    inherits: inherits,
+    map: map,
+    shuffle: shuffle,
+    renderer: renderer,
+    Observable: Observable,
+    SVGelement: SVGelement,
+    View: View,
+    Views: Views
+  };
 
   return bundle;
 })();
