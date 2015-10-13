@@ -1,12 +1,12 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'run', 'build-js' ]
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
 2 info using npm@3.3.4
 3 info using node@v4.1.0
 4 verbose stack Error: ENOENT: no such file or directory, open '/Users/pakastin/projects/frzr/package.json'
 4 verbose stack     at Error (native)
 5 verbose cwd /Users/pakastin/projects/frzr
 6 error Darwin 15.0.0
-7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "build-js"
+7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
 8 error node v4.1.0
 9 error npm  v3.3.4
 10 error path /Users/pakastin/projects/frzr/package.json
