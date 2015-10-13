@@ -52,24 +52,26 @@ var Views = frzr.Views
 
 ### View
 
-#### constructor(type, options)
+#### constructor(options)
 ```js
-var view = new View('p', {
+var view = new View({
+  el: 'p',
   class: 'view',
+  data: {
+    id: 1
+  },
   update: function (data) {
     this.textContent('Item ' + data.id)
   }
-})
-view.set({
-  id: 1
 })
 ```
 
 If you need SVG element, please use ```{svg: true}``` option
 
-#### View.extend(type, options)
+#### View.extend(options)
 ```js
-var CustomView = View.extend('p', {
+var CustomView = View.extend({
+  el: 'p',
   class: 'custom-view',
   update: function (data) {
     this.textContent('Item ' + data.id)
@@ -156,12 +158,14 @@ view.setAttributes({
 
 #### constructor(ChildView, type, options)
 ```js
-var ListView = View.extend('li', {
+var ListView = View.extend({
+  el: 'li',
   update: function (data) {
     this.textContent = data.title
   }
 })
-var views = new Views(ListView, 'ul', {
+var views = new Views(ListView, {
+  el: 'ul',
   class: 'views'
 })
 views.reset([{title: 1}, {title: 2}, {title: 3}])
