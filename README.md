@@ -126,7 +126,7 @@ view.setOptions({
   class: {
     item: false
   },
-  attrs: {
+  attr: {
     placeholder: 'value'
   },
   style: {
