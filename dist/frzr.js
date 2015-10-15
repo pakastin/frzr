@@ -40,7 +40,7 @@ var frzr = (function () {
     this.listeners[name].push({
       once: once || false,
       cb: cb,
-      ctx: ctx || this
+      ctx: ctx
     });
   };
 
@@ -48,7 +48,7 @@ var frzr = (function () {
     this.on(name, cb, ctx, true);
   };
 
-  Observable.prototype.off = function (name, cb) {
+  Observable.prototype.off = function (name, cb, ctx) {
     if (typeof name === 'undefined') {
       this.listeners = {};
       return;
@@ -62,6 +62,13 @@ var frzr = (function () {
       return;
     }
     for (var i = 0, len = listeners.length; i < len; i++) {
+      if (ctx) {
+        if (listeners[i].ctx === ctx) {
+          listeners.splice(i--, 1);
+          len--;
+        }
+        continue;
+      }
       if (listeners[i].cb === cb) {
         listeners.splice(i--, 1);
         len--;
@@ -189,20 +196,33 @@ var frzr = (function () {
   }
 
   function View(options) {
+    var self = this;
+    var isView = self instanceof View;
+
+    if (!isView) {
+      return new View(options);
+    }
+
     var svg = options && options.svg || false;
+    var data = options.data;
+    options.data = null;
 
-    View['super'].call(this); // init Observable
+    View['super'].call(self); // init Observable
 
-    this.$el = svg ? SVGelement(options.el || 'svg') : element(options.el || 'div');
-    this.attrs = {};
-    this['class'] = {};
-    this.data = {};
-    this.style = {};
+    self.$el = svg ? SVGelement(options.el || 'svg') : element(options.el || 'div');
+    self.$root = null;
+    self.parent = null;
 
-    options && this.setOptions(options, true);
-    this.trigger('init', this);
-    options.data && this.set(options.data);
-    this.trigger('inited', this);
+    self._attrs = {};
+    self._class = {};
+    self._data = {};
+    self._style = {};
+    self._text = '';
+
+    options && self.opt(options);
+    self.trigger('init', self);
+    data && self.set(data);
+    self.trigger('inited', self);
   }
 
   inherits(View, Observable);
@@ -226,16 +246,43 @@ var frzr = (function () {
 
   View.prototype.mount = function (target) {
     var self = this;
-    var $el = self.$el;
 
-    self.$root = target;
+    if (self.parent) {
+      // If already have parent, remove parent listeners first
+      self.parent.off('mount', onParentMount, self);
+      self.parent.off('mounted', onParentMounted, self);
+    }
+
+    if (self.$root) {
+      self.trigger('unmount');
+      self.trigger('unmounted');
+    }
+
+    if (target instanceof View) {
+      self.parent = target;
+      self.$root = target.$el;
+    } else {
+      self.$root = target;
+    }
 
     batchAnimationFrame(function () {
+      if (self.parent) {
+        self.parent.on('mount', onParentMount, self);
+        self.parent.on('mounted', onParentMounted, self);
+      }
       self.trigger('mount');
-      target.appendChild($el);
+      self.$root.appendChild(self.$el);
       self.trigger('mounted');
     });
   };
+
+  function onParentMount() {
+    this.trigger('parentmount');
+  }
+
+  function onParentMounted() {
+    this.trigger('parentmounted');
+  }
 
   View.prototype.unmount = function () {
     var self = this;
@@ -245,10 +292,16 @@ var frzr = (function () {
       return;
     }
 
+    if (self.parent) {
+      self.parent.off('mount', onParentMount, self);
+      self.parent.off('mounted', onParentMounted, self);
+    }
+
     batchAnimationFrame(function () {
       self.trigger('unmount');
       self.$root.removeChild($el);
       self.$root = null;
+      self.parent = null;
       self.trigger('unmounted');
     });
   };
@@ -263,9 +316,10 @@ var frzr = (function () {
   };
 
   View.prototype.mountBefore = function (target, before) {
-    var $el = this.$el;
+    var self = this;
+    var $el = self.$el;
 
-    this.$root = target;
+    self.$root = target;
 
     batchAnimationFrame(function () {
       target.insertBefore($el, before);
@@ -274,81 +328,109 @@ var frzr = (function () {
 
   View.prototype.set = function (data) {
     var self = this;
+
     batchAnimationFrame(function () {
       self.trigger('render');
     });
     self.trigger('update', data);
+
     for (var key in data) {
-      self.data[key] = data[key];
+      self._data[key] = data[key];
     }
+
     self.trigger('updated');
     batchAnimationFrame(function () {
       self.trigger('rendered');
     });
   };
 
-  View.prototype.setOptions = function (options, skipData) {
-    if (!options) {
+  View.prototype.opt = function (key, value) {
+    var self = this;
+    var options = {};
+
+    if (typeof key === 'undefined') {
       return;
     }
-    var key;
+
+    if (typeof key === 'string') {
+      options[key] = value;
+    } else {
+      options = key;
+    }
 
     for (key in options) {
       if (key === 'attrs') {
-        this.setAttributes(options.attrs);
+        self.attr(options.attrs);
+      } else if (key === 'attr') {
+        self.attr(options.attr);
+      } else if (key === 'href') {
+        self.attr({
+          href: options.href
+        });
+      } else if (key === 'id') {
+        self.attr({
+          id: options.id
+        });
       } else if (key === 'data') {
-        if (!skipData) {
-          this.set(options.data);
-        }
+        self.set(options.data);
       } else if (key === 'style') {
         if (typeof options.style === 'string') {
-          this.setAttributes({
+          self.attr({
             style: options.style
           });
           continue;
         }
-        this.setStyle(options.style);
+        self.style(options.style);
       } else if (key === 'class') {
         if (typeof options['class'] === 'string') {
-          this.setAttributes({
+          self.attr({
             'class': options['class']
           });
           continue;
         }
-        this.setClass(options['class']);
-      } else if (key === 'textContent') {
-        this.textContent(options.textContent);
+        self['class'](options['class']);
+      } else if (key === 'text') {
+        self.text(options.text);
       } else if (key === 'listen') {
-        this.addListeners(options.listen);
+        self.addListeners(options.listen);
       } else if (key === 'init') {
-        this.on('init', options.init);
+        self.on('init', options.init);
       } else if (key === 'update') {
-        this.on('update', options.update);
+        self.on('update', options.update);
+      } else if (key === 'parent') {
+        self.mount(options.parent);
+      } else if (key === '$root') {
+        self.mount(options.$root);
       } else {
-        this[key] = options[key];
+        self[key] = options[key];
       }
     }
   };
 
-  View.prototype.textContent = function (text) {
+  View.prototype.text = function (text) {
     var self = this;
     var $el = self.$el;
 
-    if (text !== self.text) {
-      self.text = text;
+    if (text !== self._text) {
+      self._text = text;
 
       batchAnimationFrame(function () {
-        if (text === self.text) {
+        if (text === self._text) {
           $el.textContent = text;
         }
       });
     }
   };
 
-  View.prototype.addListeners = function (listeners) {
+  View.prototype.listen = function (key, value) {
     var self = this;
     var $el = self.$el;
-    var key, value;
+    var listeners = {};
+    if (typeof key === 'string') {
+      listeners[key] = value;
+    } else {
+      listeners = key;
+    }
 
     for (key in listeners) {
       value = listeners[key];
@@ -362,22 +444,28 @@ var frzr = (function () {
     }
   };
 
-  View.prototype.setClass = function (classes) {
+  View.prototype['class'] = function (key, value) {
     var self = this;
     var $el = self.$el;
-    var key, value;
+    var classes = {};
+
+    if (typeof key === 'string') {
+      classes[key] = value;
+    } else {
+      classes = key;
+    }
 
     for (key in classes) {
       value = classes[key];
-      if (self['class'][key] !== value) {
-        self['class'][key] = value;
+      if (self._class[key] !== value) {
+        self._class[key] = value;
         setClass(key, value);
       }
     }
 
     function setClass(key, value) {
       batchAnimationFrame(function () {
-        if (self['class'][key] === value) {
+        if (self._class[key] === value) {
           if (value) {
             $el.classList.add(key);
           } else {
@@ -388,63 +476,90 @@ var frzr = (function () {
     }
   };
 
-  View.prototype.setStyle = function (style) {
+  View.prototype.style = function (key, value) {
     var self = this;
     var $el = self.$el;
-    var key, value;
+    var style = {};
+    if (typeof key === 'string') {
+      style[key] = value;
+    } else {
+      style = key;
+    }
 
     for (key in style) {
       value = style[key];
-      if (self.style[key] !== value) {
-        self.style[key] = value;
+      if (self._style[key] !== value) {
+        self._style[key] = value;
         setStyle(key, value);
       }
     }
 
     function setStyle(key, value) {
       batchAnimationFrame(function () {
-        if (self.style[key] === style[key]) {
+        if (self._style[key] === style[key]) {
           $el.style[key] = value;
         }
       });
     }
   };
 
-  View.prototype.setAttributes = function (attrs) {
+  View.prototype.attr = function (key, value) {
     var self = this;
     var $el = self.$el;
-    var currentAttrs = self.attrs;
-    var value, attr;
+    var currentAttrs = self._attrs;
+    var attrs = {};
+    var attr;
+
+    if (typeof key === 'string') {
+      attrs[key] = value;
+    } else {
+      attrs = key;
+    }
 
     for (attr in attrs) {
       value = attrs[attr];
       if (value !== currentAttrs[attr]) {
-        self.attrs[attr] = value;
+        self._attrs[attr] = value;
 
-        if (value === self.attrs[attr]) {
-          setAttribute(attr, value);
+        if (value === self._attrs[attr]) {
+          setAttr(attr, value);
         }
       }
     }
 
-    function setAttribute(attr, value) {
+    function setAttr(attr, value) {
       batchAnimationFrame(function () {
-        if (value === self.attrs[attr]) {
-          if (!value) {
+        if (value === self._attrs[attr]) {
+          if (value === false || value == null) {
             $el.removeAttribute(attr);
             return;
           }
           $el.setAttribute(attr, value);
 
           if (attr === 'autofocus') {
-            $el.focus();
+            if (value) {
+              $el.focus();
+              self.on('mounted', onAutofocus);
+              self.on('parentmounted', onAutofocus, self);
+            } else {
+              self.off('mounted', onAutofocus);
+              self.off('parentmounted', onAutofocus, self);
+            }
           }
         }
       });
     }
   };
 
+  function onAutofocus() {
+    this.$el.focus();
+  }
+
   function Views(ChildView, options) {
+    var isViews = this instanceof Views;
+    if (!isViews) {
+      return new Views(ChildView, options);
+    }
     this.view = new View(options);
     this.views = [];
     this.lookup = {};
