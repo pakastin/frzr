@@ -36,10 +36,10 @@
       var $container = document.getElementById('container').firstChild
 
       var Item = View.extend({el: 'p', update: function (data) {
-        this.textContent('Item ' + data.id)
+        this.text('Item ' + data.id)
       }})
 
-      var button = new View({el: 'button', listen: {click: reverse}, textContent: 'Reverse'})
+      var button = new View({el: 'button', listen: {click: reverse}, text: 'Reverse'})
       var view = new Views(Item, {el: 'div'})
 
       var list = new Array(50000)
