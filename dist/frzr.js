@@ -202,7 +202,6 @@ var frzr = (function () {
     if (!isView) {
       return new View(options);
     }
-
     var svg = options && options.svg || false;
     var data = options.data;
     options.data = null;
@@ -326,8 +325,15 @@ var frzr = (function () {
     });
   };
 
-  View.prototype.set = function (data) {
+  View.prototype.set = function (key, value) {
     var self = this;
+    var data = {};
+
+    if (typeof key === 'string') {
+      data[key] = value;
+    } else if (key != null) {
+      data = key;
+    }
 
     batchAnimationFrame(function () {
       self.trigger('render');
@@ -354,7 +360,7 @@ var frzr = (function () {
 
     if (typeof key === 'string') {
       options[key] = value;
-    } else {
+    } else if (key != null) {
       options = key;
     }
 
@@ -407,6 +413,31 @@ var frzr = (function () {
     }
   };
 
+  View.prototype.textContent = function (key, value) {
+    console.error('DEPRECATED! Please use .text instead..');
+    this.text(key, value);
+  };
+
+  View.prototype.setOptions = function (key, value) {
+    console.error('DEPRECATED! Please use .opt instead..');
+    this.opt(key, value);
+  };
+
+  View.prototype.setAttributes = function (key, value) {
+    console.error('DEPRECATED! Please use .attr instead..');
+    this.attr(key, value);
+  };
+
+  View.prototype.setClass = function (key, value) {
+    console.error('DEPRECATED! Please use .class instead..');
+    this['class'](key, value);
+  };
+
+  View.prototype.setStyle = function (key, value) {
+    console.error('DEPRECATED! Please use .style instead..');
+    this.style(key, value);
+  };
+
   View.prototype.text = function (text) {
     var self = this;
     var $el = self.$el;
@@ -428,7 +459,7 @@ var frzr = (function () {
     var listeners = {};
     if (typeof key === 'string') {
       listeners[key] = value;
-    } else {
+    } else if (key != null) {
       listeners = key;
     }
 
@@ -451,7 +482,7 @@ var frzr = (function () {
 
     if (typeof key === 'string') {
       classes[key] = value;
-    } else {
+    } else if (key != null) {
       classes = key;
     }
 
@@ -482,7 +513,7 @@ var frzr = (function () {
     var style = {};
     if (typeof key === 'string') {
       style[key] = value;
-    } else {
+    } else if (key != null) {
       style = key;
     }
 
@@ -512,7 +543,7 @@ var frzr = (function () {
 
     if (typeof key === 'string') {
       attrs[key] = value;
-    } else {
+    } else if (key != null) {
       attrs = key;
     }
 
@@ -593,7 +624,7 @@ var frzr = (function () {
       var view = currentLookup[id_or_i];
 
       if (!view) {
-        view = new ChildView(null, { parent: self.view });
+        view = new ChildView({ parent: self.view });
       }
       lookup[id_or_i] = view;
       view.set(item);
