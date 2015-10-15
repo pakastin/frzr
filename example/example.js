@@ -57,7 +57,7 @@ var ChildView = View.extend({
   el: 'p',
   class: 'view',
   update: function (options) {
-    this.textContent('Item ' + options.id)
+    this.text('Item ' + options.id)
   }
 })
 
@@ -72,7 +72,7 @@ function timeStart () {
 }
 
 function timeEnd () {
-  $rendertime.textContent = 'Rendering took: ' + (Date.now() - starttime) + ' ms'
+  $rendertime.text = 'Rendering took: ' + (Date.now() - starttime) + ' ms'
 }
 
 function sortItems (reordering) {
