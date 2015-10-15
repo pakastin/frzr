@@ -203,8 +203,6 @@ var frzr = (function () {
       return new View(options);
     }
     var svg = options && options.svg || false;
-    var data = options.data;
-    options.data = null;
 
     View['super'].call(self); // init Observable
 
@@ -212,15 +210,16 @@ var frzr = (function () {
     self.$root = null;
     self.parent = null;
 
+    self.data = {};
+
     self._attrs = {};
     self._class = {};
-    self._data = {};
     self._style = {};
     self._text = '';
 
-    options && self.opt(options);
+    options && self.opt(options, null, true);
     self.trigger('init', self);
-    data && self.set(data);
+    options.data && self.set(options.data);
     self.trigger('inited', self);
   }
 
@@ -340,8 +339,8 @@ var frzr = (function () {
     });
     self.trigger('update', data);
 
-    for (var key in data) {
-      self._data[key] = data[key];
+    for (key in data) {
+      self.data[key] = data[key];
     }
 
     self.trigger('updated');
@@ -350,7 +349,7 @@ var frzr = (function () {
     });
   };
 
-  View.prototype.opt = function (key, value) {
+  View.prototype.opt = function (key, value, skipData) {
     var self = this;
     var options = {};
 
@@ -366,6 +365,7 @@ var frzr = (function () {
 
     for (key in options) {
       if (key === 'attrs') {
+        console.error('DEPRECATED! Please use "attr" instead..');
         self.attr(options.attrs);
       } else if (key === 'attr') {
         self.attr(options.attr);
@@ -378,7 +378,9 @@ var frzr = (function () {
           id: options.id
         });
       } else if (key === 'data') {
-        self.set(options.data);
+        if (!skipData) {
+          self.set(options.data);
+        }
       } else if (key === 'style') {
         if (typeof options.style === 'string') {
           self.attr({
@@ -395,10 +397,13 @@ var frzr = (function () {
           continue;
         }
         self['class'](options['class']);
+      } else if (key === 'textContent') {
+        console.error('DEPRECATED! Please use "text" instead..');
+        self.text(options.textContent);
       } else if (key === 'text') {
         self.text(options.text);
       } else if (key === 'listen') {
-        self.addListeners(options.listen);
+        self.listen(options.listen);
       } else if (key === 'init') {
         self.on('init', options.init);
       } else if (key === 'update') {
@@ -411,6 +416,11 @@ var frzr = (function () {
         self[key] = options[key];
       }
     }
+  };
+
+  View.prototype.addListeners = function (key, value) {
+    console.error('DEPRECATED! Please use .listen instead..');
+    this.listen(key, value);
   };
 
   View.prototype.textContent = function (key, value) {
