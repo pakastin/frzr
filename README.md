@@ -9,7 +9,7 @@ Made with ♥ + ES6.
 
 [FRZR reversed 100 000 items with DOM reorder on iPhone in less than 2 seconds!](https://twitter.com/pakastin/status/651581181910208512)
 
-Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org)
+Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org) and [HTML5 Node Garden](https://nodegarden.js.org)
 
 ## BREAKING CHANGE IN VERSION 0.5.0!
 [View](https://github.com/pakastin/frzr#view) & [Views](https://github.com/pakastin/frzr#views) changed!
