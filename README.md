@@ -11,13 +11,6 @@ Made with ♥ + ES6.
 
 Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org) and [HTML5 Node Garden](https://nodegarden.js.org)
 
-## BREAKING CHANGE IN VERSION 0.5.0!
-[View](https://github.com/pakastin/frzr#view) & [Views](https://github.com/pakastin/frzr#views) changed!
-
-Use `new View({el: 'p'})` and `new Views(ChildView, {el: 'p'})`
-
-instead of the old `View('p', {})` and `Views(ChildView, 'p', {})`.
-
 ## download
 [Development](http://frzrjs.github.io/frzr/dist/frzr.js) (~10 kb uncompressed)
 
