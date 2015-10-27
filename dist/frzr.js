@@ -3,32 +3,6 @@
 var frzr = (function () {
   'use strict';
 
-  function element(type, attrs) {
-    // Just a simple helper for creating DOM elements
-    var $el = document.createElement(type);
-
-    if (typeof attrs !== 'undefined') {
-      for (var attr in attrs) {
-        $el.setAttribute(attr, attrs[attr]);
-      }
-    }
-
-    return $el;
-  }
-
-  function SVGelement(type, attrs) {
-    // Just a simple helper for creating SVG DOM elements
-    var $el = document.createElementNS('http://www.w3.org/2000/svg', type);
-
-    if (typeof attrs !== 'undefined') {
-      for (var attr in attrs) {
-        $el.setAttribute(attrs, attrs[attr]);
-      }
-    }
-
-    return $el;
-  }
-
   // This is just a very basic inheritable Observable class, like node.js's but with jQuery's API style
 
   function Observable() {
@@ -104,37 +78,6 @@ var frzr = (function () {
     }
   };
 
-  var ticking = [];
-  // very simple polyfill for requestAnimationFrame
-  var requestAnimationFrame = window.requestAnimationFrame || function (cb) {
-    setTimeout(cb, 1000 / 60);
-  };
-
-  var renderer = new Observable();
-
-  function batchAnimationFrame(cb) {
-    // batchAnimationFrame collects multiple requestAnimationFrame calls to a single call
-    if (!ticking.length) {
-      // render cycle starts
-      renderer.trigger('render');
-      requestAnimationFrame(tick);
-    }
-    ticking.push(cb);
-  }
-
-  function tick() {
-    var cbs = ticking.splice(0, ticking.length);
-    for (var i = 0, len = cbs.length; i < len; i++) {
-      cbs[i]();
-    }
-    if (ticking.length === 0) {
-      // render cycle ends
-      renderer.trigger('rendered');
-      return;
-    }
-    tick();
-  }
-
   function each(array, iterator) {
     var len = array.length;
 
@@ -193,6 +136,314 @@ var frzr = (function () {
         writable: true
       }
     });
+  }
+
+  var pow = Math.pow;
+
+  var ease = { linear: linear, quadIn: quadIn, quadOut: quadOut, quadInOut: quadInOut, cubicIn: cubicIn, cubicOut: cubicOut, cubicInOut: cubicInOut, quartIn: quartIn, quartOut: quartOut, quartInOut: quartInOut, quintIn: quintIn, quintOut: quintOut, quintInOut: quintInOut, bounceIn: bounceIn, bounceOut: bounceOut, bounceInOut: bounceInOut };
+
+  function linear(t) {
+    return t;
+  }
+
+  function quadIn(t) {
+    return pow(t, 2);
+  }
+
+  function quadOut(t) {
+    return 1 - quadIn(1 - t);
+  }
+
+  function quadInOut(t) {
+    if (t < 0.5) {
+      return quadIn(t * 2) / 2;
+    }
+    return 1 - quadIn((1 - t) * 2) / 2;
+  }
+
+  function cubicIn(t) {
+    return pow(t, 3);
+  }
+
+  function cubicOut(t) {
+    return 1 - cubicIn(1 - t);
+  }
+
+  function cubicInOut(t) {
+    if (t < 0.5) {
+      return cubicIn(t * 2) / 2;
+    }
+    return 1 - cubicIn((1 - t) * 2) / 2;
+  }
+
+  function quartIn(t) {
+    return pow(t, 4);
+  }
+
+  function quartOut(t) {
+    return 1 - quartIn(1 - t);
+  }
+
+  function quartInOut(t) {
+    if (t < 0.5) {
+      return quartIn(t * 2) / 2;
+    }
+    return 1 - quartIn((1 - t) * 2) / 2;
+  }
+
+  function quintIn(t) {
+    return pow(t, 5);
+  }
+
+  function quintOut(t) {
+    return 1 - quintOut(1 - t);
+  }
+
+  function quintInOut(t) {
+    if (t < 0.5) {
+      return quintIn(t * 2) / 2;
+    }
+    return 1 - quintIn((1 - t) * 2) / 2;
+  }
+
+  function bounceOut(t) {
+    var s = 7.5625;
+    var p = 2.75;
+
+    if (t < 1 / p) {
+      return s * t * t;
+    }
+    if (t < 2 / p) {
+      t -= 1.5 / p;
+      return s * t * t + 0.75;
+    }
+    if (t < 2.5 / p) {
+      t -= 2.25 / p;
+      return s * t * t + 0.9375;
+    }
+    t -= 2.625 / p;
+    return s * t * t + 0.984375;
+  }
+
+  function bounceIn(t) {
+    return 1 - bounceOut(1 - t);
+  }
+
+  function bounceInOut(t) {
+    if (t < 0.5) {
+      return bounceIn(t * 2) / 2;
+    }
+    return 1 - bounceIn((1 - t) * 2) / 2;
+  }
+
+  var requestAnimationFrame = window.requestAnimationFrame || function (cb) {
+    setTimeout(cb, 1000 / 60);
+  };
+
+  var ticking;
+  var animations = [];
+
+  function Animation(_ref) {
+    var _ref$delay = _ref.delay;
+    var delay = _ref$delay === undefined ? 0 : _ref$delay;
+    var _ref$duration = _ref.duration;
+    var duration = _ref$duration === undefined ? 0 : _ref$duration;
+    var easing = _ref.easing;
+    var start = _ref.start;
+    var progress = _ref.progress;
+    var end = _ref.end;
+
+    Animation['super'].call(this);
+
+    var now = Date.now();
+
+    // calculate animation start/end times
+    this.startTime = now + delay;
+    this.endTime = this.startTime + duration;
+    this.easing = ease[easing] || ease['quadOut'];
+
+    this.started = false;
+
+    start && this.on('start', start);
+    progress && this.on('progress', progress);
+    end && this.on('end', end);
+
+    // add animation
+    animations.push(this);
+
+    if (!ticking) {
+      // start ticking
+      ticking = true;
+      requestAnimationFrame(tick);
+    }
+  }
+
+  inherits(Animation, Observable);
+
+  Animation.prototype.destroy = function () {
+    for (var i = 0; i < animations.length; i++) {
+      if (animations[i] === this) {
+        animations.splice(i, 1);
+        return;
+      }
+    }
+  };
+
+  function tick() {
+    var now = Date.now();
+
+    if (!animations.length) {
+      // stop ticking
+      ticking = false;
+      return;
+    }
+
+    for (var i = 0, animation; i < animations.length; i++) {
+      animation = animations[i];
+      if (now < animation.startTime) {
+        // animation not yet started..
+        continue;
+      }
+      if (!animation.started) {
+        // animation starts
+        animation.started = true;
+        animation.trigger('start');
+      }
+      // animation progress
+      var t = (now - animation.startTime) / (animation.endTime - animation.startTime);
+      if (t > 1) {
+        t = 1;
+      }
+      animation.trigger('progress', animation.easing(t), t);
+      if (now > animation.endTime) {
+        // animation ended
+        animation.trigger('end');
+        animations.splice(i--, 1);
+        continue;
+      }
+    }
+    requestAnimationFrame(tick, true);
+  }
+
+  var d = document;
+
+  function element(type, attrs) {
+    // Just a simple helper for creating DOM elements
+    var $el = d.createElement(type);
+
+    if (typeof attrs !== 'undefined') {
+      for (var attr in attrs) {
+        $el.setAttribute(attr, attrs[attr]);
+      }
+    }
+
+    return $el;
+  }
+
+  function SVGelement(type, attrs) {
+    // Just a simple helper for creating SVG DOM elements
+    var $el = d.createElementNS('http://www.w3.org/2000/svg', type);
+
+    if (typeof attrs !== 'undefined') {
+      for (var attr in attrs) {
+        $el.setAttribute(attrs, attrs[attr]);
+      }
+    }
+
+    return $el;
+  }
+
+  var ticking$1 = [];
+  // very simple polyfill for requestAnimationFrame
+
+  var renderer = new Observable();
+
+  function batchAnimationFrame(cb) {
+    // batchAnimationFrame collects multiple requestAnimationFrame calls to a single call
+    if (!ticking$1.length) {
+      // render cycle starts
+      renderer.trigger('render');
+      requestAnimationFrame(tick$1);
+    }
+    ticking$1.push(cb);
+  }
+
+  function tick$1() {
+    var cbs = ticking$1.splice(0, ticking$1.length);
+    for (var i = 0, len = cbs.length; i < len; i++) {
+      cbs[i]();
+    }
+    if (ticking$1.length === 0) {
+      // render cycle ends
+      renderer.trigger('rendered');
+      return;
+    }
+    tick$1();
+  }
+
+  var style = document.createElement('p').style;
+  var memoized = {};
+
+  function prefix(param) {
+    if (typeof memoized[param] !== 'undefined') {
+      return memoized[param];
+    }
+
+    if (typeof style[param] !== 'undefined') {
+      memoized[param] = param;
+      return param;
+    }
+
+    var camelCase = param[0].toUpperCase() + param.slice(1);
+    var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
+    var test;
+
+    for (var i = 0, len = prefixes.length; i < len; i++) {
+      test = prefixes[i] + camelCase;
+      if (typeof style[test] !== 'undefined') {
+        memoized[param] = test;
+        return test;
+      }
+    }
+  }
+
+  var d$1 = document;
+  var body = document.body;
+  var has3d;
+
+  function translate(a, b, c) {
+    typeof has3d !== 'undefined' || (has3d = check3d());
+
+    c = c || 0;
+
+    if (has3d) {
+      return 'translate3d(' + a + ', ' + b + ', ' + c + ')';
+    } else {
+      return 'translate(' + a + ', ' + b + ')';
+    }
+  }
+
+  function check3d() {
+    // I admit, this line is stealed from the great Velocity.js!
+    // http://julian.com/research/velocity/
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      return false;
+    }
+
+    var transform = prefix('transform');
+    var $p = d$1.createElement('p');
+
+    body.appendChild($p);
+    $p.style[transform] = 'translate3d(1px,1px,1px)';
+
+    has3d = $p.style[transform];
+    has3d = has3d != null && has3d.length && has3d !== 'none';
+
+    body.removeChild($p);
+
+    return has3d;
   }
 
   function View(options) {
@@ -364,10 +615,7 @@ var frzr = (function () {
     }
 
     for (key in options) {
-      if (key === 'attrs') {
-        console.error('DEPRECATED! Please use "attr" instead..');
-        self.attr(options.attrs);
-      } else if (key === 'attr') {
+      if (key === 'attr') {
         self.attr(options.attr);
       } else if (key === 'href') {
         self.attr({
@@ -397,9 +645,6 @@ var frzr = (function () {
           continue;
         }
         self['class'](options['class']);
-      } else if (key === 'textContent') {
-        console.error('DEPRECATED! Please use "text" instead..');
-        self.text(options.textContent);
       } else if (key === 'text') {
         self.text(options.text);
       } else if (key === 'listen') {
@@ -416,36 +661,6 @@ var frzr = (function () {
         self[key] = options[key];
       }
     }
-  };
-
-  View.prototype.addListeners = function (key, value) {
-    console.error('DEPRECATED! Please use .listen instead..');
-    this.listen(key, value);
-  };
-
-  View.prototype.textContent = function (key, value) {
-    console.error('DEPRECATED! Please use .text instead..');
-    this.text(key, value);
-  };
-
-  View.prototype.setOptions = function (key, value) {
-    console.error('DEPRECATED! Please use .opt instead..');
-    this.opt(key, value);
-  };
-
-  View.prototype.setAttributes = function (key, value) {
-    console.error('DEPRECATED! Please use .attr instead..');
-    this.attr(key, value);
-  };
-
-  View.prototype.setClass = function (key, value) {
-    console.error('DEPRECATED! Please use .class instead..');
-    this['class'](key, value);
-  };
-
-  View.prototype.setStyle = function (key, value) {
-    console.error('DEPRECATED! Please use .style instead..');
-    this.style(key, value);
   };
 
   View.prototype.text = function (text) {
@@ -680,6 +895,7 @@ var frzr = (function () {
   };
 
   var bundle = {
+    Animation: Animation,
     batchAnimationFrame: batchAnimationFrame,
     each: each,
     element: element,
@@ -687,7 +903,9 @@ var frzr = (function () {
     inherits: inherits,
     map: map,
     shuffle: shuffle,
+    prefix: prefix,
     renderer: renderer,
+    translate: translate,
     Observable: Observable,
     SVGelement: SVGelement,
     View: View,

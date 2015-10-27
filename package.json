@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Cool new javascript view library",
   "main": "dist/frzr.js",
   "jsnext:main": "lib/index.js",
@@ -23,7 +23,7 @@
   "devDependencies": {
     "babel": "^5.8.23",
     "chokidar": "^1.2.0",
-    "rollup": "^0.17.3",
+    "rollup": "^0.19.2",
     "uglify-js": "^2.4.24"
   }
 }
