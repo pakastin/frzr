@@ -5,8 +5,11 @@ var frzr = (function () {
 
   // This is just a very basic inheritable Observable class, like node.js's but with jQuery's API style
 
-  function Observable() {
+  function Observable(data) {
     this.listeners = {};
+    for (var key in data) {
+      this[key] = data[key];
+    }
   }
 
   Observable.prototype.on = function (name, cb, ctx, once) {
