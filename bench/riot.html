@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      var starttime = Date.now()
+    </script>
+    <!--<script src="https://cdn.jsdelivr.net/g/riot@2.2(riot.js+compiler.js)"></script>-->
+    <script src="https://cdn.jsdelivr.net/g/riot@2.0.14(riot.min.js+compiler.min.js)"></script>
+    <script src="riotbench.tag" type="riot/tag"></script>
+    <style>
+      body {
+        padding: 1.5rem;
+        font-family: sans-serif;
+      }
+      p {
+        margin: .5rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <b>*Note* only doing 10,000 rows (vs 50,000) because Riot is too slow on Chrome (Am I doing something wrong?)</b>
+    <p id="rendertime"></p>
+    <p>
+      My results (Chrome, MacBook Pro 2011):<br>
+      1) FRZR: init 529 ms, reverse 851 ms, total 1830 ms<br>
+      2) Angular: init <b>3590 ms</b>, reverse 1323 ms, total 4913 ms (2.5x slower)<br>
+      3) React: init 1445 ms, reverse <b>7938 ms</b>, total 9383 ms (5x slower)
+    </p>
+    <p>
+      <a href="angular.html">Angular</a>
+      <a href="react.html">React</a>
+      <a href="frzr.html">FRZR</a>
+      <b>Riot</b>
+      <a href="domrender.html">Domrender</a>
+    </p>
+    <riotbench></riotbench>
+    <script>
+      riot.mount('riotbench')
+    </script>
+  </body>
+</html>
