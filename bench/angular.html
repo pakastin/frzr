@@ -24,15 +24,18 @@
       3) React: init 1445 ms, reverse <b>7938 ms</b>, total 9383 ms (5x slower)
     </p>
     <p>
-      <a href="frzr.html">FRZR</a>
+      <b>Angular</b>
       <a href="react.html">React</a>
+      <a href="frzr.html">FRZR</a>
+      <a href="riot.html">Riot</a>
+      <a href="domrender.html">Domrender</a>
     </p>
     <button ng-click="test.reverse()">Reverse</button>
     <div id="container">
       <div>
         <div>
           <p ng-repeat="item in test.list track by item.id">Item {{item.id}}</p>
-        </ul>
+        </div>
       </div>
     </div>
     <script>
