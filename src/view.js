@@ -1,5 +1,5 @@
 
-const EVENTS = ['init', 'inited', 'mount', 'mounted', 'unmount', 'unmounted', 'update', 'updated', 'destroy'].reduce((obj, key) => {
+const EVENTS = 'init inited mount mounted unmount unmounted update updated destroy'.split(' ').reduce((obj, key) => {
   obj[key] = true;
   return obj;
 }, {});
