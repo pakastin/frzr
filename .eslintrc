@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb/base",
+
+  "rules": {
+    "space-before-function-paren": [2, "always"],
+    "no-loop-func": [0],
+    "comma-dangle": [2, "never"]
+  }
+}

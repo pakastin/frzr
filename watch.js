@@ -1,16 +1,18 @@
 
-var cp = require('child_process')
-var chokidar = require('chokidar')
+const cp = require('child_process');
+const chokidar = require('chokidar');
 
-chokidar.watch('./lib/**/*.js')
-  .on('change', execCurry('npm run build-js'))
+exec('npm run build')();
 
-function execCurry (cmd) {
-  return function () {
-    cp.exec(cmd, function (err, stdout, stderr) {
-      err && console.error(err)
-      stdout && console.log(stdout)
-      stderr && console.error(stderr)
-    })
-  }
+chokidar.watch('src/**/*.js')
+    .on('change', exec('npm run build'));
+
+function exec (cmd) {
+  return () => {
+    cp.exec(cmd, (err, stdout, stderr) => {
+      err && console.error(err);
+      stdout && console.log(stdout);
+      stderr && console.error(stderr);
+    });
+  };
 }
