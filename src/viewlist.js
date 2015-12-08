@@ -55,7 +55,7 @@ export class ViewList extends Observable {
    * Sync list of Views with data provided
    * @param {Array} data Data for syncing list of Views
    */
-  setViews (data) {
+  setData (data) {
     const views = new Array(data.length);
     const lookup = {};
     const currentViews = this.views;

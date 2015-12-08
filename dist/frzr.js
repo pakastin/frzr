@@ -528,7 +528,10 @@
 
       if (views[0].views) {
         views[0].parent = this;
-        return this.setChildren.apply(this, views[0].views);
+        if (!views[0].views.length) {
+          return this;
+        }
+        this.setChildren.apply(this, views[0].views);
       }
       var traverse = this.el.firstChild;
 
@@ -672,7 +675,7 @@
      * @param {Array} data Data for syncing list of Views
      */
 
-    ViewList.prototype.setViews = function setViews(data) {
+    ViewList.prototype.setData = function setData(data) {
       var _parent,
           _this2 = this;
 
