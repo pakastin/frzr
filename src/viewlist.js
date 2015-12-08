@@ -60,7 +60,7 @@ extend(ViewList, Observable, {
     }
     this.views = views;
     this.lookup = lookup;
-    this.parent.setChildren(...views);
+    if (this.parent) this.parent.setChildren(...views);
   }
 });
 

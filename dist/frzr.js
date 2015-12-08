@@ -53,7 +53,7 @@
   }
 
   function extendable(Class) {
-    Class.extend = function (options) {
+    Class.extend = function _extend(options) {
       function ExtendedClass() {
         var _ExtendedClass$super;
 
@@ -242,6 +242,10 @@
       }
     },
     addChild: function addChild(child) {
+      if (child.views) {
+        child.parent = this;
+        return this.setChildren.apply(this, child.views);
+      }
       if (child.parent) {
         child.trigger('unmount');
         child.trigger('unmounted');
@@ -266,11 +270,15 @@
       child.trigger('mounted');
     },
     setChildren: function setChildren() {
-      var traverse = this.el.firstChild;
-
       for (var _len2 = arguments.length, views = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         views[_key2] = arguments[_key2];
       }
+
+      if (views[0].views) {
+        views[0].parent = this;
+        return this.setChildren.apply(this, views[0].views);
+      }
+      var traverse = this.el.firstChild;
 
       for (var i = 0; i < views.length; i++) {
         var view = views[i];
@@ -398,7 +406,7 @@
       }
       this.views = views;
       this.lookup = lookup;
-      (_parent = this.parent).setChildren.apply(_parent, views);
+      if (this.parent) (_parent = this.parent).setChildren.apply(_parent, views);
     }
   });
 

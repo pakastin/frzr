@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "babel-preset-es2015-rollup": "^1.0.0",
+    "babel-preset-es2015-rollup": "github:pakastin/babel-preset-es2015-rollup-loose",
     "chokidar": "^1.3.0",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^2.0.0",

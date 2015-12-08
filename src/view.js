@@ -114,6 +114,10 @@ extend(View, Observable, {
     }
   },
   addChild (child) {
+    if (child.views) {
+      child.parent = this;
+      return this.setChildren(...child.views);
+    }
     if (child.parent) {
       child.trigger('unmount');
       child.trigger('unmounted');
@@ -138,6 +142,10 @@ extend(View, Observable, {
     child.trigger('mounted');
   },
   setChildren (...views) {
+    if (views[0].views) {
+      views[0].parent = this;
+      return this.setChildren(...views[0].views);
+    }
     let traverse = this.el.firstChild;
 
     for (let i = 0; i < views.length; i++) {

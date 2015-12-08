@@ -32,7 +32,7 @@ export function extend (Class, SuperClass, prototype) {
 }
 
 export function extendable (Class) {
-  Class.extend = function (options) {
+  Class.extend = function _extend (options) {
     function ExtendedClass (...args) {
       ExtendedClass.super.call(this, options, ...args);
     }
