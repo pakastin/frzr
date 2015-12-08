@@ -3,6 +3,8 @@
 
 Cool new javascript view library.
 
+[![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
+
 Made with ♥ + ES6.
 
 ## download
