@@ -1,0 +1,38 @@
+{
+  "coverage": "92.3%",
+  "expectCount": 39,
+  "actualCount": 36,
+  "files": {
+    "src/observable.js": {
+      "expectCount": 7,
+      "actualCount": 6,
+      "undocumentLines": [
+        2
+      ]
+    },
+    "src/view.js": {
+      "expectCount": 23,
+      "actualCount": 22,
+      "undocumentLines": [
+        10
+      ]
+    },
+    "src/viewlist.js": {
+      "expectCount": 5,
+      "actualCount": 4,
+      "undocumentLines": [
+        11
+      ]
+    },
+    "src/utils.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/el.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    }
+  }
+}
