@@ -1,19 +1,25 @@
 {
   "name": "frzr",
-  "version": "0.6.6",
-  "description": "Cool new javascript view library",
+  "version": "0.7.0",
+  "description": "FRZR view library",
+  "jsnext:main": "src/index.js",
   "main": "dist/frzr.js",
-  "jsnext:main": "lib/index.js",
   "scripts": {
-    "build-js": "rollup -f iife --name frzr lib/bundle.js | babel -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
     "start": "node watch",
-    "postinstall": "mkdir -p dist/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm test && rollup -n frzr -c .rollup.js -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js && npm run build-doc",
+    "build-doc": "esdoc -c esdoc.json",
+    "postinstall": "mkdir -p ./dist",
+    "test": "eslint src/**/*.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pakastin/frzr.git"
   },
+  "keywords": [
+    "frzr",
+    "view",
+    "library"
+  ],
   "author": "Juha Lindstedt",
   "license": "ISC",
   "bugs": {
@@ -21,9 +27,18 @@
   },
   "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "babel": "^5.8.23",
-    "chokidar": "^1.2.0",
-    "rollup": "^0.19.2",
-    "uglify-js": "^2.4.24"
+    "babel-preset-es2015-rollup": "github:pakastin/babel-preset-es2015-rollup-loose",
+    "babel-preset-es2015-rollup-loose": "github:pakastin/babel-preset-es2015-rollup-loose",
+    "chokidar": "^1.3.0",
+    "esdoc": "^0.4.3",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^2.0.0",
+    "express": "^4.13.3",
+    "jsdoc": "^3.4.0",
+    "rollup": "^0.21.1",
+    "rollup-plugin-babel": "^2.2.0",
+    "rollup-plugin-npm": "^1.1.0",
+    "standard": "^5.4.1",
+    "uglify-js": "^2.6.1"
   }
 }

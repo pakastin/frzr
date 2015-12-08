@@ -1,104 +1,185 @@
-'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  factory((global.frzr = {}));
+}(this, function (exports) { 'use strict';
 
-var frzr = (function () {
-  'use strict';
+  var babelHelpers = {};
 
-  // This is just a very basic inheritable Observable class, like node.js's but with jQuery's API style
-
-  function Observable(data) {
-    this.listeners = {};
-    for (var key in data) {
-      this[key] = data[key];
+  babelHelpers.classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
     }
-  }
+  };
 
-  Observable.prototype.on = function (name, cb, ctx, once) {
-    this.listeners[name] || (this.listeners[name] = []);
-    this.listeners[name].push({
-      once: once || false,
-      cb: cb,
-      ctx: ctx
+  babelHelpers.inherits = function (subClass, superClass) {
+    if (typeof superClass !== "function" && superClass !== null) {
+      throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+    }
+
+    subClass.prototype = Object.create(superClass && superClass.prototype, {
+      constructor: {
+        value: subClass,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
     });
+    if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
   };
 
-  Observable.prototype.one = function (name, cb, ctx) {
-    this.on(name, cb, ctx, true);
+  babelHelpers.possibleConstructorReturn = function (self, call) {
+    if (!self) {
+      throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+    }
+
+    return call && (typeof call === "object" || typeof call === "function") ? call : self;
   };
 
-  Observable.prototype.off = function (name, cb, ctx) {
-    if (typeof name === 'undefined') {
+  babelHelpers;
+  /**
+   * HTMLElement helper
+   * @param  {String} [tagName='div'] HTMLElement tag name
+   * @param  {Object} [attributes={}]   attributes/text/HTML
+   * @return {HTMLElement}         Returns pure HTMLElement
+   */
+  function el() {
+    var tagName = arguments.length <= 0 || arguments[0] === undefined ? 'div' : arguments[0];
+    var attributes = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+    var _el = document.createElement(tagName);
+
+    for (var key in attributes) {
+      if (key === 'text') {
+        _el.textContent = attributes[key];
+      } else if (key === 'html') {
+        _el.innerHTML = attributes[key];
+      } else {
+        _el.setAttribute(key, attributes[key]);
+      }
+    }
+    return _el;
+  }
+
+  var Observable = (function () {
+    /**
+     * Inits listeners
+     * @return {Observable}
+     */
+
+    function Observable() {
+      babelHelpers.classCallCheck(this, Observable);
+
+      /**
+       * Listeners cache
+       * @type {Object}
+       */
       this.listeners = {};
-      return;
     }
-    if (typeof cb === 'undefined') {
-      this.listeners[name] = [];
-      return;
-    }
-    var listeners = this.listeners[name];
-    if (!listeners) {
-      return;
-    }
-    for (var i = 0, len = listeners.length; i < len; i++) {
-      if (ctx) {
-        if (listeners[i].ctx === ctx) {
+    /**
+     * Add listener by name
+     * @param  {String}   name Listener name
+     * @param  {Function} callback   Listener callback
+     * @return {Observable}
+     */
+
+    Observable.prototype.on = function on(name, callback) {
+      if (!this.listeners[name]) this.listeners[name] = [];
+
+      this.listeners[name].push({ callback: callback, one: false });
+
+      return this;
+    };
+    /**
+     * Add listener by name, which triggers only one
+     * @param  {String}   name Listener name
+     * @param  {Function} callback   Listener callback
+     * @return {Observable}
+     */
+
+    Observable.prototype.one = function one(name, callback) {
+      if (!this.listeners[name]) this.listeners[name] = [];
+
+      this.listeners[name].push({ callback: callback, one: true });
+
+      return this;
+    };
+    /**
+     * Triggers listeners by name
+     * @param  {String} name    [description]
+     * @param  {*} [...args] [description]
+     * @return {Observable}
+     */
+
+    Observable.prototype.trigger = function trigger(name) {
+      var listeners = this.listeners[name];
+
+      if (!listeners) {
+        return this;
+      }
+
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      for (var i = 0; i < listeners.length; i++) {
+        listeners[i].callback.apply(this, args);
+
+        if (listeners[i].one) {
           listeners.splice(i--, 1);
-          len--;
         }
-        continue;
       }
-      if (listeners[i].cb === cb) {
-        listeners.splice(i--, 1);
-        len--;
+
+      return this;
+    };
+    /**
+     * Remove all listeners, or by name, or by name & callback
+     * @param  {String}   [name]     Listener name
+     * @param  {Function} [callback] Listener callback
+     * @return {Observable}
+     */
+
+    Observable.prototype.off = function off(name, callback) {
+      if (typeof name === 'undefined') {
+        this.listeners = {};
+      } else if (typeof callback === 'undefined') {
+        this.listeners[name] = [];
+      } else {
+        var listeners = this.listeners[name];
+
+        if (!listeners) {
+          return this;
+        }
+
+        for (var i = 0; i < listeners.length; i++) {
+          if (listeners[i].callback === callback) {
+            listeners.splice(i--, 1);
+          }
+        }
       }
-    }
-  };
 
-  Observable.prototype.trigger = function (name) {
-    var listeners = this.listeners[name];
-    var len = arguments.length - 1;
-    var args = new Array(len);
+      return this;
+    };
 
-    // V8 optimization
-    // https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+    return Observable;
+  })();
 
-    for (var i = 0; i < len; i++) {
-      args[i] = arguments[i + 1];
-    }
-
-    if (!listeners) {
-      return;
-    }
-
-    for (var i = 0; i < listeners.length; i++) {
-      var listener = listeners[i];
-      listener.cb.apply(listener.ctx || this, args);
-      if (listener.once) {
-        listeners.splice(i--, 1);
-        len--;
-      }
-    }
-  };
-
+  /**
+   * Faster way to iterate array
+   * @param  {Array} array    source array
+   * @param  {Function} iterator gets called: iterator(array[i], i)
+   */
   function each(array, iterator) {
-    var len = array.length;
-
-    for (var i = 0; i < len; i++) {
-      iterator(array[i], i, len);
+    for (var i = 0; i < array.length; i++) {
+      iterator(array[i], i);
     }
   }
 
-  function filter(array, iterator) {
-    var results = [];
-    var len = array.length;
-
-    for (var i = 0; i < len; i++) {
-      var item = array[i];
-      iterator(item, i, len) && results.push(item);
-    }
-
-    return results;
-  }
-
+  /**
+   * Fisher-Yates shuffle helper
+   * @param  {Array} array Array to be shuffled
+   * @return {Array}       Shuffled Array
+   */
   function shuffle(array) {
     if (!array || !array.length) {
       return array;
@@ -107,819 +188,557 @@ var frzr = (function () {
     for (var i = array.length - 1; i > 0; i--) {
       var rnd = Math.random() * i | 0;
       var temp = array[i];
+
       array[i] = array[rnd];
       array[rnd] = temp;
     }
 
     return array;
   }
+  /**
+   * Makes Class extendable by adding Class.extend
+   * @param  {Class} Class source Class
+   * @return {ExtendedClass}       resulted ExtendedClass
+   */
+  function extendable(Class) {
+    Class.extend = function _extend(options) {
+      return (function (_Class) {
+        babelHelpers.inherits(ExtendedClass, _Class);
 
-  function map(array, iterator) {
-    var len = array.length;
-    var results = new Array(len);
+        function ExtendedClass() {
+          babelHelpers.classCallCheck(this, ExtendedClass);
 
-    for (var i = 0; i < len; i++) {
-      results[i] = iterator(array[i], i, len);
-    }
+          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
 
-    return results;
+          return babelHelpers.possibleConstructorReturn(this, _Class.call.apply(_Class, [this, options].concat(args)));
+        }
+
+        return ExtendedClass;
+      })(Class);
+    };
   }
 
-  function inherits(targetClass, superClass) {
-    targetClass['super'] = superClass;
-    targetClass.prototype = Object.create(superClass.prototype, {
-      constructor: {
-        configurable: true,
-        value: targetClass,
-        writable: true
-      }
-    });
-  }
+  var EVENT = 'init inited mount mounted unmount unmounted update updated destroy'.split(' ').reduce(function (obj, name) {
+    obj[name] = name;
+    return obj;
+  }, {});
+
+  var View = (function (_Observable) {
+    babelHelpers.inherits(View, _Observable);
+
+    /**
+     * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+     */
+
+    /**
+     * @typedef {Object} ViewOptions
+     * @property {el|HTMLElement} [el=el('div')] DOM element
+     * @property {Function} [init] 'init' callback shortcut
+     * @property {Function} [inited] 'inited' callback shortcut
+     * @property {Function} [mount] 'mount' callback shortcut
+     * @property {Function} [mounted] 'mounted' callback shortcut
+     * @property {Function} [update] 'update' callback shortcut
+     * @property {Function} [updated] 'updated' callback shortcut
+     * @property {Function} [destroy] 'destroy' callback shortcut
+     * @property {*} [*] Anything else you want to pass on to View
+     */
+
+    /**
+     * Creates View
+     * @param  {ViewOptions} [options] View options
+     * @param  {*} [data]    Any data to pass on to init()
+     * @return {View}
+     */
+
+    function View() {
+      var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+      var data = arguments[1];
+      babelHelpers.classCallCheck(this, View);
+
+      /**
+       * el attributes cache
+       * @type {Object}
+       */
+
+      var _this = babelHelpers.possibleConstructorReturn(this, _Observable.call(this));
+
+      _this.attrs = {};
+      /**
+       * el classNames cache
+       * @type {Object}
+       */
+      _this.classes = {};
+      /**
+       * HTMLElement
+       * @type {el|HTMLElement}
+       */
+      _this.el = null;
+      /**
+       * Proxy event listeners cache
+       * @type {Array}
+       */
+      _this.eventListeners = [];
+      /**
+       * el innerHTML cache
+       * @type {String}
+       */
+      _this.html = '';
+      /**
+       * Listeners cache
+       * @type {Object}
+       */
+      _this.listeners = {};
+      /**
+       * el styles cache
+       * @type {Object}
+       */
+      _this.styles = {};
+      /**
+       * el textContent cache
+       * @type {String}
+       */
+      _this.text = '';
 
-  var ease = { linear: linear, quadIn: quadIn, quadOut: quadOut, quadInOut: quadInOut, cubicIn: cubicIn, cubicOut: cubicOut, cubicInOut: cubicInOut, quartIn: quartIn, quartOut: quartOut, quartInOut: quartInOut, quintIn: quintIn, quintOut: quintOut, quintInOut: quintInOut, bounceIn: bounceIn, bounceOut: bounceOut, bounceInOut: bounceInOut };
-
-  function linear(t) {
-    return t;
-  }
-
-  function quadIn(t) {
-    return Math.pow(t, 2);
-  }
-
-  function quadOut(t) {
-    return 1 - quadIn(1 - t);
-  }
-
-  function quadInOut(t) {
-    if (t < 0.5) {
-      return quadIn(t * 2) / 2;
-    }
-    return 1 - quadIn((1 - t) * 2) / 2;
-  }
-
-  function cubicIn(t) {
-    return Math.pow(t, 3);
-  }
-
-  function cubicOut(t) {
-    return 1 - cubicIn(1 - t);
-  }
-
-  function cubicInOut(t) {
-    if (t < 0.5) {
-      return cubicIn(t * 2) / 2;
-    }
-    return 1 - cubicIn((1 - t) * 2) / 2;
-  }
-
-  function quartIn(t) {
-    return Math.pow(t, 4);
-  }
-
-  function quartOut(t) {
-    return 1 - quartIn(1 - t);
-  }
-
-  function quartInOut(t) {
-    if (t < 0.5) {
-      return quartIn(t * 2) / 2;
-    }
-    return 1 - quartIn((1 - t) * 2) / 2;
-  }
-
-  function quintIn(t) {
-    return Math.pow(t, 5);
-  }
-
-  function quintOut(t) {
-    return 1 - quintOut(1 - t);
-  }
-
-  function quintInOut(t) {
-    if (t < 0.5) {
-      return quintIn(t * 2) / 2;
-    }
-    return 1 - quintIn((1 - t) * 2) / 2;
-  }
-
-  function bounceOut(t) {
-    var s = 7.5625;
-    var p = 2.75;
-
-    if (t < 1 / p) {
-      return s * t * t;
-    }
-    if (t < 2 / p) {
-      t -= 1.5 / p;
-      return s * t * t + 0.75;
-    }
-    if (t < 2.5 / p) {
-      t -= 2.25 / p;
-      return s * t * t + 0.9375;
-    }
-    t -= 2.625 / p;
-    return s * t * t + 0.984375;
-  }
-
-  function bounceIn(t) {
-    return 1 - bounceOut(1 - t);
-  }
-
-  function bounceInOut(t) {
-    if (t < 0.5) {
-      return bounceIn(t * 2) / 2;
-    }
-    return 1 - bounceIn((1 - t) * 2) / 2;
-  }
-
-  var requestAnimationFrame = window.requestAnimationFrame || function (cb) {
-    setTimeout(cb, 1000 / 60);
-  };
-
-  var animations = [];
-  var ticking = undefined;
-
-  function Animation(_ref) {
-    var _ref$delay = _ref.delay;
-    var delay = _ref$delay === undefined ? 0 : _ref$delay;
-    var _ref$duration = _ref.duration;
-    var duration = _ref$duration === undefined ? 0 : _ref$duration;
-    var easing = _ref.easing;
-    var start = _ref.start;
-    var progress = _ref.progress;
-    var end = _ref.end;
-
-    Animation['super'].call(this);
-
-    var now = Date.now();
-
-    // calculate animation start/end times
-    this.startTime = now + delay;
-    this.endTime = this.startTime + duration;
-    this.easing = ease[easing] || ease['quadOut'];
-
-    this.started = false;
-
-    start && this.on('start', start);
-    progress && this.on('progress', progress);
-    end && this.on('end', end);
-
-    // add animation
-    animations.push(this);
-
-    if (!ticking) {
-      // start ticking
-      ticking = true;
-      requestAnimationFrame(tick);
-    }
-  }
-
-  inherits(Animation, Observable);
-
-  Animation.prototype.destroy = function () {
-    for (var i = 0; i < animations.length; i++) {
-      if (animations[i] === this) {
-        animations.splice(i, 1);
-        return;
-      }
-    }
-  };
-
-  function tick() {
-    var now = Date.now();
-
-    if (!animations.length) {
-      // stop ticking
-      ticking = false;
-      return;
-    }
-
-    for (var i = 0; i < animations.length; i++) {
-      var animation = animations[i];
-
-      if (now < animation.startTime) {
-        // animation not yet started..
-        continue;
-      }
-      if (!animation.started) {
-        // animation starts
-        animation.started = true;
-        animation.trigger('start');
-      }
-      // animation progress
-      var t = (now - animation.startTime) / (animation.endTime - animation.startTime);
-      if (t > 1) {
-        t = 1;
-      }
-      animation.trigger('progress', animation.easing(t), t);
-      if (now > animation.endTime) {
-        // animation ended
-        animation.trigger('end');
-        animations.splice(i--, 1);
-        continue;
-      }
-    }
-    requestAnimationFrame(tick, true);
-  }
-
-  function element(type, attrs) {
-    // Just a simple helper for creating DOM elements
-    var $el = document.createElement(type);
-
-    if (typeof attrs !== 'undefined') {
-      for (var attr in attrs) {
-        $el.setAttribute(attr, attrs[attr]);
-      }
-    }
-
-    return $el;
-  }
-
-  function SVGelement(type, attrs) {
-    // Just a simple helper for creating SVG DOM elements
-    var $el = document.createElementNS('http://www.w3.org/2000/svg', type);
-
-    if (typeof attrs !== 'undefined') {
-      for (var attr in attrs) {
-        $el.setAttribute(attrs, attrs[attr]);
-      }
-    }
-
-    return $el;
-  }
-
-  var ticking$1 = [];
-  // very simple polyfill for requestAnimationFrame
-
-  var renderer = new Observable();
-
-  function batchAnimationFrame(cb) {
-    // batchAnimationFrame collects multiple requestAnimationFrame calls to a single call
-    if (!ticking$1.length) {
-      // render cycle starts
-      renderer.trigger('render');
-      requestAnimationFrame(tick$1);
-    }
-    ticking$1.push(cb);
-  }
-
-  function tick$1() {
-    var cbs = ticking$1.splice(0, ticking$1.length);
-    for (var i = 0, len = cbs.length; i < len; i++) {
-      cbs[i]();
-    }
-    if (ticking$1.length === 0) {
-      // render cycle ends
-      renderer.trigger('rendered');
-      return;
-    }
-    tick$1();
-  }
-
-  var style = document.createElement('p').style;
-  var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
-  var memoized = {};
-
-  function prefix(param) {
-    if (typeof memoized[param] !== 'undefined') {
-      return memoized[param];
-    }
-
-    if (typeof style[param] !== 'undefined') {
-      memoized[param] = param;
-      return param;
-    }
-
-    var camelCase = param[0].toUpperCase() + param.slice(1);
-
-    for (var i = 0, len = prefixes.length; i < len; i++) {
-      var test = prefixes[i] + camelCase;
-      if (typeof style[test] !== 'undefined') {
-        memoized[param] = test;
-        return test;
-      }
-    }
-  }
-
-  var has3d = undefined;
-
-  function translate(a, b, c) {
-    typeof has3d !== 'undefined' || (has3d = check3d());
-
-    c = c || 0;
-
-    if (has3d) {
-      return 'translate3d(' + a + ', ' + b + ', ' + c + ')';
-    } else {
-      return 'translate(' + a + ', ' + b + ')';
-    }
-  }
-
-  function check3d() {
-    // I admit, this line is stealed from the great Velocity.js!
-    // http://julian.com/research/velocity/
-    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!isMobile) {
-      return false;
-    }
-
-    var transform = prefix('transform');
-    var $p = document.createElement('p');
-
-    document.body.appendChild($p);
-    $p.style[transform] = 'translate3d(1px,1px,1px)';
-
-    has3d = $p.style[transform];
-    has3d = has3d != null && has3d.length && has3d !== 'none';
-
-    document.body.removeChild($p);
-
-    return has3d;
-  }
-
-  function View(options) {
-    var isView = this instanceof View;
-
-    if (!isView) {
-      return new View(options);
-    }
-
-    View['super'].call(this); // init Observable
-
-    this.$el = options && options.svg ? SVGelement(options.el || 'svg') : element(options.el || 'div');
-
-    this.data = {};
-
-    this._attrs = {};
-    this._class = {};
-    this._style = {};
-    this._text = '';
-
-    options && this.opt(options, null, true);
-    this.trigger('init', this);
-    options.data && this.set(options.data);
-    this.trigger('inited', this);
-  }
-
-  inherits(View, Observable);
-
-  View.extend = function (superOptions) {
-    return function ExtendedView(options) {
-      if (!options) {
-        return new View(superOptions);
-      }
-      var currentOptions = {};
-
-      for (var key in superOptions) {
-        currentOptions[key] = superOptions[key];
-      }
       for (var key in options) {
-        currentOptions[key] = options[key];
+        if (EVENT[key]) {
+          _this.on(key, options[key]);
+        } else {
+          _this[key] = options[key];
+        }
       }
-      return new View(currentOptions);
-    };
-  };
-
-  View.prototype.mount = function (target) {
-    var _this = this;
-
-    if (this.parent) {
-      // If already have parent, remove parent listeners first
-      this.parent.off('mount', onParentMount, this);
-      this.parent.off('mounted', onParentMounted, this);
+      _this.trigger(EVENT.init, data);
+      if (!_this.el) _this.el = document.createElement('div');
+      _this.el.view = _this;
+      _this.trigger(EVENT.inited, data);
+      return _this;
     }
+    /**
+     * Sets/removes View element attribute (only if changed)
+     * @param {String} name   Attribute name
+     * @param {*|null} value Attribute value or null to remove
+     * @return {View}
+     */
 
-    if (this.$root) {
-      this.trigger('unmount');
-      this.trigger('unmounted');
-    }
+    View.prototype.setAttr = function setAttr(name, value) {
+      if (!this.attrs) this.attrs = {};
 
-    if (target instanceof View) {
-      this.parent = target;
-      this.$root = target.$el;
-    } else {
-      this.$root = target;
-    }
-
-    batchAnimationFrame(function () {
-      if (_this.parent) {
-        _this.parent.on('mount', onParentMount, _this);
-        _this.parent.on('mounted', onParentMounted, _this);
+      if (this.attrs[name] === value) {
+        return this;
       }
-      _this.trigger('mount');
-      _this.$root.appendChild(_this.$el);
-      _this.trigger('mounted');
-    });
-  };
-
-  function onParentMount() {
-    this.trigger('parentmount');
-  }
-
-  function onParentMounted() {
-    this.trigger('parentmounted');
-  }
-
-  View.prototype.unmount = function () {
-    var _this2 = this;
-
-    var $el = this.$el;
-
-    if (!this.$root) {
-      return;
-    }
-
-    if (this.parent) {
-      this.parent.off('mount', onParentMount, this);
-      this.parent.off('mounted', onParentMounted, this);
-    }
-
-    batchAnimationFrame(function () {
-      _this2.trigger('unmount');
-      _this2.$root.removeChild($el);
-      _this2.$root = null;
-      _this2.parent = null;
-      _this2.trigger('unmounted');
-    });
-  };
-
-  View.prototype.destroy = function () {
-    this.trigger('destroy');
-    this.off();
-    this.unmount();
-    this.trigger('destroyed');
-  };
-
-  View.prototype.mountBefore = function (target, before) {
-    var $el = this.$el;
-
-    this.$root = target;
-
-    batchAnimationFrame(function () {
-      target.insertBefore($el, before);
-    });
-  };
-
-  View.prototype.set = function (key, value) {
-    var _this3 = this;
-
-    var data = {};
-
-    if (typeof key === 'string') {
-      data[key] = value;
-    } else if (key != null) {
-      data = key;
-    }
-
-    batchAnimationFrame(function () {
-      _this3.trigger('render');
-    });
-    this.trigger('update', data);
-
-    for (var _key in data) {
-      this.data[_key] = data[_key];
-    }
-
-    this.trigger('updated');
-    batchAnimationFrame(function () {
-      _this3.trigger('rendered');
-    });
-  };
-
-  View.prototype.opt = function (key, value, skipData) {
-    var options = {};
-
-    if (typeof key === 'undefined') {
-      return;
-    }
-
-    if (typeof key === 'string') {
-      options[key] = value;
-    } else if (key != null) {
-      options = key;
-    }
-
-    for (var _key2 in options) {
-      if (_key2 === 'attr') {
-        this.attr(options.attr);
-      } else if (_key2 === 'href') {
-        this.attr({
-          href: options.href
-        });
-      } else if (_key2 === 'id') {
-        this.attr({
-          id: options.id
-        });
-      } else if (_key2 === 'data') {
-        if (!skipData) {
-          this.set(options.data);
-        }
-      } else if (_key2 === 'style') {
-        if (typeof options.style === 'string') {
-          this.attr({
-            style: options.style
-          });
-          continue;
-        }
-        this.style(options.style);
-      } else if (_key2 === 'class') {
-        if (typeof options['class'] === 'string') {
-          this.attr({
-            'class': options['class']
-          });
-          continue;
-        }
-        this['class'](options['class']);
-      } else if (_key2 === 'text') {
-        this.text(options.text);
-      } else if (_key2 === 'listen') {
-        this.listen(options.listen);
-      } else if (_key2 === 'init') {
-        this.on('init', options.init);
-      } else if (_key2 === 'update') {
-        this.on('update', options.update);
-      } else if (_key2 === 'mount') {
-        this.on('mount', options.mount);
-      } else if (_key2 === 'mounted') {
-        this.on('mounted', options.mounted);
-      } else if (_key2 === 'unmount') {
-        this.on('unmount', options.unmount);
-      } else if (_key2 === 'unmounted') {
-        this.on('unmounted', options.unmounted);
-      } else if (_key2 === 'destroy') {
-        this.on('destroy', options.destroy);
-      } else if (_key2 === 'parent') {
-        this.mount(options.parent);
-      } else if (_key2 === '$root') {
-        this.mount(options.$root);
+      if (value || value === '') {
+        this.el.setAttribute(name, value);
+        this.attrs[name] = value;
       } else {
-        this[_key2] = options[_key2];
+        this.el.removeAttribute(name);
+        this.attrs[name] = null;
       }
-    }
-  };
 
-  View.prototype.text = function (text) {
-    var _this4 = this;
+      return this;
+    };
+    /**
+     * Sets/removes View element class (only if changed)
+     * @param {String} key   Class name
+     * @param {Boolean} value true / false
+     * @return {View}
+     */
 
-    var $el = this.$el;
+    View.prototype.setClass = function setClass(key, value) {
+      if (!this.classes) this.classes = {};
 
-    if (text !== this._text) {
-      this._text = text;
+      if (this.classes[key] === value) {
+        return this;
+      }
+      if (value) {
+        this.el.classList.add(key);
+      } else {
+        this.el.classList.remove(key);
+      }
+      this.classes[key] = value;
 
-      batchAnimationFrame(function () {
-        if (text === _this4._text) {
-          $el.textContent = text;
+      return this;
+    };
+    /**
+     * Sets/removes View element style (only if changed)
+     * @param {String} key   Style name
+     * @param {*|null} value Style value or null to remove
+     * @return {View}
+     */
+
+    View.prototype.setStyle = function setStyle(key, value) {
+      if (!this.styles) this.styles = {};
+
+      if (this.styles[key] === value) {
+        return this;
+      }
+      this.el.style[key] = value;
+      this.styles[key] = value;
+
+      return this;
+    };
+    /**
+     * Sets View element textContent (only if changed)
+     * @param {String} text Text to be applied to textContent
+     * @return {View}
+     */
+
+    View.prototype.setText = function setText(text) {
+      if (this.text === text) {
+        return this;
+      }
+      this.el.textContent = text;
+      this.text = text;
+
+      return this;
+    };
+    /**
+     * Sets View element innerHTML (only if changed)
+     * @param {String} html HTML string
+     * @return {View}
+     */
+
+    View.prototype.setHTML = function setHTML(html) {
+      if (this.html === html) {
+        return this;
+      }
+      this.el.innerHTML = html;
+      this.html = html;
+
+      return this;
+    };
+    /**
+     * Adds proxy event listener to View
+     * @param {[type]}   name       Listener name
+     * @param {Function} callback         Listener callback
+     * @param {Boolean}   useCapture Use capture or not
+     * @return {View}
+     */
+
+    View.prototype.addListener = function addListener(name, callback, useCapture) {
+      var _this2 = this;
+
+      var listener = {
+        name: name,
+        callback: callback,
+        proxy: function proxy() {
+          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          callback.apply(_this2, args);
         }
-      });
-    }
-  };
+      };
+      if (!this.eventListeners) this.eventListeners = [];
 
-  View.prototype.listen = function (key, value) {
-    var _this5 = this;
+      this.eventListeners.push(listener);
+      this.el.addEventListener(name, listener.proxy, useCapture);
 
-    var $el = this.$el;
-
-    var listeners = {};
-    if (typeof key === 'string') {
-      listeners[key] = value;
-    } else if (key != null) {
-      listeners = key;
-    }
-
-    var _loop = function (_key3) {
-      value = listeners[_key3];
-      _this5.on(_key3, value);
-      $el.addEventListener(_key3, function (e) {
-        _this5.trigger(_key3, e);
-      });
+      return this;
     };
+    /**
+     * Removes all proxy event listeners from View, or by name, or by name and callback
+     * @param  {String}   [name] Listener name
+     * @param  {Function} [callback]   Listener callback
+     * @return {View}
+     */
 
-    for (var _key3 in listeners) {
-      _loop(_key3);
-    }
-  };
-
-  View.prototype['class'] = function (key, value) {
-    var _this6 = this;
-
-    var $el = this.$el;
-    var classes = {};
-
-    if (typeof key === 'string') {
-      classes[key] = value;
-    } else if (key != null) {
-      classes = key;
-    }
-
-    var _loop2 = function (_key4) {
-      value = classes[_key4];
-      if (_this6._class[_key4] !== value) {
-        _this6._class[_key4] = value;
-        batchAnimationFrame(function () {
-          if (_this6._class[_key4] === value) {
-            if (value) {
-              $el.classList.add(_key4);
-            } else {
-              $el.classList.remove(_key4);
-            }
-          }
-        });
+    View.prototype.removeListener = function removeListener(name, callback) {
+      var listeners = this.eventListeners;
+      if (!listeners) {
+        return this;
       }
-    };
-
-    for (var _key4 in classes) {
-      _loop2(_key4);
-    }
-  };
-
-  View.prototype.style = function (key, value) {
-    var _this7 = this;
-
-    var $el = this.$el;
-    var style = {};
-
-    if (typeof key === 'string') {
-      style[key] = value;
-    } else if (key != null) {
-      style = key;
-    }
-
-    var _loop3 = function (_key5) {
-      value = style[_key5];
-      if (_this7._style[_key5] !== value) {
-        _this7._style[_key5] = value;
-        batchAnimationFrame(function () {
-          if (_this7._style[_key5] === style[_key5]) {
-            $el.style[_key5] = value;
+      if (typeof name === 'undefined') {
+        for (var i = 0; i < listeners.length; i++) {
+          this.el.removeEventListener(listeners[i].proxy);
+        }
+        this.listeners = [];
+      } else if (typeof callback === 'undefined') {
+        for (var i = 0; i < listeners.length; i++) {
+          if (listeners[i].name === name) {
+            listeners.splice(i--, 1);
           }
-        });
-      }
-    };
-
-    for (var _key5 in style) {
-      _loop3(_key5);
-    }
-  };
-
-  View.prototype.attr = function (key, value) {
-    var _this8 = this;
-
-    var $el = this.$el;
-    var currentAttrs = this._attrs;
-    var attrs = {};
-
-    if (typeof key === 'string') {
-      attrs[key] = value;
-    } else if (key != null) {
-      attrs = key;
-    }
-
-    var _loop4 = function (attr) {
-      value = attrs[attr];
-      if (value !== currentAttrs[attr]) {
-        _this8._attrs[attr] = value;
-
-        if (value === _this8._attrs[attr]) {
-          batchAnimationFrame(function () {
-            if (value === _this8._attrs[attr]) {
-              if (value === false || value == null) {
-                $el.removeAttribute(attr);
-                return;
-              }
-              $el.setAttribute(attr, value);
-
-              if (attr === 'autofocus') {
-                if (value) {
-                  $el.focus();
-                  _this8.on('mounted', onAutofocus);
-                  _this8.on('parentmounted', onAutofocus, _this8);
-                } else {
-                  _this8.off('mounted', onAutofocus);
-                  _this8.off('parentmounted', onAutofocus, _this8);
-                }
-              }
-            }
-          });
+        }
+      } else {
+        for (var i = 0; i < listeners.length; i++) {
+          var listener = listeners[i];
+          if (listener.name === name && callback === listener.callback) {
+            listeners.splice(i--, 1);
+          }
         }
       }
+
+      return this;
     };
+    /**
+     * Adds child View/ViewList to View
+     * @param {View|ViewList} child Child View/ViewList to be added
+     * @return {View}
+     */
 
-    for (var attr in attrs) {
-      _loop4(attr);
-    }
-  };
+    View.prototype.addChild = function addChild(child) {
+      if (child.views) {
+        child.parent = this;
+        return this.setChildren.apply(this, child.views);
+      }
+      if (child.parent) {
+        child.trigger(EVENT.unmount);
+        child.trigger(EVENT.unmounted);
+      }
+      child.trigger(EVENT.mount);
 
-  function onAutofocus() {
-    this.$el.focus();
-  }
+      this.el.appendChild(child.el);
+      child.parent = this;
 
-  function Views(ChildView, options) {
-    var isViews = this instanceof Views;
+      child.trigger(EVENT.mounted);
 
-    if (!isViews) {
-      return new Views(ChildView, options);
-    }
+      return this;
+    };
+    /**
+     * Adds child View before another View/HTMLElement
+     * @param {View} child  Child View to be added
+     * @param {View|HTMLElement} before Reference View/HTMLElement
+     * @return {View}
+     */
 
-    this.view = new View(options);
-    this.views = [];
-    this.lookup = {};
-    this.ChildView = ChildView || View;
-  }
+    View.prototype.addBefore = function addBefore(child, before) {
+      if (child.parent) {
+        child.trigger(EVENT.unmount);
+        child.trigger(EVENT.unmounted);
+      }
+      child.trigger(EVENT.mount);
 
-  inherits(Views, Observable);
+      this.el.insertBefore(child.el, before.el || before);
+      child.parent = this;
 
-  Views.prototype.mount = function (target) {
-    this.view.mount(target);
-  };
+      child.trigger(EVENT.mounted);
 
-  Views.prototype.mountBefore = function (target, before) {
-    this.view.mountBefore(target, before);
-  };
+      return this;
+    };
+    /**
+     * Replace children with Views or ViewList
+     * @param {View|ViewList} ...views [description]
+     * @return {View}
+     */
 
-  Views.prototype.unmount = function () {
-    this.view.unmount();
-  };
-
-  Views.prototype.reset = function (data, key) {
-    var ChildView = this.ChildView;
-
-    var views = new Array(data.length);
-    var lookup = {};
-    var currentLookup = this.lookup;
-
-    for (var i = 0, len = data.length, id = undefined, view = undefined; i < len; i++) {
-      var item = data[i];
-
-      id = key ? item[key] : i;
-      view = currentLookup[id];
-
-      if (!view) {
-        view = new ChildView({ parent: this.view });
+    View.prototype.setChildren = function setChildren() {
+      for (var _len2 = arguments.length, views = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        views[_key2] = arguments[_key2];
       }
 
-      lookup[id] = view;
-      view.set(item);
-      views[i] = view;
-    }
-    for (var id in currentLookup) {
-      if (!lookup[id]) {
-        currentLookup[id].destroy();
+      if (views[0].views) {
+        views[0].parent = this;
+        return this.setChildren.apply(this, views[0].views);
       }
-    }
-    this.views = views;
-    this.lookup = lookup;
-    this.reorder();
-  };
+      var traverse = this.el.firstChild;
 
-  Views.prototype.reorder = function () {
-    var _this9 = this;
+      for (var i = 0; i < views.length; i++) {
+        var view = views[i];
 
-    var $root = this.view.$el;
-
-    batchAnimationFrame(function () {
-      var traverse = $root.firstChild;
-
-      for (var i = 0, len = _this9.views.length; i < len; i++) {
-        var view = _this9.views[i];
-
-        if (traverse === view.$el) {
+        if (traverse === view.el) {
           traverse = traverse.nextSibling;
-          return;
+          continue;
+        }
+        var sorted = false;
+        if (view.parent === this) {
+          view.trigger(EVENT.sort);
+          sorted = true;
         }
         if (traverse) {
-          view.$root = $root;
-          $root.insertBefore(view.$el, traverse);
+          this.addBefore(view, traverse);
         } else {
-          view.$root = $root;
-          $root.appendChild(view.$el);
+          this.addChild(view);
+        }
+        if (sorted) {
+          view.trigger(EVENT.sorted);
         }
       }
       while (traverse) {
         var next = traverse.nextSibling;
-        $root.removeChild(traverse);
+
+        if (traverse.view) {
+          traverse.view.parent.removeChild(traverse.view);
+        } else {
+          this.el.removeChild(traverse);
+        }
+
         traverse = next;
       }
-    });
-  };
 
-  var bundle = {
-    Animation: Animation,
-    batchAnimationFrame: batchAnimationFrame,
-    each: each,
-    element: element,
-    filter: filter,
-    inherits: inherits,
-    map: map,
-    shuffle: shuffle,
-    prefix: prefix,
-    renderer: renderer,
-    translate: translate,
-    Observable: Observable,
-    SVGelement: SVGelement,
-    View: View,
-    Views: Views
-  };
+      return this;
+    };
+    /**
+     * Remove child View / ViewList
+     * @param  {View|ViewList} child Child View/ViewList to be removed
+     * @return {View}
+     */
 
-  return bundle;
-})();
+    View.prototype.removeChild = function removeChild(child) {
+      if (!child.parent) {
+        return this;
+      }
+      child.trigger(EVENT.unmount);
+
+      this.el.removeChild(child.el);
+      child.parent = null;
+
+      child.trigger(EVENT.unmounted);
+
+      return this;
+    };
+    /**
+     * Trigger 'update' with data
+     * @param  {*} data Any data
+     * @return {View}
+     */
+
+    View.prototype.update = function update(data) {
+      this.trigger(EVENT.update, data);
+    };
+    /**
+     * Destroy View (remove listeners, children, etc..)
+     */
+
+    View.prototype.destroy = function destroy() {
+      this.trigger(EVENT.destroy);
+      this.setChildren([]);
+      this.parent.removeChild(this);
+      this.off();
+      this.removeListener();
+    };
+
+    return View;
+  })(Observable);
+
+  extendable(View);
+
+  var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, key) {
+    obj[key] = true;
+    return obj;
+  }, {});
+
+  var ViewList = (function (_Observable) {
+    babelHelpers.inherits(ViewList, _Observable);
+
+    /**
+     * @typedef {Object} ViewListOptions
+     * @property {View} [View=View] View Class to create new Views with
+     * @property {Function} [init] 'init' callback shortcut
+     * @property {Function} [inited] 'inited' callback shortcut
+     * @property {Function} [mount] 'mount' callback shortcut
+     * @property {Function} [mounted] 'mounted' callback shortcut
+     * @property {Function} [sort] 'sort' callback shortcut
+     * @property {Function} [sorted] 'sorted' callback shortcut
+     * @property {Function} [update] 'update' callback shortcut
+     * @property {Function} [updated] 'updated' callback shortcut
+     * @property {Function} [destroy] 'destroy' callback shortcut
+     * @property {*} [*] Anything else you want to pass on to View
+     */
+
+    /**
+     * Creates list of Views to be mounted to a View
+     * @param  {ViewListOptions} options ViewList options
+     * @return {ViewList}
+     */
+
+    function ViewList(options) {
+      babelHelpers.classCallCheck(this, ViewList);
+
+      /**
+       * Views by key, if key provided
+       * @type {Object}
+       */
+
+      var _this = babelHelpers.possibleConstructorReturn(this, _Observable.call(this));
+
+      _this.lookup = {};
+      /**
+       * list of Views
+       * @type {Array}
+       */
+      _this.views = [];
+
+      for (var key in options) {
+        if (EVENTS[key]) {
+          _this.on(key, options[key]);
+        } else {
+          _this[key] = options[key];
+        }
+      }
+      return _this;
+    }
+    /**
+     * Sync list of Views with data provided
+     * @param {Array} data Data for syncing list of Views
+     */
+
+    ViewList.prototype.setViews = function setViews(data) {
+      var _parent,
+          _this2 = this;
+
+      var views = new Array(data.length);
+      var lookup = {};
+      var currentViews = this.views;
+      var currentLookup = this.lookup;
+      var key = this.key;
+
+      var _loop = function _loop(i) {
+        var item = data[i];
+        var id = key && item[key];
+        var ViewClass = _this2.View || View;
+        var view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();
+
+        var _loop2 = function _loop2(j) {
+          var name = EVENTS[j];
+          view.on(name, function () {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+              args[_key] = arguments[_key];
+            }
+
+            _this2.trigger(name, [view].concat(args));
+          });
+        };
+
+        for (var j = 0; j < EVENTS.length; j++) {
+          _loop2(j);
+        }
+
+        if (key) lookup[key] = view;
+
+        views[i] = view;
+        view.update(item);
+      };
+
+      for (var i = 0; i < data.length; i++) {
+        _loop(i);
+      }
+      if (key) {
+        for (var id in currentLookup) {
+          if (!lookup[id]) {
+            currentLookup[id].destroy();
+          }
+        }
+      } else {
+        for (var i = views.length; i < currentViews.length; i++) {
+          currentViews[i].destroy();
+        }
+      }
+      this.views = views;
+      this.lookup = lookup;
+      if (this.parent) (_parent = this.parent).setChildren.apply(_parent, views);
+    };
+
+    return ViewList;
+  })(Observable);
+
+  extendable(ViewList);
+
+  exports.el = el;
+  exports.View = View;
+  exports.ViewList = ViewList;
+  exports.Observable = Observable;
+  exports.each = each;
+  exports.extendable = extendable;
+  exports.shuffle = shuffle;
+
+}));
