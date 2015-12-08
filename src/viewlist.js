@@ -1,27 +1,60 @@
 
-const EVENTS = ['init', 'inited', 'mount', 'mounted', 'unmount', 'unmounted', 'sort', 'sorted', 'update', 'updated', 'destroy'].reduce((obj, key) => {
+const EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, key) => {
   obj[key] = true;
   return obj;
 }, {});
 
-import { extend, extendable, Observable, View } from './index';
+import { Observable } from './observable';
+import { View } from './view';
+import { extendable } from './utils';
 
-export function ViewList (options) {
-  ViewList.super.call(this);
+export class ViewList extends Observable {
+  /**
+   * @typedef {Object} ViewListOptions
+   * @property {View} [View=View] View Class to create new Views with
+   * @property {Function} [init] 'init' callback shortcut
+   * @property {Function} [inited] 'inited' callback shortcut
+   * @property {Function} [mount] 'mount' callback shortcut
+   * @property {Function} [mounted] 'mounted' callback shortcut
+   * @property {Function} [sort] 'sort' callback shortcut
+   * @property {Function} [sorted] 'sorted' callback shortcut
+   * @property {Function} [update] 'update' callback shortcut
+   * @property {Function} [updated] 'updated' callback shortcut
+   * @property {Function} [destroy] 'destroy' callback shortcut
+   * @property {*} [*] Anything else you want to pass on to View
+   */
 
-  this.views = [];
-  this.lookup = {};
+  /**
+   * Creates list of Views to be mounted to a View
+   * @param  {ViewListOptions} options ViewList options
+   * @return {ViewList}
+   */
+  constructor (options) {
+    super();
 
-  for (const key in options) {
-    if (EVENTS[key]) {
-      this.on(key, options[key]);
-    } else {
-      this[key] = options[key];
+    /**
+     * Views by key, if key provided
+     * @type {Object}
+     */
+    this.lookup = {};
+    /**
+     * list of Views
+     * @type {Array}
+     */
+    this.views = [];
+
+    for (const key in options) {
+      if (EVENTS[key]) {
+        this.on(key, options[key]);
+      } else {
+        this[key] = options[key];
+      }
     }
   }
-}
-
-extend(ViewList, Observable, {
+  /**
+   * Sync list of Views with data provided
+   * @param {Array} data Data for syncing list of Views
+   */
   setViews (data) {
     const views = new Array(data.length);
     const lookup = {};
@@ -62,6 +95,6 @@ extend(ViewList, Observable, {
     this.lookup = lookup;
     if (this.parent) this.parent.setChildren(...views);
   }
-});
+}
 
 extendable(ViewList);

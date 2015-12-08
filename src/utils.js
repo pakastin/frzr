@@ -1,10 +1,20 @@
 
+/**
+ * Faster way to iterate array
+ * @param  {Array} array    source array
+ * @param  {Function} iterator gets called: iterator(array[i], i)
+ */
 export function each (array, iterator) {
   for (let i = 0; i < array.length; i++) {
     iterator(array[i], i);
   }
 }
 
+/**
+ * Fisher-Yates shuffle helper
+ * @param  {Array} array Array to be shuffled
+ * @return {Array}       Shuffled Array
+ */
 export function shuffle (array) {
   if (!array || !array.length) {
     return array;
@@ -20,23 +30,17 @@ export function shuffle (array) {
 
   return array;
 }
-
-export function extend (Class, SuperClass, prototype) {
-  Class.prototype = Object.create(SuperClass && SuperClass.prototype);
-  Class.prototype.constructor = Class;
-  Class.super = SuperClass;
-
-  for (const key in prototype || {}) {
-    Class.prototype[key] = prototype[key];
-  }
-}
-
+/**
+ * Makes Class extendable by adding Class.extend
+ * @param  {Class} Class source Class
+ * @return {ExtendedClass}       resulted ExtendedClass
+ */
 export function extendable (Class) {
   Class.extend = function _extend (options) {
-    function ExtendedClass (...args) {
-      ExtendedClass.super.call(this, options, ...args);
-    }
-    extend(ExtendedClass, Class);
-    return ExtendedClass;
+    return class ExtendedClass extends Class {
+      constructor (...args) {
+        super(options, ...args);
+      }
+    };
   };
 }
