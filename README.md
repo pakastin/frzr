@@ -16,9 +16,9 @@ https://frzr.js.org/doc
 http://codepen.io/collection/XKwVMG/
 
 ## download
-[Development](http://frzrjs.github.io/frzr/dist/frzr.js) (~20 kb uncompressed with full documentation)
+[Development](https://frzr.js.org/dist/frzr.js) (~20 kb uncompressed with full documentation)
 
-[Production](http://frzrjs.github.io/frzr/dist/frzr.min.js) (~7 kb uncompressed & minified)
+[Production](https://frzr.js.org/dist/frzr.min.js) (~7 kb uncompressed & minified)
 
 ### Installing from NPM
 
