@@ -282,7 +282,10 @@ export class View extends Observable {
   setChildren (...views) {
     if (views[0].views) {
       views[0].parent = this;
-      return this.setChildren(...views[0].views);
+      if (!views[0].views.length) {
+        return this;
+      }
+      this.setChildren(...views[0].views);
     }
     let traverse = this.el.firstChild;
 
