@@ -4,6 +4,9 @@
   "rules": {
     "space-before-function-paren": [2, "always"],
     "no-loop-func": [0],
-    "comma-dangle": [2, "never"]
+    "comma-dangle": [2, "never"],
+    "guard-for-in": [0],
+    "no-shadow": [0],
+    "no-console": [0]
   }
 }

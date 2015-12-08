@@ -4,23 +4,24 @@ const EVENTS = ['init', 'inited', 'mount', 'mounted', 'unmount', 'unmounted', 's
   return obj;
 }, {});
 
-import { Observable, View } from './index';
+import { extend, extendable, Observable, View } from './index';
 
-export class ViewList extends Observable {
-  constructor (options = {}) {
-    super();
+export function ViewList (options) {
+  ViewList.super.call(this);
 
-    this.views = [];
-    this.lookup = {};
+  this.views = [];
+  this.lookup = {};
 
-    for (const key in options) {
-      if (EVENTS[key]) {
-        this.on(key, options[key]);
-      } else {
-        this[key] = options[key];
-      }
+  for (const key in options) {
+    if (EVENTS[key]) {
+      this.on(key, options[key]);
+    } else {
+      this[key] = options[key];
     }
   }
+}
+
+extend(ViewList, Observable, {
   setViews (data) {
     const views = new Array(data.length);
     const lookup = {};
@@ -59,14 +60,8 @@ export class ViewList extends Observable {
     }
     this.views = views;
     this.lookup = lookup;
-    this.parent.setChildren(views);
+    this.parent.setChildren(...views);
   }
-}
+});
 
-ViewList.extend = function extend (options) {
-  return class ExtendedViewList extends ViewList {
-    constructor (data) {
-      super(options, data);
-    }
-  };
-};
+extendable(ViewList);

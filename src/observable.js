@@ -1,18 +1,21 @@
 
-export class Observable {
-  constructor () {
-    this.listeners = {};
-  }
+import { extend } from './index';
+
+export function Observable () {
+  this.listeners = {};
+}
+
+extend(Observable, null, {
   on (name, cb) {
     if (!this.listeners[name]) this.listeners[name] = [];
 
     this.listeners[name].push({ cb, one: false });
-  }
+  },
   one (name, cb) {
     if (!this.listeners[name]) this.listeners[name] = [];
 
     this.listeners[name].push({ cb, one: true });
-  }
+  },
   trigger (name, ...args) {
     const listeners = this.listeners[name];
 
@@ -27,7 +30,7 @@ export class Observable {
         listeners.splice(i--, 1);
       }
     }
-  }
+  },
   off (name, cb) {
     if (typeof name === 'undefined') {
       this.listeners = {};
@@ -47,4 +50,4 @@ export class Observable {
       }
     }
   }
-}
+});

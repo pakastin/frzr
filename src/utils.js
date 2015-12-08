@@ -20,3 +20,23 @@ export function shuffle (array) {
 
   return array;
 }
+
+export function extend (Class, SuperClass, prototype) {
+  Class.prototype = Object.create(SuperClass && SuperClass.prototype);
+  Class.prototype.constructor = Class;
+  Class.super = SuperClass;
+
+  for (const key in prototype || {}) {
+    Class.prototype[key] = prototype[key];
+  }
+}
+
+export function extendable (Class) {
+  Class.extend = function (options) {
+    function ExtendedClass (...args) {
+      ExtendedClass.super.call(this, options, ...args);
+    }
+    extend(ExtendedClass, Class);
+    return ExtendedClass;
+  };
+}

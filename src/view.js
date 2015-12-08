@@ -4,23 +4,27 @@ const EVENTS = 'init inited mount mounted unmount unmounted update updated destr
   return obj;
 }, {});
 
-import { Observable } from './observable';
+import { extend, extendable, Observable } from './index';
 
-export class View extends Observable {
-  constructor (options, data) {
-    super();
-
-    for (const key in options) {
-      if (EVENTS[key]) {
-        this.on(key, options[key]);
-      } else {
-        this[key] = options[key];
-      }
-    }
-    this.el.view = this;
-    this.trigger('init', data);
-    this.trigger('inited', data);
+export function View (options, data) {
+  if (!(this instanceof View)) {
+    throw new Error('Something went wrong');
   }
+  View.super.call(this);
+
+  for (const key in options) {
+    if (EVENTS[key]) {
+      this.on(key, options[key]);
+    } else {
+      this[key] = options[key];
+    }
+  }
+  this.trigger('init', data);
+  this.el.view = this;
+  this.trigger('inited', data);
+}
+
+extend(View, Observable, {
   setAttr (key, value) {
     if (!this.attrs) this.attrs = {};
 
@@ -34,7 +38,7 @@ export class View extends Observable {
       this.el.removeAttribute(key);
       this.attrs[key] = null;
     }
-  }
+  },
   setClass (key, value) {
     if (!this.classes) this.classes = {};
 
@@ -47,7 +51,7 @@ export class View extends Observable {
       this.el.classList.remove(key);
     }
     this.classes[key] = value;
-  }
+  },
   setStyle (key, value) {
     if (!this.styles) this.styles = {};
 
@@ -56,21 +60,21 @@ export class View extends Observable {
     }
     this.el.style[key] = value;
     this.styles[key] = value;
-  }
+  },
   setText (value) {
     if (this.text === value) {
       return;
     }
     this.el.textContent = value;
     this.text = value;
-  }
+  },
   setHTML (value) {
     if (this.html === value) {
       return;
     }
     this.el.innerHTML = value;
     this.html = value;
-  }
+  },
   addListener (name, cb, useCapture) {
     const listener = {
       name: name,
@@ -83,7 +87,7 @@ export class View extends Observable {
 
     this.eventListeners.push(listener);
     this.el.addEventListener(name, listener.proxy, useCapture);
-  }
+  },
   removeListener (name, cb) {
     const listeners = this.eventListeners;
     if (!listeners) {
@@ -108,7 +112,7 @@ export class View extends Observable {
         }
       }
     }
-  }
+  },
   addChild (child) {
     if (child.parent) {
       child.trigger('unmount');
@@ -120,7 +124,7 @@ export class View extends Observable {
     child.parent = this;
 
     child.trigger('mounted');
-  }
+  },
   addBefore (child, before) {
     if (child.parent) {
       child.trigger('unmount');
@@ -132,7 +136,7 @@ export class View extends Observable {
     child.parent = this;
 
     child.trigger('mounted');
-  }
+  },
   setChildren (...views) {
     let traverse = this.el.firstChild;
 
@@ -163,7 +167,7 @@ export class View extends Observable {
 
       traverse = next;
     }
-  }
+  },
   removeChild (child) {
     if (!child.parent) {
       return;
@@ -174,22 +178,16 @@ export class View extends Observable {
     child.parent = null;
 
     child.trigger('unmounted');
-  }
+  },
   update (data) {
     this.trigger('update', data);
-  }
+  },
   destroy () {
     this.trigger('destroy');
     this.parent.removeChild(this);
     this.off();
     this.removeListener();
   }
-}
+});
 
-View.extend = function extend (options) {
-  return class ExtendedView extends View {
-    constructor (data) {
-      super(options, data);
-    }
-  };
-};
+extendable(View);
