@@ -600,9 +600,9 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/viewlist.js~viewlist#setviews",
-    "class/src/viewlist.js~ViewList.html#instance-method-setViews",
-    "src/viewlist.js~ViewList#setViews",
+    "src/viewlist.js~viewlist#setdata",
+    "class/src/viewlist.js~ViewList.html#instance-method-setData",
+    "src/viewlist.js~ViewList#setData",
     "method"
   ],
   [
