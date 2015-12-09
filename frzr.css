@@ -54,6 +54,12 @@ a {
 a:hover {
   text-decoration: underline;
 }
+.github-fork-ribbon {
+  background-color: #333;
+}
+.github-fork-ribbon:hover {
+  background-color: #4a90e2;
+}
 @media (min-width: 1600px) {
   html {
     font-size: 112.5%;
