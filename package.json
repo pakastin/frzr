@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "FRZR view library",
   "jsnext:main": "src/index.js",
   "main": "dist/frzr.js",
