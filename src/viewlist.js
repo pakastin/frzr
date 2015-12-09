@@ -75,7 +75,7 @@ export class ViewList extends Observable {
         });
       }
 
-      if (key) lookup[key] = view;
+      if (key) lookup[id] = view;
 
       views[i] = view;
       view.update(item);
