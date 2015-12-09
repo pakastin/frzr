@@ -241,16 +241,22 @@ export class View extends Observable {
       child.parent = this;
       return this.setChildren(...child.views);
     }
+    let sorting = false;
     if (child.parent) {
-      child.trigger(EVENT.unmount);
-      child.trigger(EVENT.unmounted);
+      sorting = true;
+      child.trigger(EVENT.sort);
+    } else {
+      child.trigger(EVENT.mount);
     }
-    child.trigger(EVENT.mount);
 
     this.el.appendChild(child.el);
     child.parent = this;
 
-    child.trigger(EVENT.mounted);
+    if (sorting) {
+      child.trigger(EVENT.sorted);
+    } else {
+      child.trigger(EVENT.mounted);
+    }
 
     return this;
   }
@@ -261,16 +267,23 @@ export class View extends Observable {
    * @return {View}
    */
   addBefore (child, before) {
+    let sorting = false;
+
     if (child.parent) {
-      child.trigger(EVENT.unmount);
-      child.trigger(EVENT.unmounted);
+      sorting = true;
+      child.trigger(EVENT.sort);
+    } else {
+      child.trigger(EVENT.mount);
     }
-    child.trigger(EVENT.mount);
 
     this.el.insertBefore(child.el, before.el || before);
     child.parent = this;
 
-    child.trigger(EVENT.mounted);
+    if (sorting) {
+      child.trigger(EVENT.sorted);
+    } else {
+      child.trigger(EVENT.mounted);
+    }
 
     return this;
   }
@@ -296,18 +309,10 @@ export class View extends Observable {
         traverse = traverse.nextSibling;
         continue;
       }
-      let sorted = false;
-      if (view.parent === this) {
-        view.trigger(EVENT.sort);
-        sorted = true;
-      }
       if (traverse) {
         this.addBefore(view, traverse);
       } else {
         this.addChild(view);
-      }
-      if (sorted) {
-        view.trigger(EVENT.sorted);
       }
     }
     while (traverse) {
