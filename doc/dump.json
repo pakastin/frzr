@@ -471,7 +471,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { extendable } from './utils';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n    this.trigger(EVENT.init, data);\n    if (!this.el) this.el = document.createElement('div');\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} name   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (name, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[name] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(name, value);\n      this.attrs[name] = value;\n    } else {\n      this.el.removeAttribute(name);\n      this.attrs[name] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} key   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (key, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[key] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(key);\n    } else {\n      this.el.classList.remove(key);\n    }\n    this.classes[key] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} key   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (key, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[key] === value) {\n      return this;\n    }\n    this.el.style[key] = value;\n    this.styles[key] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   name       Listener name\n   * @param {Function} callback         Listener callback\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (name, callback, useCapture) {\n    const listener = {\n      name: name,\n      callback: callback,\n      proxy: (...args) => {\n        callback.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and callback\n   * @param  {String}   [name] Listener name\n   * @param  {Function} [callback]   Listener callback\n   * @return {View}\n   */\n  removeListener (name, callback) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof name === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof callback === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === name) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === name && callback === listener.callback) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    if (this.parent) this.parent.removeChild(this);\n    this.trigger(EVENT.destroy);\n    this.setChildren([]);\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
+    "content": "\nimport { extendable } from './utils';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n    this.trigger(EVENT.init, data);\n    if (!this.el) this.el = document.createElement('div');\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} name   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (name, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[name] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(name, value);\n      this.attrs[name] = value;\n    } else {\n      this.el.removeAttribute(name);\n      this.attrs[name] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} key   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (key, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[key] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(key);\n    } else {\n      this.el.classList.remove(key);\n    }\n    this.classes[key] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} key   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (key, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[key] === value) {\n      return this;\n    }\n    this.el.style[key] = value;\n    this.styles[key] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   name       Listener name\n   * @param {Function} callback         Listener callback\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (name, callback, useCapture) {\n    const listener = {\n      name: name,\n      callback: callback,\n      proxy: (...args) => {\n        callback.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and callback\n   * @param  {String}   [name] Listener name\n   * @param  {Function} [callback]   Listener callback\n   * @return {View}\n   */\n  removeListener (name, callback) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof name === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof callback === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === name) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === name && callback === listener.callback) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    if (this.parent) this.parent.removeChild(this);\n    this.trigger(EVENT.destroy);\n    this.setChildren([]);\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
   },
   {
     "__docId__": 17,
@@ -597,6 +597,26 @@
         ],
         "spread": false,
         "optional": true,
+        "name": "sort",
+        "description": "'sort' callback shortcut"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "sorted",
+        "description": "'sorted' callback shortcut"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
         "name": "update",
         "description": "'update' callback shortcut"
       },
@@ -649,7 +669,7 @@
     "longname": "src/view.js~View#constructor",
     "access": null,
     "description": "Creates View",
-    "lineNumber": 35,
+    "lineNumber": 37,
     "params": [
       {
         "nullable": null,
@@ -692,7 +712,7 @@
     "longname": "src/view.js~View#attrs",
     "access": null,
     "description": "el attributes cache",
-    "lineNumber": 42,
+    "lineNumber": 44,
     "type": {
       "nullable": null,
       "types": [
@@ -712,7 +732,7 @@
     "longname": "src/view.js~View#classes",
     "access": null,
     "description": "el classNames cache",
-    "lineNumber": 47,
+    "lineNumber": 49,
     "type": {
       "nullable": null,
       "types": [
@@ -732,7 +752,7 @@
     "longname": "src/view.js~View#el",
     "access": null,
     "description": "HTMLElement",
-    "lineNumber": 52,
+    "lineNumber": 54,
     "type": {
       "nullable": null,
       "types": [
@@ -753,7 +773,7 @@
     "longname": "src/view.js~View#eventListeners",
     "access": null,
     "description": "Proxy event listeners cache",
-    "lineNumber": 57,
+    "lineNumber": 59,
     "type": {
       "nullable": null,
       "types": [
@@ -773,7 +793,7 @@
     "longname": "src/view.js~View#html",
     "access": null,
     "description": "el innerHTML cache",
-    "lineNumber": 62,
+    "lineNumber": 64,
     "type": {
       "nullable": null,
       "types": [
@@ -793,7 +813,7 @@
     "longname": "src/view.js~View#listeners",
     "access": null,
     "description": "Listeners cache",
-    "lineNumber": 67,
+    "lineNumber": 69,
     "type": {
       "nullable": null,
       "types": [
@@ -813,7 +833,7 @@
     "longname": "src/view.js~View#styles",
     "access": null,
     "description": "el styles cache",
-    "lineNumber": 72,
+    "lineNumber": 74,
     "type": {
       "nullable": null,
       "types": [
@@ -833,7 +853,7 @@
     "longname": "src/view.js~View#text",
     "access": null,
     "description": "el textContent cache",
-    "lineNumber": 77,
+    "lineNumber": 79,
     "type": {
       "nullable": null,
       "types": [
@@ -853,7 +873,7 @@
     "longname": "src/view.js~View#el",
     "access": null,
     "description": null,
-    "lineNumber": 87,
+    "lineNumber": 89,
     "undocument": true,
     "type": {
       "types": [
@@ -871,7 +891,7 @@
     "longname": "src/view.js~View#setAttr",
     "access": null,
     "description": "Sets/removes View element attribute (only if changed)",
-    "lineNumber": 97,
+    "lineNumber": 99,
     "params": [
       {
         "nullable": null,
@@ -915,7 +935,7 @@
     "longname": "src/view.js~View#attrs",
     "access": null,
     "description": null,
-    "lineNumber": 98,
+    "lineNumber": 100,
     "undocument": true,
     "type": {
       "types": [
@@ -933,7 +953,7 @@
     "longname": "src/view.js~View#setClass",
     "access": null,
     "description": "Sets/removes View element class (only if changed)",
-    "lineNumber": 119,
+    "lineNumber": 121,
     "params": [
       {
         "nullable": null,
@@ -976,7 +996,7 @@
     "longname": "src/view.js~View#classes",
     "access": null,
     "description": null,
-    "lineNumber": 120,
+    "lineNumber": 122,
     "undocument": true,
     "type": {
       "types": [
@@ -994,7 +1014,7 @@
     "longname": "src/view.js~View#setStyle",
     "access": null,
     "description": "Sets/removes View element style (only if changed)",
-    "lineNumber": 140,
+    "lineNumber": 142,
     "params": [
       {
         "nullable": null,
@@ -1038,7 +1058,7 @@
     "longname": "src/view.js~View#styles",
     "access": null,
     "description": null,
-    "lineNumber": 141,
+    "lineNumber": 143,
     "undocument": true,
     "type": {
       "types": [
@@ -1056,7 +1076,7 @@
     "longname": "src/view.js~View#setText",
     "access": null,
     "description": "Sets View element textContent (only if changed)",
-    "lineNumber": 156,
+    "lineNumber": 158,
     "params": [
       {
         "nullable": null,
@@ -1089,7 +1109,7 @@
     "longname": "src/view.js~View#text",
     "access": null,
     "description": null,
-    "lineNumber": 161,
+    "lineNumber": 163,
     "undocument": true,
     "type": {
       "types": [
@@ -1107,7 +1127,7 @@
     "longname": "src/view.js~View#setHTML",
     "access": null,
     "description": "Sets View element innerHTML (only if changed)",
-    "lineNumber": 170,
+    "lineNumber": 172,
     "params": [
       {
         "nullable": null,
@@ -1140,7 +1160,7 @@
     "longname": "src/view.js~View#html",
     "access": null,
     "description": null,
-    "lineNumber": 175,
+    "lineNumber": 177,
     "undocument": true,
     "type": {
       "types": [
@@ -1158,7 +1178,7 @@
     "longname": "src/view.js~View#addListener",
     "access": null,
     "description": "Adds proxy event listener to View",
-    "lineNumber": 186,
+    "lineNumber": 188,
     "params": [
       {
         "nullable": null,
@@ -1211,7 +1231,7 @@
     "longname": "src/view.js~View#eventListeners",
     "access": null,
     "description": null,
-    "lineNumber": 194,
+    "lineNumber": 196,
     "undocument": true,
     "type": {
       "types": [
@@ -1229,7 +1249,7 @@
     "longname": "src/view.js~View#removeListener",
     "access": null,
     "description": "Removes all proxy event listeners from View, or by name, or by name and callback",
-    "lineNumber": 207,
+    "lineNumber": 209,
     "params": [
       {
         "nullable": null,
@@ -1272,7 +1292,7 @@
     "longname": "src/view.js~View#listeners",
     "access": null,
     "description": null,
-    "lineNumber": 216,
+    "lineNumber": 218,
     "undocument": true,
     "type": {
       "types": [
@@ -1290,7 +1310,7 @@
     "longname": "src/view.js~View#addChild",
     "access": null,
     "description": "Adds child View/ViewList to View",
-    "lineNumber": 239,
+    "lineNumber": 241,
     "params": [
       {
         "nullable": null,
@@ -1324,7 +1344,7 @@
     "longname": "src/view.js~View#addBefore",
     "access": null,
     "description": "Adds child View before another View/HTMLElement",
-    "lineNumber": 269,
+    "lineNumber": 271,
     "params": [
       {
         "nullable": null,
@@ -1368,7 +1388,7 @@
     "longname": "src/view.js~View#setChildren",
     "access": null,
     "description": "Replace children with Views or ViewList",
-    "lineNumber": 295,
+    "lineNumber": 297,
     "params": [
       {
         "nullable": null,
@@ -1402,7 +1422,7 @@
     "longname": "src/view.js~View#removeChild",
     "access": null,
     "description": "Remove child View / ViewList",
-    "lineNumber": 337,
+    "lineNumber": 339,
     "params": [
       {
         "nullable": null,
@@ -1436,7 +1456,7 @@
     "longname": "src/view.js~View#update",
     "access": null,
     "description": "Trigger 'update' with data",
-    "lineNumber": 355,
+    "lineNumber": 357,
     "params": [
       {
         "nullable": null,
@@ -1469,7 +1489,7 @@
     "longname": "src/view.js~View#destroy",
     "access": null,
     "description": "Destroy View (remove listeners, children, etc..)",
-    "lineNumber": 361,
+    "lineNumber": 363,
     "params": [],
     "generator": false
   },

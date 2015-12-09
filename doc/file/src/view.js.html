@@ -51,7 +51,7 @@
 import { extendable } from &apos;./utils&apos;;
 import { Observable } from &apos;./observable&apos;;
 
-const EVENT = &apos;init inited mount mounted unmount unmounted update updated destroy&apos;.split(&apos; &apos;).reduce((obj, name) =&gt; {
+const EVENT = &apos;init inited mount mounted unmount unmounted sort sorted update updated destroy&apos;.split(&apos; &apos;).reduce((obj, name) =&gt; {
   obj[name] = name;
   return obj;
 }, {});
@@ -68,6 +68,8 @@ export class View extends Observable {
    * @property {Function} [inited] &apos;inited&apos; callback shortcut
    * @property {Function} [mount] &apos;mount&apos; callback shortcut
    * @property {Function} [mounted] &apos;mounted&apos; callback shortcut
+   * @property {Function} [sort] &apos;sort&apos; callback shortcut
+   * @property {Function} [sorted] &apos;sorted&apos; callback shortcut
    * @property {Function} [update] &apos;update&apos; callback shortcut
    * @property {Function} [updated] &apos;updated&apos; callback shortcut
    * @property {Function} [destroy] &apos;destroy&apos; callback shortcut
