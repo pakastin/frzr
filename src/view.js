@@ -2,7 +2,7 @@
 import { extendable } from './utils';
 import { Observable } from './observable';
 
-const EVENT = 'init inited mount mounted unmount unmounted update updated destroy'.split(' ').reduce((obj, name) => {
+const EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {
   obj[name] = name;
   return obj;
 }, {});
