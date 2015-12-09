@@ -8,7 +8,6 @@
     "start": "node watch",
     "build": "npm test && rollup -n frzr -c .rollup.js -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js && npm run build-doc",
     "build-doc": "esdoc -c esdoc.json",
-    "postinstall": "mkdir -p ./dist",
     "test": "eslint src/**/*.js"
   },
   "repository": {
