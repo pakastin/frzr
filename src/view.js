@@ -19,6 +19,8 @@ export class View extends Observable {
    * @property {Function} [inited] 'inited' callback shortcut
    * @property {Function} [mount] 'mount' callback shortcut
    * @property {Function} [mounted] 'mounted' callback shortcut
+   * @property {Function} [sort] 'sort' callback shortcut
+   * @property {Function} [sorted] 'sorted' callback shortcut
    * @property {Function} [update] 'update' callback shortcut
    * @property {Function} [updated] 'updated' callback shortcut
    * @property {Function} [destroy] 'destroy' callback shortcut
