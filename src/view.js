@@ -359,9 +359,9 @@ export class View extends Observable {
    * Destroy View (remove listeners, children, etc..)
    */
   destroy () {
+    if (this.parent) this.parent.removeChild(this);
     this.trigger(EVENT.destroy);
     this.setChildren([]);
-    this.parent.removeChild(this);
     this.off();
     this.removeListener();
   }
