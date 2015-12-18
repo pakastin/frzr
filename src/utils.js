@@ -11,6 +11,37 @@ export function each (array, iterator) {
 }
 
 /**
+ * Defined check helper
+ * @param  {*}  check Something to check
+ * @return {Boolean}       True / false
+ */
+export function isDefined (check) {
+  return typeof check !== 'undefined' || check !== null;
+}
+
+/**
+ * CSS style string iteration helper
+ * @param  {String} styleString     CSS style string
+ * @param  {Function} handler Handler function
+ */
+export function eachCSS (styleString, handler) {
+  const styles = styleString.split(';');
+
+  for (let i = 0; i < styles.length; i++) {
+    if (!styles[i].length) {
+      continue;
+    }
+    const style = styles[i].split(':');
+    const propertyName = style[0].trim();
+    const value = style[1].trim();
+
+    if (propertyName.length) {
+      handler(propertyName, value);
+    }
+  }
+}
+
+/**
  * Fisher-Yates shuffle helper
  * @param  {Array} array Array to be shuffled
  * @return {Array}       Shuffled Array
@@ -36,7 +67,7 @@ export function shuffle (array) {
  * @return {ExtendedClass}       resulted ExtendedClass
  */
 export function extendable (Class) {
-  Class.extend = function _extend (options) {
+  Class.extend = function extend (options) {
     return class ExtendedClass extends Class {
       constructor (...args) {
         super(options, ...args);

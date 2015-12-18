@@ -1,5 +1,6 @@
 
 import { extendable } from './utils';
+import { prefix } from './prefix';
 import { Observable } from './observable';
 
 const EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {
@@ -86,67 +87,72 @@ export class View extends Observable {
       }
     }
     this.trigger(EVENT.init, data);
+
     if (!this.el) this.el = document.createElement('div');
+
     this.el.view = this;
     this.trigger(EVENT.inited, data);
   }
   /**
    * Sets/removes View element attribute (only if changed)
-   * @param {String} name   Attribute name
+   * @param {String} attributeName   Attribute name
    * @param {*|null} value Attribute value or null to remove
    * @return {View}
    */
-  setAttr (name, value) {
+  setAttr (attributeName, value) {
     if (!this.attrs) this.attrs = {};
 
-    if (this.attrs[name] === value) {
+    if (this.attrs[attributeName] === value) {
       return this;
     }
     if (value || value === '') {
-      this.el.setAttribute(name, value);
-      this.attrs[name] = value;
+      this.el.setAttribute(attributeName, value);
+      this.attrs[attributeName] = value;
     } else {
-      this.el.removeAttribute(name);
-      this.attrs[name] = null;
+      this.el.removeAttribute(attributeName);
+      this.attrs[attributeName] = null;
     }
 
     return this;
   }
   /**
    * Sets/removes View element class (only if changed)
-   * @param {String} key   Class name
+   * @param {String} className   Class name
    * @param {Boolean} value true / false
    * @return {View}
    */
-  setClass (key, value) {
+  setClass (className, value) {
     if (!this.classes) this.classes = {};
 
-    if (this.classes[key] === value) {
+    if (this.classes[className] === value) {
       return this;
     }
     if (value) {
-      this.el.classList.add(key);
+      this.el.classList.add(className);
     } else {
-      this.el.classList.remove(key);
+      this.el.classList.remove(className);
     }
-    this.classes[key] = value;
+    this.classes[className] = value;
 
     return this;
   }
   /**
    * Sets/removes View element style (only if changed)
-   * @param {String} key   Style name
+   * @param {String} propertyName   Style name
    * @param {*|null} value Style value or null to remove
    * @return {View}
    */
-  setStyle (key, value) {
+  setStyle (propertyName, value) {
     if (!this.styles) this.styles = {};
 
-    if (this.styles[key] === value) {
+    if (this.styles[propertyName] === value) {
       return this;
     }
-    this.el.style[key] = value;
-    this.styles[key] = value;
+
+    const prefixed = prefix(propertyName);
+
+    this.el.style[prefixed] = value;
+    this.styles[propertyName] = value;
 
     return this;
   }
@@ -180,14 +186,14 @@ export class View extends Observable {
   }
   /**
    * Adds proxy event listener to View
-   * @param {[type]}   name       Listener name
+   * @param {[type]}   listenerName       Listener name
    * @param {Function} callback         Listener callback
    * @param {Boolean}   useCapture Use capture or not
    * @return {View}
    */
-  addListener (name, callback, useCapture) {
+  addListener (listenerName, callback, useCapture) {
     const listener = {
-      name: name,
+      name: listenerName,
       callback: callback,
       proxy: (...args) => {
         callback.apply(this, args);
@@ -202,30 +208,30 @@ export class View extends Observable {
   }
   /**
    * Removes all proxy event listeners from View, or by name, or by name and callback
-   * @param  {String}   [name] Listener name
+   * @param  {String}   [listenerName] Listener name
    * @param  {Function} [callback]   Listener callback
    * @return {View}
    */
-  removeListener (name, callback) {
+  removeListener (listenerName, callback) {
     const listeners = this.eventListeners;
     if (!listeners) {
       return this;
     }
-    if (typeof name === 'undefined') {
+    if (typeof listenerName === 'undefined') {
       for (let i = 0; i < listeners.length; i++) {
         this.el.removeEventListener(listeners[i].proxy);
       }
       this.listeners = [];
     } else if (typeof callback === 'undefined') {
       for (let i = 0; i < listeners.length; i++) {
-        if (listeners[i].name === name) {
+        if (listeners[i].name === listenerName) {
           listeners.splice(i--, 1);
         }
       }
     } else {
       for (let i = 0; i < listeners.length; i++) {
         const listener = listeners[i];
-        if (listener.name === name && callback === listener.callback) {
+        if (listener.name === listenerName && callback === listener.callback) {
           listeners.splice(i--, 1);
         }
       }

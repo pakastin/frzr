@@ -9,10 +9,11 @@ chokidar.watch('src/**/*.js')
 
 function exec (cmd) {
   return () => {
+    console.log(cmd);
     cp.exec(cmd, (err, stdout, stderr) => {
-      err && console.error(err);
-      stdout && console.log(stdout);
-      stderr && console.error(stderr);
+      if (err) console.error(err);
+      if (stdout) console.log(stdout);
+      if (stderr) console.error(stderr);
     });
   };
 }

@@ -1,3 +1,7 @@
+
+import { eachCSS } from './utils';
+import { prefix } from './prefix';
+
 /**
  * HTMLElement helper
  * @param  {String} [tagName='div'] HTMLElement tag name
@@ -12,6 +16,12 @@ export function el (tagName = 'div', attributes = {}) {
       _el.textContent = attributes[key];
     } else if (key === 'html') {
       _el.innerHTML = attributes[key];
+    } else if (key === 'style') {
+      eachCSS(attributes.style, (propertyName, value) => {
+        const prefixedProperty = prefix(propertyName);
+
+        _el.style[prefixedProperty] = value;
+      });
     } else {
       _el.setAttribute(key, attributes[key]);
     }

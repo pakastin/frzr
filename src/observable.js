@@ -13,45 +13,47 @@ export class Observable {
   }
   /**
    * Add listener by name
-   * @param  {String}   name Listener name
-   * @param  {Function} callback   Listener callback
+   * @param  {String}     eventName   Event name
+   * @param  {Function}   handler     Event handler
    * @return {Observable}
    */
-  on (name, callback) {
-    if (!this.listeners[name]) this.listeners[name] = [];
+  on (eventName, handler) {
+    if (typeof this.listeners[eventName] === 'undefined') {
+      this.listeners[eventName] = [];
+    }
 
-    this.listeners[name].push({ callback, one: false });
+    this.listeners[eventName].push({ handler, one: false });
 
     return this;
   }
   /**
    * Add listener by name, which triggers only one
-   * @param  {String}   name Listener name
-   * @param  {Function} callback   Listener callback
+   * @param  {String}     eventName   Event name
+   * @param  {Function}   handler     Event handler
    * @return {Observable}
    */
-  one (name, callback) {
-    if (!this.listeners[name]) this.listeners[name] = [];
+  one (eventName, handler) {
+    if (!this.listeners[eventName]) this.listeners[eventName] = [];
 
-    this.listeners[name].push({ callback, one: true });
+    this.listeners[eventName].push({ handler, one: true });
 
     return this;
   }
   /**
    * Triggers listeners by name
-   * @param  {String} name    [description]
-   * @param  {*} [...args] [description]
+   * @param  {String}     eventName   Event name
+   * @param  {*}          [...args]   Call arguments
    * @return {Observable}
    */
-  trigger (name, ...args) {
-    const listeners = this.listeners[name];
+  trigger (eventName, ...args) {
+    const listeners = this.listeners[eventName];
 
     if (!listeners) {
       return this;
     }
 
     for (let i = 0; i < listeners.length; i++) {
-      listeners[i].callback.apply(this, args);
+      listeners[i].handler.apply(this, args);
 
       if (listeners[i].one) {
         listeners.splice(i--, 1);
@@ -61,15 +63,15 @@ export class Observable {
     return this;
   }
   /**
-   * Remove all listeners, or by name, or by name & callback
-   * @param  {String}   [name]     Listener name
-   * @param  {Function} [callback] Listener callback
+   * Remove all listeners, or by name, or by name & handler
+   * @param  {String}     [name]      Event name
+   * @param  {Function}   [handler]   Event handler
    * @return {Observable}
    */
-  off (name, callback) {
+  off (name, handler) {
     if (typeof name === 'undefined') {
       this.listeners = {};
-    } else if (typeof callback === 'undefined') {
+    } else if (typeof handler === 'undefined') {
       this.listeners[name] = [];
     } else {
       const listeners = this.listeners[name];
@@ -79,7 +81,7 @@ export class Observable {
       }
 
       for (let i = 0; i < listeners.length; i++) {
-        if (listeners[i].callback === callback) {
+        if (listeners[i].handler === handler) {
           listeners.splice(i--, 1);
         }
       }
