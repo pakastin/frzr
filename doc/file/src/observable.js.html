@@ -32,12 +32,18 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/animation.js~Animation.html">Animation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/view.js~View.html">View</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-el">el</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prefix">prefix</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-raf">raf</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-translate">translate</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-each">each</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-eachCSS">eachCSS</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-extendable">extendable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDefined">isDefined</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-shuffle">shuffle</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewOptions">ViewOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span></span></li>
@@ -62,45 +68,47 @@ export class Observable {
   }
   /**
    * Add listener by name
-   * @param  {String}   name Listener name
-   * @param  {Function} callback   Listener callback
+   * @param  {String}     eventName   Event name
+   * @param  {Function}   handler     Event handler
    * @return {Observable}
    */
-  on (name, callback) {
-    if (!this.listeners[name]) this.listeners[name] = [];
+  on (eventName, handler) {
+    if (typeof this.listeners[eventName] === &apos;undefined&apos;) {
+      this.listeners[eventName] = [];
+    }
 
-    this.listeners[name].push({ callback, one: false });
+    this.listeners[eventName].push({ handler, one: false });
 
     return this;
   }
   /**
    * Add listener by name, which triggers only one
-   * @param  {String}   name Listener name
-   * @param  {Function} callback   Listener callback
+   * @param  {String}     eventName   Event name
+   * @param  {Function}   handler     Event handler
    * @return {Observable}
    */
-  one (name, callback) {
-    if (!this.listeners[name]) this.listeners[name] = [];
+  one (eventName, handler) {
+    if (!this.listeners[eventName]) this.listeners[eventName] = [];
 
-    this.listeners[name].push({ callback, one: true });
+    this.listeners[eventName].push({ handler, one: true });
 
     return this;
   }
   /**
    * Triggers listeners by name
-   * @param  {String} name    [description]
-   * @param  {*} [...args] [description]
+   * @param  {String}     eventName   Event name
+   * @param  {*}          [...args]   Call arguments
    * @return {Observable}
    */
-  trigger (name, ...args) {
-    const listeners = this.listeners[name];
+  trigger (eventName, ...args) {
+    const listeners = this.listeners[eventName];
 
     if (!listeners) {
       return this;
     }
 
     for (let i = 0; i &lt; listeners.length; i++) {
-      listeners[i].callback.apply(this, args);
+      listeners[i].handler.apply(this, args);
 
       if (listeners[i].one) {
         listeners.splice(i--, 1);
@@ -110,15 +118,15 @@ export class Observable {
     return this;
   }
   /**
-   * Remove all listeners, or by name, or by name &amp; callback
-   * @param  {String}   [name]     Listener name
-   * @param  {Function} [callback] Listener callback
+   * Remove all listeners, or by name, or by name &amp; handler
+   * @param  {String}     [name]      Event name
+   * @param  {Function}   [handler]   Event handler
    * @return {Observable}
    */
-  off (name, callback) {
+  off (name, handler) {
     if (typeof name === &apos;undefined&apos;) {
       this.listeners = {};
-    } else if (typeof callback === &apos;undefined&apos;) {
+    } else if (typeof handler === &apos;undefined&apos;) {
       this.listeners[name] = [];
     } else {
       const listeners = this.listeners[name];
@@ -128,7 +136,7 @@ export class Observable {
       }
 
       for (let i = 0; i &lt; listeners.length; i++) {
-        if (listeners[i].callback === callback) {
+        if (listeners[i].handler === handler) {
           listeners.splice(i--, 1);
         }
       }

@@ -32,12 +32,18 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/animation.js~Animation.html">Animation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/view.js~View.html">View</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-el">el</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prefix">prefix</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-raf">raf</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-translate">translate</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-each">each</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-eachCSS">eachCSS</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-extendable">extendable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDefined">isDefined</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-shuffle">shuffle</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewOptions">ViewOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span></span></li>
@@ -56,6 +62,37 @@
 export function each (array, iterator) {
   for (let i = 0; i &lt; array.length; i++) {
     iterator(array[i], i);
+  }
+}
+
+/**
+ * Defined check helper
+ * @param  {*}  check Something to check
+ * @return {Boolean}       True / false
+ */
+export function isDefined (check) {
+  return typeof check !== &apos;undefined&apos; || check !== null;
+}
+
+/**
+ * CSS style string iteration helper
+ * @param  {String} styleString     CSS style string
+ * @param  {Function} handler Handler function
+ */
+export function eachCSS (styleString, handler) {
+  const styles = styleString.split(&apos;;&apos;);
+
+  for (let i = 0; i &lt; styles.length; i++) {
+    if (!styles[i].length) {
+      continue;
+    }
+    const style = styles[i].split(&apos;:&apos;);
+    const propertyName = style[0].trim();
+    const value = style[1].trim();
+
+    if (propertyName.length) {
+      handler(propertyName, value);
+    }
   }
 }
 
@@ -85,7 +122,7 @@ export function shuffle (array) {
  * @return {ExtendedClass}       resulted ExtendedClass
  */
 export function extendable (Class) {
-  Class.extend = function _extend (options) {
+  Class.extend = function extend (options) {
     return class ExtendedClass extends Class {
       constructor (...args) {
         super(options, ...args);

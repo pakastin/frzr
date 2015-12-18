@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">API Document</title>
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/translate.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -52,22 +52,51 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="frzr">FRZR</h1>
-<p><a href="https://gitter.im/pakastin/frzr?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/pakastin/frzr"></a></p>
-<p>Cool new javascript view library.</p>
-<p>Made with &#x2665; + ES6.</p>
-<p><a href="https://frzr.js.org"><img src="https://frzr.js.org/img/logo.svg" alt="FRZR logo"></a></p>
-<p>Also check out my little open source vanilla js <a href="https://deck-of-cards.js.org">HTML5 Deck of Cards</a> and <a href="https://nodegarden.js.org">HTML5 Node Garden</a></p>
-<h2 id="documentation">documentation</h2>
-<p><a href="https://frzr.js.org/doc">https://frzr.js.org/doc</a></p>
-<h2 id="getting-started">getting started</h2>
-<p><a href="http://codepen.io/collection/XKwVMG/">http://codepen.io/collection/XKwVMG/</a></p>
-<h2 id="download">download</h2>
-<p><a href="https://frzr.js.org/dist/frzr.js">Development</a> (~20 kb uncompressed with full documentation)</p>
-<p><a href="https://frzr.js.org/dist/frzr.min.js">Production</a> (~7 kb uncompressed &amp; minified)</p>
-<h3 id="installing-from-npm">Installing from NPM</h3>
-<pre><code><code class="source-code prettyprint">npm install frzr</code>
-</code></pre></div>
+<div class="content" data-ice="content"><h1 data-ice="title">src/translate.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">
+import { prefix } from &apos;./prefix&apos;;
+import { isDefined } from &apos;./utils&apos;;
+
+let has3d;
+
+export function translate (x = 0, y = 0, z = 0) {
+  if (typeof has3d === &apos;undefined&apos;) {
+    has3d = check3d();
+  }
+
+  if (has3d || z) {
+    return &apos;translate3d(&apos; + x + &apos;, &apos; + y + &apos;, &apos; + z + &apos;)&apos;;
+  } else {
+    return &apos;translate(&apos; + x + &apos;, &apos; + y + &apos;)&apos;;
+  }
+}
+
+function check3d () {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  if (!isMobile) {
+    return false;
+  }
+
+  const transform = prefix(&apos;transform&apos;);
+  const $p = document.createElement(&apos;p&apos;);
+
+  document.body.appendChild($p);
+  $p.style[transform] = &apos;translate3d(1px,1px,1px)&apos;;
+  has3d = $p.style[transform];
+
+  if (isDefined(has3d) &amp;&amp; has3d.length &amp;&amp; has3d !== &apos;none&apos;) {
+    has3d = true;
+  } else {
+    has3d = false;
+  }
+
+  document.body.removeChild($p);
+
+  return has3d;
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

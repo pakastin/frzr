@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">ViewList | API Document</title>
+  <title data-ice="title">Animation | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -53,23 +53,23 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {ViewList} from &apos;<span><a href="file/src/viewlist.js.html#lineNumber11">frzr/src/viewlist.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {Animation} from &apos;<span><a href="file/src/animation.js.html#lineNumber9">frzr/src/animation.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/viewlist.js.html#lineNumber11">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/animation.js.html#lineNumber9">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
-  <h1 data-ice="name">ViewList</h1>
+  <h1 data-ice="name">Animation</h1>
 
   
 
   
   
-  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span>src/observable~Observable</span> &#x2192; ViewList</div></div>
+  <div class="flat-list" data-ice="extendsChain"><h4>Extends:</h4><div><span>src/observable~Observable</span> &#x2192; Animation</div></div>
   
   
   
@@ -107,14 +107,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(options: <span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span>): <span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(objectPattern: {&quot;delay&quot;: <span>*</span>, &quot;duration&quot;: <span>*</span>, &quot;easing&quot;: <span>*</span>, &quot;start&quot;: <span>*</span>, &quot;progress&quot;: <span>*</span>, &quot;end&quot;: <span>*</span>})</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Creates list of Views to be mounted to a View</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -140,14 +139,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html#instance-member-lookup">lookup</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-member-easing">easing</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Views by key, if key provided</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -166,14 +164,63 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html#instance-member-views">views</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-member-endTime">endTime</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>list of Views</p>
-</div>
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-member-startTime">startTime</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-member-started">started</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -199,14 +246,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html#instance-method-setData">setData</a></span></span><span data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>)</span>
+           <span data-ice="name"><span><a href="class/src/animation.js~Animation.html#instance-method-destroy">destroy</a></span></span><span data-ice="signature">()</span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Sync list of Views with data provided</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -231,19 +277,18 @@
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(options: <span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span>): <span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(objectPattern: {&quot;delay&quot;: <span>*</span>, &quot;duration&quot;: <span>*</span>, &quot;easing&quot;: <span>*</span>, &quot;start&quot;: <span>*</span>, &quot;progress&quot;: <span>*</span>, &quot;end&quot;: <span>*</span>})</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/viewlist.js.html#lineNumber32">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber10">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Creates list of Views to be mounted to a View</p>
-</div>
+  
 
   
 
@@ -256,28 +301,17 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">options</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>ViewList options</p>
-</td>
+      <td data-ice="name" data-depth="0">objectPattern</td>
+      <td data-ice="type">{&quot;delay&quot;: <span>*</span>, &quot;duration&quot;: <span>*</span>, &quot;easing&quot;: <span>*</span>, &quot;start&quot;: <span>*</span>, &quot;progress&quot;: <span>*</span>, &quot;end&quot;: <span>*</span>}</td>
+      <td data-ice="appendix"><ul><li>default: {&quot;delay&quot;:null,&quot;duration&quot;:null,&quot;easing&quot;:null,&quot;start&quot;:null,&quot;progress&quot;:null,&quot;end&quot;:null}</li></ul></td>
+      <td data-ice="description"></td>
     </tr>
 </tbody>
   </table>
 </div>
 </div>
 
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tr>
-        <td class="return-type" data-ice="returnType"><span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></td>
-        
-      </tr>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
+  
 
   
 
@@ -296,25 +330,24 @@
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-lookup">
+  <h3 data-ice="anchor" id="instance-member-easing">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">lookup</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span data-ice="name">easing</span><span data-ice="signature">: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/viewlist.js.html#lineNumber39">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber18">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Views by key, if key provided</p>
-</div>
+  
 
   
 
@@ -337,25 +370,104 @@
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-views">
+  <h3 data-ice="anchor" id="instance-member-endTime">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">views</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></span>
+    <span data-ice="name">endTime</span><span data-ice="signature">: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/viewlist.js.html#lineNumber44">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber17">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>list of Views</p>
+  
+
+  
+
+  <div data-ice="properties">
 </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-startTime">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">startTime</span><span data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber16">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-started">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">started</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber20">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
 
   
 
@@ -381,46 +493,28 @@
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-setData">
+  <h3 data-ice="anchor" id="instance-method-destroy">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">setData</span><span data-ice="signature">(data: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span>)</span>
+    <span data-ice="name">destroy</span><span data-ice="signature">()</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/viewlist.js.html#lineNumber58">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/animation.js.html#lineNumber35">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Sync list of Views with data provided</p>
-</div>
+  
 
   
 
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">data</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Data for syncing list of Views</p>
-</td>
-    </tr>
-</tbody>
-  </table>
-</div>
+  <div data-ice="properties">
 </div>
 
   

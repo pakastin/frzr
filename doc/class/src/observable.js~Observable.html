@@ -32,12 +32,18 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/animation.js~Animation.html">Animation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/view.js~View.html">View</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-el">el</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prefix">prefix</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-raf">raf</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-translate">translate</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-each">each</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-eachCSS">eachCSS</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-extendable">extendable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDefined">isDefined</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-shuffle">shuffle</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewOptions">ViewOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span></span></li>
@@ -167,13 +173,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-off">off</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-off">off</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Remove all listeners, or by name, or by name &amp; callback</p>
+        <div data-ice="description"><p>Remove all listeners, or by name, or by name &amp; handler</p>
 </div>
       </div>
     </td>
@@ -193,7 +199,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-on">on</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-on">on</a></span></span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
         </p>
       </div>
       <div>
@@ -219,7 +225,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-one">one</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-one">one</a></span></span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
         </p>
       </div>
       <div>
@@ -245,7 +251,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-trigger">trigger</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+           <span data-ice="name"><span><a href="class/src/observable.js~Observable.html#instance-method-trigger">trigger</a></span></span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
         </p>
       </div>
       <div>
@@ -375,18 +381,18 @@
     
     
     
-    <span data-ice="name">off</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+    <span data-ice="name">off</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber69">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber71">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Remove all listeners, or by name, or by name &amp; callback</p>
+  <div data-ice="description"><p>Remove all listeners, or by name, or by name &amp; handler</p>
 </div>
 
   
@@ -403,14 +409,14 @@
       <td data-ice="name" data-depth="0">name</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>Listener name</p>
+      <td data-ice="description"><p>Event name</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">callback</td>
+      <td data-ice="name" data-depth="0">handler</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>Listener callback</p>
+      <td data-ice="description"><p>Event handler</p>
 </td>
     </tr>
 </tbody>
@@ -450,7 +456,7 @@
     
     
     
-    <span data-ice="name">on</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+    <span data-ice="name">on</span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
     <span class="right-info">
       
       
@@ -475,17 +481,17 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">eventName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Listener name</p>
+      <td data-ice="description"><p>Event name</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">callback</td>
+      <td data-ice="name" data-depth="0">handler</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Listener callback</p>
+      <td data-ice="description"><p>Event handler</p>
 </td>
     </tr>
 </tbody>
@@ -525,11 +531,11 @@
     
     
     
-    <span data-ice="name">one</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+    <span data-ice="name">one</span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, handler: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber33">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber35">source</a></span></span>
     </span>
   </h3>
 
@@ -550,17 +556,17 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">eventName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Listener name</p>
+      <td data-ice="description"><p>Event name</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">callback</td>
+      <td data-ice="name" data-depth="0">handler</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Listener callback</p>
+      <td data-ice="description"><p>Event handler</p>
 </td>
     </tr>
 </tbody>
@@ -600,11 +606,11 @@
     
     
     
-    <span data-ice="name">trigger</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
+    <span data-ice="name">trigger</span><span data-ice="signature">(eventName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="class/src/observable.js~Observable.html">Observable</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber46">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/observable.js.html#lineNumber48">source</a></span></span>
     </span>
   </h3>
 
@@ -625,17 +631,17 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">eventName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>[description]</p>
+      <td data-ice="description"><p>Event name</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="3">
       <td data-ice="name" data-depth="3">...args</td>
       <td data-ice="type"><span>*</span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
-      <td data-ice="description"><p>[description]</p>
+      <td data-ice="description"><p>Call arguments</p>
 </td>
     </tr>
 </tbody>

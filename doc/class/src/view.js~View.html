@@ -32,12 +32,18 @@
 <nav class="navigation" data-ice="nav"><div>
   <ul>
     
-  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/animation.js~Animation.html">Animation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/observable.js~Observable.html">Observable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/view.js~View.html">View</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/viewlist.js~ViewList.html">ViewList</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-el">el</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-prefix">prefix</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-raf">raf</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-translate">translate</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-each">each</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-eachCSS">eachCSS</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-extendable">extendable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isDefined">isDefined</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-shuffle">shuffle</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewOptions">ViewOptions</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-ViewListOptions">ViewListOptions</a></span></span></li>
@@ -47,13 +53,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {View} from &apos;<span><a href="file/src/view.js.html#lineNumber10">frzr/src/view.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {View} from &apos;<span><a href="file/src/view.js.html#lineNumber11">frzr/src/view.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/view.js.html#lineNumber10">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/view.js.html#lineNumber11">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -401,7 +407,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-addListener">addListener</a></span></span><span data-ice="signature">(name: <span>[type]</span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, useCapture: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-addListener">addListener</a></span></span><span data-ice="signature">(listenerName: <span>[type]</span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, useCapture: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
         </p>
       </div>
       <div>
@@ -479,7 +485,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-removeListener">removeListener</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-removeListener">removeListener</a></span></span><span data-ice="signature">(listenerName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
         </p>
       </div>
       <div>
@@ -505,7 +511,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setAttr">setAttr</a></span></span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setAttr">setAttr</a></span></span><span data-ice="signature">(attributeName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
         </p>
       </div>
       <div>
@@ -557,7 +563,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setClass">setClass</a></span></span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setClass">setClass</a></span></span><span data-ice="signature">(className: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
         </p>
       </div>
       <div>
@@ -609,7 +615,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setStyle">setStyle</a></span></span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+           <span data-ice="name"><span><a href="class/src/view.js~View.html#instance-method-setStyle">setStyle</a></span></span><span data-ice="signature">(propertyName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
         </p>
       </div>
       <div>
@@ -697,7 +703,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber37">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber38">source</a></span></span>
     </span>
   </h3>
 
@@ -775,7 +781,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber44">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber45">source</a></span></span>
     </span>
   </h3>
 
@@ -816,7 +822,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber49">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber50">source</a></span></span>
     </span>
   </h3>
 
@@ -857,7 +863,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber54">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber55">source</a></span></span>
     </span>
   </h3>
 
@@ -898,7 +904,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber59">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber60">source</a></span></span>
     </span>
   </h3>
 
@@ -939,7 +945,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber64">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber65">source</a></span></span>
     </span>
   </h3>
 
@@ -980,7 +986,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber69">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber70">source</a></span></span>
     </span>
   </h3>
 
@@ -1021,7 +1027,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber74">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber75">source</a></span></span>
     </span>
   </h3>
 
@@ -1062,7 +1068,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber79">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber80">source</a></span></span>
     </span>
   </h3>
 
@@ -1106,7 +1112,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber271">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber277">source</a></span></span>
     </span>
   </h3>
 
@@ -1181,7 +1187,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber241">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber247">source</a></span></span>
     </span>
   </h3>
 
@@ -1245,11 +1251,11 @@
     
     
     
-    <span data-ice="name">addListener</span><span data-ice="signature">(name: <span>[type]</span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, useCapture: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+    <span data-ice="name">addListener</span><span data-ice="signature">(listenerName: <span>[type]</span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, useCapture: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber188">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber194">source</a></span></span>
     </span>
   </h3>
 
@@ -1270,7 +1276,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">listenerName</td>
       <td data-ice="type"><span>[type]</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Listener name</p>
@@ -1331,7 +1337,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber363">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber369">source</a></span></span>
     </span>
   </h3>
 
@@ -1372,7 +1378,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber339">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber345">source</a></span></span>
     </span>
   </h3>
 
@@ -1436,11 +1442,11 @@
     
     
     
-    <span data-ice="name">removeListener</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+    <span data-ice="name">removeListener</span><span data-ice="signature">(listenerName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber209">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber215">source</a></span></span>
     </span>
   </h3>
 
@@ -1461,7 +1467,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">listenerName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"><ul><li>optional</li></ul></td>
       <td data-ice="description"><p>Listener name</p>
@@ -1511,11 +1517,11 @@
     
     
     
-    <span data-ice="name">setAttr</span><span data-ice="signature">(name: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+    <span data-ice="name">setAttr</span><span data-ice="signature">(attributeName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber99">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber102">source</a></span></span>
     </span>
   </h3>
 
@@ -1536,7 +1542,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">name</td>
+      <td data-ice="name" data-depth="0">attributeName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Attribute name</p>
@@ -1590,7 +1596,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber297">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber303">source</a></span></span>
     </span>
   </h3>
 
@@ -1654,11 +1660,11 @@
     
     
     
-    <span data-ice="name">setClass</span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+    <span data-ice="name">setClass</span><span data-ice="signature">(className: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber121">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber124">source</a></span></span>
     </span>
   </h3>
 
@@ -1679,7 +1685,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">key</td>
+      <td data-ice="name" data-depth="0">className</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Class name</p>
@@ -1733,7 +1739,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber172">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber178">source</a></span></span>
     </span>
   </h3>
 
@@ -1797,11 +1803,11 @@
     
     
     
-    <span data-ice="name">setStyle</span><span data-ice="signature">(key: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
+    <span data-ice="name">setStyle</span><span data-ice="signature">(propertyName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, value: <span>*</span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null">null</a></span>): <span><a href="class/src/view.js~View.html">View</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber142">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber145">source</a></span></span>
     </span>
   </h3>
 
@@ -1822,7 +1828,7 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">key</td>
+      <td data-ice="name" data-depth="0">propertyName</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"><p>Style name</p>
@@ -1876,7 +1882,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber158">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber164">source</a></span></span>
     </span>
   </h3>
 
@@ -1944,7 +1950,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber357">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/view.js.html#lineNumber363">source</a></span></span>
     </span>
   </h3>
 

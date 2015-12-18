@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">API Document</title>
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/animation.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -52,22 +52,89 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="frzr">FRZR</h1>
-<p><a href="https://gitter.im/pakastin/frzr?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/pakastin/frzr"></a></p>
-<p>Cool new javascript view library.</p>
-<p>Made with &#x2665; + ES6.</p>
-<p><a href="https://frzr.js.org"><img src="https://frzr.js.org/img/logo.svg" alt="FRZR logo"></a></p>
-<p>Also check out my little open source vanilla js <a href="https://deck-of-cards.js.org">HTML5 Deck of Cards</a> and <a href="https://nodegarden.js.org">HTML5 Node Garden</a></p>
-<h2 id="documentation">documentation</h2>
-<p><a href="https://frzr.js.org/doc">https://frzr.js.org/doc</a></p>
-<h2 id="getting-started">getting started</h2>
-<p><a href="http://codepen.io/collection/XKwVMG/">http://codepen.io/collection/XKwVMG/</a></p>
-<h2 id="download">download</h2>
-<p><a href="https://frzr.js.org/dist/frzr.js">Development</a> (~20 kb uncompressed with full documentation)</p>
-<p><a href="https://frzr.js.org/dist/frzr.min.js">Production</a> (~7 kb uncompressed &amp; minified)</p>
-<h3 id="installing-from-npm">Installing from NPM</h3>
-<pre><code><code class="source-code prettyprint">npm install frzr</code>
-</code></pre></div>
+<div class="content" data-ice="content"><h1 data-ice="title">src/animation.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">
+import { Observable } from &apos;./observable&apos;;
+import ease from &apos;./ease&apos;;
+import { raf } from &apos;./raf&apos;;
+
+const animations = [];
+let ticking;
+
+export class Animation extends Observable {
+  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {
+    super();
+
+    const now = Date.now();
+
+    // calculate animation start/end times
+    this.startTime = now + delay;
+    this.endTime = this.startTime + duration;
+    this.easing = ease[easing] || ease.quadOut;
+
+    this.started = false;
+
+    if (start) this.on(&apos;start&apos;, start);
+    if (progress) this.on(&apos;progress&apos;, progress);
+    if (end) this.on(&apos;end&apos;, end);
+
+    // add animation
+    animations.push(this);
+
+    if (!ticking) {
+      // start ticking
+      ticking = true;
+      raf(tick);
+    }
+  }
+  destroy () {
+    for (let i = 0; i &lt; animations.length; i++) {
+      if (animations[i] === this) {
+        animations.splice(i, 1);
+        return;
+      }
+    }
+  }
+}
+
+function tick () {
+  const now = Date.now();
+
+  if (!animations.length) {
+    // stop ticking
+    ticking = false;
+    return;
+  }
+
+  for (let i = 0; i &lt; animations.length; i++) {
+    const animation = animations[i];
+
+    if (now &lt; animation.startTime) {
+      // animation not yet started..
+      continue;
+    }
+    if (!animation.started) {
+      // animation starts
+      animation.started = true;
+      animation.trigger(&apos;start&apos;);
+    }
+    // animation progress
+    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);
+    if (t &gt; 1) {
+      t = 1;
+    }
+    animation.trigger(&apos;progress&apos;, animation.easing(t), t);
+    if (now &gt; animation.endTime) {
+      // animation ended
+      animation.trigger(&apos;end&apos;);
+      animations.splice(i--, 1);
+      continue;
+    }
+  }
+  raf(tick, true);
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

@@ -1,8 +1,21 @@
 {
-  "coverage": "92.3%",
-  "expectCount": 39,
-  "actualCount": 36,
+  "coverage": "76.47%",
+  "expectCount": 51,
+  "actualCount": 39,
   "files": {
+    "src/animation.js": {
+      "expectCount": 7,
+      "actualCount": 0,
+      "undocumentLines": [
+        9,
+        10,
+        35,
+        18,
+        17,
+        16,
+        20
+      ]
+    },
     "src/observable.js": {
       "expectCount": 7,
       "actualCount": 6,
@@ -14,7 +27,7 @@
       "expectCount": 23,
       "actualCount": 22,
       "undocumentLines": [
-        10
+        11
       ]
     },
     "src/viewlist.js": {
@@ -25,14 +38,33 @@
       ]
     },
     "src/utils.js": {
-      "expectCount": 3,
-      "actualCount": 3,
+      "expectCount": 5,
+      "actualCount": 5,
       "undocumentLines": []
     },
     "src/el.js": {
       "expectCount": 1,
       "actualCount": 1,
       "undocumentLines": []
+    },
+    "src/prefix.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/raf.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        4
+      ]
+    },
+    "src/translate.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        7
+      ]
     }
   }
 }

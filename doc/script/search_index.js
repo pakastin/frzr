@@ -1,5 +1,11 @@
 window.esdocSearchIndex = [
   [
+    "frzr/src/animation.js~animation",
+    "class/src/animation.js~Animation.html",
+    "<span>Animation</span> <span class=\"search-result-import-path\">frzr/src/animation.js</span>",
+    "class"
+  ],
+  [
     "frzr/src/observable.js~observable",
     "class/src/observable.js~Observable.html",
     "<span>Observable</span> <span class=\"search-result-import-path\">frzr/src/observable.js</span>",
@@ -24,6 +30,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "frzr/src/utils.js~eachcss",
+    "function/index.html#static-function-eachCSS",
+    "<span>eachCSS</span> <span class=\"search-result-import-path\">frzr/src/utils.js</span>",
+    "function"
+  ],
+  [
     "frzr/src/el.js~el",
     "function/index.html#static-function-el",
     "<span>el</span> <span class=\"search-result-import-path\">frzr/src/el.js</span>",
@@ -36,9 +48,33 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "frzr/src/utils.js~isdefined",
+    "function/index.html#static-function-isDefined",
+    "<span>isDefined</span> <span class=\"search-result-import-path\">frzr/src/utils.js</span>",
+    "function"
+  ],
+  [
+    "frzr/src/prefix.js~prefix",
+    "function/index.html#static-function-prefix",
+    "<span>prefix</span> <span class=\"search-result-import-path\">frzr/src/prefix.js</span>",
+    "function"
+  ],
+  [
+    "frzr/src/raf.js~raf",
+    "function/index.html#static-function-raf",
+    "<span>raf</span> <span class=\"search-result-import-path\">frzr/src/raf.js</span>",
+    "function"
+  ],
+  [
     "frzr/src/utils.js~shuffle",
     "function/index.html#static-function-shuffle",
     "<span>shuffle</span> <span class=\"search-result-import-path\">frzr/src/utils.js</span>",
+    "function"
+  ],
+  [
+    "frzr/src/translate.js~translate",
+    "function/index.html#static-function-translate",
+    "<span>translate</span> <span class=\"search-result-import-path\">frzr/src/translate.js</span>",
     "function"
   ],
   [
@@ -372,6 +408,54 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
+    "src/animation.js",
+    "file/src/animation.js.html",
+    "src/animation.js",
+    "file"
+  ],
+  [
+    "src/animation.js~animation#constructor",
+    "class/src/animation.js~Animation.html#instance-constructor-constructor",
+    "src/animation.js~Animation#constructor",
+    "method"
+  ],
+  [
+    "src/animation.js~animation#destroy",
+    "class/src/animation.js~Animation.html#instance-method-destroy",
+    "src/animation.js~Animation#destroy",
+    "method"
+  ],
+  [
+    "src/animation.js~animation#easing",
+    "class/src/animation.js~Animation.html#instance-member-easing",
+    "src/animation.js~Animation#easing",
+    "member"
+  ],
+  [
+    "src/animation.js~animation#endtime",
+    "class/src/animation.js~Animation.html#instance-member-endTime",
+    "src/animation.js~Animation#endTime",
+    "member"
+  ],
+  [
+    "src/animation.js~animation#starttime",
+    "class/src/animation.js~Animation.html#instance-member-startTime",
+    "src/animation.js~Animation#startTime",
+    "member"
+  ],
+  [
+    "src/animation.js~animation#started",
+    "class/src/animation.js~Animation.html#instance-member-started",
+    "src/animation.js~Animation#started",
+    "member"
+  ],
+  [
+    "src/ease.js",
+    "file/src/ease.js.html",
+    "src/ease.js",
+    "file"
+  ],
+  [
     "src/el.js",
     "file/src/el.js.html",
     "src/el.js",
@@ -424,6 +508,24 @@ window.esdocSearchIndex = [
     "class/src/observable.js~Observable.html#instance-method-trigger",
     "src/observable.js~Observable#trigger",
     "method"
+  ],
+  [
+    "src/prefix.js",
+    "file/src/prefix.js.html",
+    "src/prefix.js",
+    "file"
+  ],
+  [
+    "src/raf.js",
+    "file/src/raf.js.html",
+    "src/raf.js",
+    "file"
+  ],
+  [
+    "src/translate.js",
+    "file/src/translate.js.html",
+    "src/translate.js",
+    "file"
   ],
   [
     "src/utils.js",
