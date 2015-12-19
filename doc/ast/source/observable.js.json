@@ -1812,7 +1812,7 @@
               "trailingComments": [
                 {
                   "type": "Block",
-                  "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {*}          [...args]   Call arguments\n   * @return {Observable}\n   ",
+                  "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {...*}          [args]   Call arguments\n   * @return {Observable}\n   ",
                   "range": [
                     948,
                     1117
@@ -2957,7 +2957,7 @@
               "leadingComments": [
                 {
                   "type": "Block",
-                  "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {*}          [...args]   Call arguments\n   * @return {Observable}\n   ",
+                  "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {...*}          [args]   Call arguments\n   * @return {Observable}\n   ",
                   "range": [
                     948,
                     1117
@@ -4591,7 +4591,7 @@
     },
     {
       "type": "Block",
-      "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {*}          [...args]   Call arguments\n   * @return {Observable}\n   ",
+      "value": "*\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {...*}          [args]   Call arguments\n   * @return {Observable}\n   ",
       "range": [
         948,
         1117

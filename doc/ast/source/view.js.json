@@ -14931,7 +14931,7 @@
               "trailingComments": [
                 {
                   "type": "Block",
-                  "value": "*\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   ",
+                  "value": "*\n   * Replace children with Views or ViewList\n   * @param {...View|ViewList} views [description]\n   * @return {View}\n   ",
                   "range": [
                     7416,
                     7541
@@ -17605,7 +17605,7 @@
               "leadingComments": [
                 {
                   "type": "Block",
-                  "value": "*\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   ",
+                  "value": "*\n   * Replace children with Views or ViewList\n   * @param {...View|ViewList} views [description]\n   * @return {View}\n   ",
                   "range": [
                     7416,
                     7541
@@ -20680,7 +20680,7 @@
     },
     {
       "type": "Block",
-      "value": "*\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   ",
+      "value": "*\n   * Replace children with Views or ViewList\n   * @param {...View|ViewList} views [description]\n   * @return {View}\n   ",
       "range": [
         7416,
         7541
