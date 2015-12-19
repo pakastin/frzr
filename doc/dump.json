@@ -10,7 +10,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { Observable } from './observable';\nimport ease from './ease';\nimport { raf } from './raf';\n\nconst animations = [];\nlet ticking;\n\nexport class Animation extends Observable {\n  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {\n    super();\n\n    const now = Date.now();\n\n    // calculate animation start/end times\n    this.startTime = now + delay;\n    this.endTime = this.startTime + duration;\n    this.easing = ease[easing] || ease.quadOut;\n\n    this.started = false;\n\n    if (start) this.on('start', start);\n    if (progress) this.on('progress', progress);\n    if (end) this.on('end', end);\n\n    // add animation\n    animations.push(this);\n\n    if (!ticking) {\n      // start ticking\n      ticking = true;\n      raf(tick);\n    }\n  }\n  destroy () {\n    for (let i = 0; i < animations.length; i++) {\n      if (animations[i] === this) {\n        animations.splice(i, 1);\n        return;\n      }\n    }\n  }\n}\n\nfunction tick () {\n  const now = Date.now();\n\n  if (!animations.length) {\n    // stop ticking\n    ticking = false;\n    return;\n  }\n\n  for (let i = 0; i < animations.length; i++) {\n    const animation = animations[i];\n\n    if (now < animation.startTime) {\n      // animation not yet started..\n      continue;\n    }\n    if (!animation.started) {\n      // animation starts\n      animation.started = true;\n      animation.trigger('start');\n    }\n    // animation progress\n    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);\n    if (t > 1) {\n      t = 1;\n    }\n    animation.trigger('progress', animation.easing(t), t);\n    if (now > animation.endTime) {\n      // animation ended\n      animation.trigger('end');\n      animations.splice(i--, 1);\n      continue;\n    }\n  }\n  raf(tick, true);\n}\n"
+    "content": "\nimport { Observable } from './observable';\nimport { ease } from './easing';\nimport { raf } from './raf';\n\nconst animations = [];\nlet ticking;\n\nexport class Animation extends Observable {\n  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {\n    super();\n\n    const now = Date.now();\n\n    // calculate animation start/end times\n    this.startTime = now + delay;\n    this.endTime = this.startTime + duration;\n    this.easing = ease[easing] || ease.quadOut;\n\n    this.started = false;\n\n    if (start) this.on('start', start);\n    if (progress) this.on('progress', progress);\n    if (end) this.on('end', end);\n\n    // add animation\n    animations.push(this);\n\n    if (!ticking) {\n      // start ticking\n      ticking = true;\n      raf(tick);\n    }\n  }\n  destroy () {\n    for (let i = 0; i < animations.length; i++) {\n      if (animations[i] === this) {\n        animations.splice(i, 1);\n        return;\n      }\n    }\n  }\n}\n\nfunction tick () {\n  const now = Date.now();\n\n  if (!animations.length) {\n    // stop ticking\n    ticking = false;\n    return;\n  }\n\n  for (let i = 0; i < animations.length; i++) {\n    const animation = animations[i];\n\n    if (now < animation.startTime) {\n      // animation not yet started..\n      continue;\n    }\n    if (!animation.started) {\n      // animation starts\n      animation.started = true;\n      animation.trigger('start');\n    }\n    // animation progress\n    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);\n    if (t > 1) {\n      t = 1;\n    }\n    animation.trigger('progress', animation.easing(t), t);\n    if (now > animation.endTime) {\n      // animation ended\n      animation.trigger('end');\n      animations.splice(i--, 1);\n      continue;\n    }\n  }\n  raf(tick, true);\n}\n"
   },
   {
     "__docId__": 1,
@@ -194,58 +194,49 @@
     "kind": "file",
     "static": true,
     "variation": null,
-    "name": "src/ease.js",
+    "name": "src/easing.js",
     "memberof": null,
-    "longname": "src/ease.js",
+    "longname": "src/easing.js",
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nexport default { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };\n\nfunction linear (t) {\n  return t;\n}\n\nfunction quadIn (t) {\n  return Math.pow(t, 2);\n}\n\nfunction quadOut (t) {\n  return 1 - quadIn(1 - t);\n}\n\nfunction quadInOut (t) {\n  if (t < 0.5) {\n    return quadIn(t * 2) / 2;\n  }\n  return 1 - quadIn((1 - t) * 2) / 2;\n}\n\nfunction cubicIn (t) {\n  return Math.pow(t, 3);\n}\n\nfunction cubicOut (t) {\n  return 1 - cubicIn(1 - t);\n}\n\nfunction cubicInOut (t) {\n  if (t < 0.5) {\n    return cubicIn(t * 2) / 2;\n  }\n  return 1 - cubicIn((1 - t) * 2) / 2;\n}\n\nfunction quartIn (t) {\n  return Math.pow(t, 4);\n}\n\nfunction quartOut (t) {\n  return 1 - quartIn(1 - t);\n}\n\nfunction quartInOut (t) {\n  if (t < 0.5) {\n    return quartIn(t * 2) / 2;\n  }\n  return 1 - quartIn((1 - t) * 2) / 2;\n}\n\nfunction quintIn (t) {\n  return Math.pow(t, 5);\n}\n\nfunction quintOut (t) {\n  return 1 - quintOut(1 - t);\n}\n\nfunction quintInOut (t) {\n  if (t < 0.5) {\n    return quintIn(t * 2) / 2;\n  }\n  return 1 - quintIn((1 - t) * 2) / 2;\n}\n\nfunction bounceOut (t) {\n  const s = 7.5625;\n  const p = 2.75;\n\n  if (t < 1 / p) {\n    return s * t * t;\n  }\n  if (t < 2 / p) {\n    t -= 1.5 / p;\n    return s * t * t + 0.75;\n  }\n  if (t < 2.5 / p) {\n    t -= 2.25 / p;\n    return s * t * t + 0.9375;\n  }\n  t -= 2.625 / p;\n  return s * t * t + 0.984375;\n}\n\nfunction bounceIn (t) {\n  return 1 - bounceOut(1 - t);\n}\n\nfunction bounceInOut (t) {\n  if (t < 0.5) {\n    return bounceIn(t * 2) / 2;\n  }\n  return 1 - bounceIn((1 - t) * 2) / 2;\n}\n"
+    "content": "\nexport const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };\n\nfunction linear (t) {\n  return t;\n}\n\nfunction quadIn (t) {\n  return Math.pow(t, 2);\n}\n\nfunction quadOut (t) {\n  return 1 - quadIn(1 - t);\n}\n\nfunction quadInOut (t) {\n  if (t < 0.5) {\n    return quadIn(t * 2) / 2;\n  }\n  return 1 - quadIn((1 - t) * 2) / 2;\n}\n\nfunction cubicIn (t) {\n  return Math.pow(t, 3);\n}\n\nfunction cubicOut (t) {\n  return 1 - cubicIn(1 - t);\n}\n\nfunction cubicInOut (t) {\n  if (t < 0.5) {\n    return cubicIn(t * 2) / 2;\n  }\n  return 1 - cubicIn((1 - t) * 2) / 2;\n}\n\nfunction quartIn (t) {\n  return Math.pow(t, 4);\n}\n\nfunction quartOut (t) {\n  return 1 - quartIn(1 - t);\n}\n\nfunction quartInOut (t) {\n  if (t < 0.5) {\n    return quartIn(t * 2) / 2;\n  }\n  return 1 - quartIn((1 - t) * 2) / 2;\n}\n\nfunction quintIn (t) {\n  return Math.pow(t, 5);\n}\n\nfunction quintOut (t) {\n  return 1 - quintOut(1 - t);\n}\n\nfunction quintInOut (t) {\n  if (t < 0.5) {\n    return quintIn(t * 2) / 2;\n  }\n  return 1 - quintIn((1 - t) * 2) / 2;\n}\n\nfunction bounceOut (t) {\n  const s = 7.5625;\n  const p = 2.75;\n\n  if (t < 1 / p) {\n    return s * t * t;\n  }\n  if (t < 2 / p) {\n    t -= 1.5 / p;\n    return s * t * t + 0.75;\n  }\n  if (t < 2.5 / p) {\n    t -= 2.25 / p;\n    return s * t * t + 0.9375;\n  }\n  t -= 2.625 / p;\n  return s * t * t + 0.984375;\n}\n\nfunction bounceIn (t) {\n  return 1 - bounceOut(1 - t);\n}\n\nfunction bounceInOut (t) {\n  if (t < 0.5) {\n    return bounceIn(t * 2) / 2;\n  }\n  return 1 - bounceIn((1 - t) * 2) / 2;\n}\n"
   },
   {
     "__docId__": 11,
-    "kind": "function",
+    "kind": "variable",
     "static": true,
     "variation": null,
-    "name": "linear",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~linear",
+    "name": "ease",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~ease",
     "access": null,
-    "export": false,
-    "importPath": "frzr/src/ease.js",
-    "importStyle": null,
+    "export": true,
+    "importPath": "frzr/src/easing.js",
+    "importStyle": "{ease}",
     "description": null,
-    "lineNumber": 4,
+    "lineNumber": 2,
     "undocument": true,
-    "params": [
-      {
-        "name": "t",
-        "types": [
-          "*"
-        ]
-      }
-    ],
-    "return": {
+    "type": {
       "types": [
         "*"
       ]
-    },
-    "generator": false
+    }
   },
   {
     "__docId__": 12,
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quadIn",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quadIn",
+    "name": "linear",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~linear",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 8,
+    "lineNumber": 4,
     "undocument": true,
     "params": [
       {
@@ -267,15 +258,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quadOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quadOut",
+    "name": "quadIn",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quadIn",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 12,
+    "lineNumber": 8,
     "undocument": true,
     "params": [
       {
@@ -297,15 +288,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quadInOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quadInOut",
+    "name": "quadOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quadOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 16,
+    "lineNumber": 12,
     "undocument": true,
     "params": [
       {
@@ -327,15 +318,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "cubicIn",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~cubicIn",
+    "name": "quadInOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quadInOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 16,
     "undocument": true,
     "params": [
       {
@@ -357,15 +348,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "cubicOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~cubicOut",
+    "name": "cubicIn",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~cubicIn",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 27,
+    "lineNumber": 23,
     "undocument": true,
     "params": [
       {
@@ -387,15 +378,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "cubicInOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~cubicInOut",
+    "name": "cubicOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~cubicOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 31,
+    "lineNumber": 27,
     "undocument": true,
     "params": [
       {
@@ -417,15 +408,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quartIn",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quartIn",
+    "name": "cubicInOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~cubicInOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 38,
+    "lineNumber": 31,
     "undocument": true,
     "params": [
       {
@@ -447,15 +438,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quartOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quartOut",
+    "name": "quartIn",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quartIn",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 42,
+    "lineNumber": 38,
     "undocument": true,
     "params": [
       {
@@ -477,15 +468,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quartInOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quartInOut",
+    "name": "quartOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quartOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 46,
+    "lineNumber": 42,
     "undocument": true,
     "params": [
       {
@@ -507,15 +498,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quintIn",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quintIn",
+    "name": "quartInOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quartInOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 53,
+    "lineNumber": 46,
     "undocument": true,
     "params": [
       {
@@ -537,15 +528,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quintOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quintOut",
+    "name": "quintIn",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quintIn",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 57,
+    "lineNumber": 53,
     "undocument": true,
     "params": [
       {
@@ -567,15 +558,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "quintInOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~quintInOut",
+    "name": "quintOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quintOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 61,
+    "lineNumber": 57,
     "undocument": true,
     "params": [
       {
@@ -597,15 +588,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "bounceOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~bounceOut",
+    "name": "quintInOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~quintInOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 68,
+    "lineNumber": 61,
     "undocument": true,
     "params": [
       {
@@ -627,15 +618,15 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "bounceIn",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~bounceIn",
+    "name": "bounceOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~bounceOut",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 87,
+    "lineNumber": 68,
     "undocument": true,
     "params": [
       {
@@ -657,12 +648,42 @@
     "kind": "function",
     "static": true,
     "variation": null,
-    "name": "bounceInOut",
-    "memberof": "src/ease.js",
-    "longname": "src/ease.js~bounceInOut",
+    "name": "bounceIn",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~bounceIn",
     "access": null,
     "export": false,
-    "importPath": "frzr/src/ease.js",
+    "importPath": "frzr/src/easing.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 87,
+    "undocument": true,
+    "params": [
+      {
+        "name": "t",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "__docId__": 27,
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "bounceInOut",
+    "memberof": "src/easing.js",
+    "longname": "src/easing.js~bounceInOut",
+    "access": null,
+    "export": false,
+    "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
     "lineNumber": 91,
@@ -683,7 +704,7 @@
     "generator": false
   },
   {
-    "__docId__": 27,
+    "__docId__": 28,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -696,7 +717,7 @@
     "content": "\nimport { eachCSS } from './utils';\nimport { prefix } from './prefix';\n\n/**\n * HTMLElement helper\n * @param  {String} [tagName='div'] HTMLElement tag name\n * @param  {Object} [attributes={}]   attributes/text/HTML\n * @return {HTMLElement}         Returns pure HTMLElement\n */\nexport function el (tagName = 'div', attributes = {}) {\n  const _el = document.createElement(tagName);\n\n  for (const key in attributes) {\n    if (key === 'text') {\n      _el.textContent = attributes[key];\n    } else if (key === 'html') {\n      _el.innerHTML = attributes[key];\n    } else if (key === 'style') {\n      eachCSS(attributes.style, (propertyName, value) => {\n        const prefixedProperty = prefix(propertyName);\n\n        _el.style[prefixedProperty] = value;\n      });\n    } else {\n      _el.setAttribute(key, attributes[key]);\n    }\n  }\n  return _el;\n}\n"
   },
   {
-    "__docId__": 28,
+    "__docId__": 29,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -746,7 +767,7 @@
     "generator": false
   },
   {
-    "__docId__": 29,
+    "__docId__": 30,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -756,10 +777,10 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nexport { el } from './el';\nexport { prefix } from './prefix';\nexport { View } from './view';\nexport { ViewList } from './viewlist';\nexport { Animation } from './animation';\nexport { Observable } from './observable';\nexport { each, extendable, shuffle } from './utils';\nexport { translate } from './translate';\nexport { raf } from './raf';\n"
+    "content": "\nexport { ease } from './easing';\nexport { el } from './el';\nexport { prefix } from './prefix';\nexport { View } from './view';\nexport { ViewList } from './viewlist';\nexport { Animation } from './animation';\nexport { Observable } from './observable';\nexport { each, extendable, shuffle } from './utils';\nexport { translate } from './translate';\nexport { raf } from './raf';\n"
   },
   {
-    "__docId__": 30,
+    "__docId__": 31,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -772,7 +793,7 @@
     "content": "\nexport class Observable {\n  /**\n   * Inits listeners\n   * @return {Observable}\n   */\n  constructor () {\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n  }\n  /**\n   * Add listener by name\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  on (eventName, handler) {\n    if (typeof this.listeners[eventName] === 'undefined') {\n      this.listeners[eventName] = [];\n    }\n\n    this.listeners[eventName].push({ handler, one: false });\n\n    return this;\n  }\n  /**\n   * Add listener by name, which triggers only one\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  one (eventName, handler) {\n    if (!this.listeners[eventName]) this.listeners[eventName] = [];\n\n    this.listeners[eventName].push({ handler, one: true });\n\n    return this;\n  }\n  /**\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {*}          [...args]   Call arguments\n   * @return {Observable}\n   */\n  trigger (eventName, ...args) {\n    const listeners = this.listeners[eventName];\n\n    if (!listeners) {\n      return this;\n    }\n\n    for (let i = 0; i < listeners.length; i++) {\n      listeners[i].handler.apply(this, args);\n\n      if (listeners[i].one) {\n        listeners.splice(i--, 1);\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Remove all listeners, or by name, or by name & handler\n   * @param  {String}     [name]      Event name\n   * @param  {Function}   [handler]   Event handler\n   * @return {Observable}\n   */\n  off (name, handler) {\n    if (typeof name === 'undefined') {\n      this.listeners = {};\n    } else if (typeof handler === 'undefined') {\n      this.listeners[name] = [];\n    } else {\n      const listeners = this.listeners[name];\n\n      if (!listeners) {\n        return this;\n      }\n\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].handler === handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n}\n"
   },
   {
-    "__docId__": 31,
+    "__docId__": 32,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -789,7 +810,7 @@
     "interface": false
   },
   {
-    "__docId__": 32,
+    "__docId__": 33,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -811,7 +832,7 @@
     "generator": false
   },
   {
-    "__docId__": 33,
+    "__docId__": 34,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -831,7 +852,7 @@
     }
   },
   {
-    "__docId__": 34,
+    "__docId__": 35,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -874,7 +895,7 @@
     "generator": false
   },
   {
-    "__docId__": 35,
+    "__docId__": 36,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -917,7 +938,7 @@
     "generator": false
   },
   {
-    "__docId__": 36,
+    "__docId__": 37,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -960,7 +981,7 @@
     "generator": false
   },
   {
-    "__docId__": 37,
+    "__docId__": 38,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -1003,7 +1024,7 @@
     "generator": false
   },
   {
-    "__docId__": 38,
+    "__docId__": 39,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1021,7 +1042,7 @@
     }
   },
   {
-    "__docId__": 39,
+    "__docId__": 40,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -1034,7 +1055,7 @@
     "content": "\nconst style = document.createElement('p').style;\nconst prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];\nconst memoized = {};\n\n/**\n * Prefixes style property\n * @param  {String} propertyName Style property name to prefix\n * @return {String} Returns prefixed property name\n */\nexport function prefix (propertyName) {\n  if (typeof memoized[propertyName] !== 'undefined') {\n    return memoized[propertyName];\n  }\n\n  if (typeof style[propertyName] !== 'undefined') {\n    memoized[propertyName] = propertyName;\n    return propertyName;\n  }\n\n  const camelCase = propertyName[0].toUpperCase() + propertyName.slice(1);\n\n  for (let i = 0, len = prefixes.length; i < len; i++) {\n    const test = prefixes[i] + camelCase;\n\n    if (typeof style[test] !== 'undefined') {\n      memoized[propertyName] = test;\n\n      return test;\n    }\n  }\n}\n"
   },
   {
-    "__docId__": 40,
+    "__docId__": 41,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -1055,7 +1076,7 @@
     }
   },
   {
-    "__docId__": 41,
+    "__docId__": 42,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -1076,7 +1097,7 @@
     }
   },
   {
-    "__docId__": 42,
+    "__docId__": 43,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -1097,7 +1118,7 @@
     }
   },
   {
-    "__docId__": 43,
+    "__docId__": 44,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1133,7 +1154,7 @@
     "generator": false
   },
   {
-    "__docId__": 44,
+    "__docId__": 45,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -1146,7 +1167,7 @@
     "content": "\nconst hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';\n\nexport function raf (cb) {\n  if (hasRequestAnimationFrame) {\n    return window.requestAnimationFrame(cb);\n  } else {\n    return setTimeout(cb, 1000 / 60);\n  }\n}\n\nraf.cancel = function cancel (id) {\n  if (hasRequestAnimationFrame) {\n    window.cancelAnimationFrame(id);\n  } else {\n    clearTimeout(id);\n  }\n};\n"
   },
   {
-    "__docId__": 45,
+    "__docId__": 46,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -1167,7 +1188,7 @@
     }
   },
   {
-    "__docId__": 46,
+    "__docId__": 47,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1197,7 +1218,7 @@
     "generator": false
   },
   {
-    "__docId__": 47,
+    "__docId__": 48,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1222,7 +1243,7 @@
     "generator": false
   },
   {
-    "__docId__": 48,
+    "__docId__": 49,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -1235,7 +1256,7 @@
     "content": "\nimport { prefix } from './prefix';\nimport { isDefined } from './utils';\n\nlet has3d;\n\nexport function translate (x = 0, y = 0, z = 0) {\n  if (typeof has3d === 'undefined') {\n    has3d = check3d();\n  }\n\n  if (has3d || z) {\n    return 'translate3d(' + x + ', ' + y + ', ' + z + ')';\n  } else {\n    return 'translate(' + x + ', ' + y + ')';\n  }\n}\n\nfunction check3d () {\n  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);\n\n  if (!isMobile) {\n    return false;\n  }\n\n  const transform = prefix('transform');\n  const $p = document.createElement('p');\n\n  document.body.appendChild($p);\n  $p.style[transform] = 'translate3d(1px,1px,1px)';\n  has3d = $p.style[transform];\n\n  if (isDefined(has3d) && has3d.length && has3d !== 'none') {\n    has3d = true;\n  } else {\n    has3d = false;\n  }\n\n  document.body.removeChild($p);\n\n  return has3d;\n}\n"
   },
   {
-    "__docId__": 49,
+    "__docId__": 50,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1286,7 +1307,7 @@
     "generator": false
   },
   {
-    "__docId__": 50,
+    "__docId__": 51,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1309,7 +1330,7 @@
     "generator": false
   },
   {
-    "__docId__": 51,
+    "__docId__": 52,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -1322,7 +1343,7 @@
     "content": "\n/**\n * Faster way to iterate array\n * @param  {Array} array    source array\n * @param  {Function} iterator gets called: iterator(array[i], i)\n */\nexport function each (array, iterator) {\n  for (let i = 0; i < array.length; i++) {\n    iterator(array[i], i);\n  }\n}\n\n/**\n * Defined check helper\n * @param  {*}  check Something to check\n * @return {Boolean}       True / false\n */\nexport function isDefined (check) {\n  return typeof check !== 'undefined' || check !== null;\n}\n\n/**\n * CSS style string iteration helper\n * @param  {String} styleString     CSS style string\n * @param  {Function} handler Handler function\n */\nexport function eachCSS (styleString, handler) {\n  const styles = styleString.split(';');\n\n  for (let i = 0; i < styles.length; i++) {\n    if (!styles[i].length) {\n      continue;\n    }\n    const style = styles[i].split(':');\n    const propertyName = style[0].trim();\n    const value = style[1].trim();\n\n    if (propertyName.length) {\n      handler(propertyName, value);\n    }\n  }\n}\n\n/**\n * Fisher-Yates shuffle helper\n * @param  {Array} array Array to be shuffled\n * @return {Array}       Shuffled Array\n */\nexport function shuffle (array) {\n  if (!array || !array.length) {\n    return array;\n  }\n\n  for (let i = array.length - 1; i > 0; i--) {\n    const rnd = Math.random() * i | 0;\n    const temp = array[i];\n\n    array[i] = array[rnd];\n    array[rnd] = temp;\n  }\n\n  return array;\n}\n/**\n * Makes Class extendable by adding Class.extend\n * @param  {Class} Class source Class\n * @return {ExtendedClass}       resulted ExtendedClass\n */\nexport function extendable (Class) {\n  Class.extend = function extend (options) {\n    return class ExtendedClass extends Class {\n      constructor (...args) {\n        super(options, ...args);\n      }\n    };\n  };\n}\n"
   },
   {
-    "__docId__": 52,
+    "__docId__": 53,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1360,7 +1381,7 @@
     "generator": false
   },
   {
-    "__docId__": 53,
+    "__docId__": 54,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1396,7 +1417,7 @@
     "generator": false
   },
   {
-    "__docId__": 54,
+    "__docId__": 55,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1434,7 +1455,7 @@
     "generator": false
   },
   {
-    "__docId__": 55,
+    "__docId__": 56,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1470,7 +1491,7 @@
     "generator": false
   },
   {
-    "__docId__": 56,
+    "__docId__": 57,
     "kind": "function",
     "static": true,
     "variation": null,
@@ -1506,7 +1527,7 @@
     "generator": false
   },
   {
-    "__docId__": 57,
+    "__docId__": 58,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -1516,10 +1537,10 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { extendable } from './utils';\nimport { prefix } from './prefix';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n    this.trigger(EVENT.init, data);\n\n    if (!this.el) this.el = document.createElement('div');\n\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} attributeName   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (attributeName, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[attributeName] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(attributeName, value);\n      this.attrs[attributeName] = value;\n    } else {\n      this.el.removeAttribute(attributeName);\n      this.attrs[attributeName] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} className   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (className, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[className] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(className);\n    } else {\n      this.el.classList.remove(className);\n    }\n    this.classes[className] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} propertyName   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (propertyName, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[propertyName] === value) {\n      return this;\n    }\n\n    const prefixed = prefix(propertyName);\n\n    this.el.style[prefixed] = value;\n    this.styles[propertyName] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   listenerName       Listener name\n   * @param {Function} callback         Listener callback\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (listenerName, callback, useCapture) {\n    const listener = {\n      name: listenerName,\n      callback: callback,\n      proxy: (...args) => {\n        callback.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and callback\n   * @param  {String}   [listenerName] Listener name\n   * @param  {Function} [callback]   Listener callback\n   * @return {View}\n   */\n  removeListener (listenerName, callback) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof listenerName === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof callback === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === listenerName) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === listenerName && callback === listener.callback) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    if (this.parent) this.parent.removeChild(this);\n    this.trigger(EVENT.destroy);\n    this.setChildren([]);\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
+    "content": "\nimport { extendable } from './utils';\nimport { prefix } from './prefix';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' event handler shortcut\n   * @property {Function} [inited] 'inited' event handler shortcut\n   * @property {Function} [mount] 'mount' event handler shortcut\n   * @property {Function} [mounted] 'mounted' event handler shortcut\n   * @property {Function} [sort] 'sort' event handler shortcut\n   * @property {Function} [sorted] 'sorted' event handler shortcut\n   * @property {Function} [update] 'update' event handler shortcut\n   * @property {Function} [updated] 'updated' event handler shortcut\n   * @property {Function} [destroy] 'destroy' event handler shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n\n    this.trigger(EVENT.init, data);\n    if (!this.el) this.el = document.createElement('div');\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} attributeName   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (attributeName, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[attributeName] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(attributeName, value);\n      this.attrs[attributeName] = value;\n    } else {\n      this.el.removeAttribute(attributeName);\n      this.attrs[attributeName] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} className   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (className, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[className] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(className);\n    } else {\n      this.el.classList.remove(className);\n    }\n    this.classes[className] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} propertyName   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (propertyName, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[propertyName] === value) {\n      return this;\n    }\n\n    const prefixed = prefix(propertyName);\n\n    this.el.style[prefixed] = value;\n    this.styles[propertyName] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   listenerName       Listener name\n   * @param {Function} handler         Listener handler\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (listenerName, handler, useCapture) {\n    const listener = {\n      name: listenerName,\n      handler,\n      proxy: (...args) => {\n        handler.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and handler\n   * @param  {String}   [listenerName] Listener name\n   * @param  {Function} [handler]   Listener handler\n   * @return {View}\n   */\n  removeListener (listenerName, handler) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof listenerName === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof handler === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === listenerName) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === listenerName && handler === listener.handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {View|ViewList} ...views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views.length && views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    this.trigger(EVENT.destroy);\n    if (this.parent) this.parent.removeChild(this);\n\n    let traverse = this.el.firstChild;\n\n    while (traverse) {\n      if (traverse.view) {\n        traverse.view.destroy();\n      } else {\n        this.el.removeChild(traverse);\n      }\n      traverse = this.el.firstChild;\n    }\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
   },
   {
-    "__docId__": 58,
+    "__docId__": 59,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -1540,7 +1561,7 @@
     }
   },
   {
-    "__docId__": 59,
+    "__docId__": 60,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -1560,7 +1581,7 @@
     ]
   },
   {
-    "__docId__": 60,
+    "__docId__": 61,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -1572,7 +1593,7 @@
     "description": null
   },
   {
-    "__docId__": 61,
+    "__docId__": 62,
     "kind": "typedef",
     "static": true,
     "variation": null,
@@ -1603,7 +1624,7 @@
         "spread": false,
         "optional": true,
         "name": "init",
-        "description": "'init' callback shortcut"
+        "description": "'init' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1613,7 +1634,7 @@
         "spread": false,
         "optional": true,
         "name": "inited",
-        "description": "'inited' callback shortcut"
+        "description": "'inited' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1623,7 +1644,7 @@
         "spread": false,
         "optional": true,
         "name": "mount",
-        "description": "'mount' callback shortcut"
+        "description": "'mount' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1633,7 +1654,7 @@
         "spread": false,
         "optional": true,
         "name": "mounted",
-        "description": "'mounted' callback shortcut"
+        "description": "'mounted' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1643,7 +1664,7 @@
         "spread": false,
         "optional": true,
         "name": "sort",
-        "description": "'sort' callback shortcut"
+        "description": "'sort' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1653,7 +1674,7 @@
         "spread": false,
         "optional": true,
         "name": "sorted",
-        "description": "'sorted' callback shortcut"
+        "description": "'sorted' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1663,7 +1684,7 @@
         "spread": false,
         "optional": true,
         "name": "update",
-        "description": "'update' callback shortcut"
+        "description": "'update' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1673,7 +1694,7 @@
         "spread": false,
         "optional": true,
         "name": "updated",
-        "description": "'updated' callback shortcut"
+        "description": "'updated' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1683,7 +1704,7 @@
         "spread": false,
         "optional": true,
         "name": "destroy",
-        "description": "'destroy' callback shortcut"
+        "description": "'destroy' event handler shortcut"
       },
       {
         "nullable": null,
@@ -1705,7 +1726,7 @@
     }
   },
   {
-    "__docId__": 62,
+    "__docId__": 63,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -1748,7 +1769,7 @@
     "generator": false
   },
   {
-    "__docId__": 63,
+    "__docId__": 64,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1768,7 +1789,7 @@
     }
   },
   {
-    "__docId__": 64,
+    "__docId__": 65,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1788,7 +1809,7 @@
     }
   },
   {
-    "__docId__": 65,
+    "__docId__": 66,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1809,7 +1830,7 @@
     }
   },
   {
-    "__docId__": 66,
+    "__docId__": 67,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1829,7 +1850,7 @@
     }
   },
   {
-    "__docId__": 67,
+    "__docId__": 68,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1849,7 +1870,7 @@
     }
   },
   {
-    "__docId__": 68,
+    "__docId__": 69,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1869,7 +1890,7 @@
     }
   },
   {
-    "__docId__": 69,
+    "__docId__": 70,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1889,7 +1910,7 @@
     }
   },
   {
-    "__docId__": 70,
+    "__docId__": 71,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1909,7 +1930,7 @@
     }
   },
   {
-    "__docId__": 71,
+    "__docId__": 72,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1927,7 +1948,7 @@
     }
   },
   {
-    "__docId__": 72,
+    "__docId__": 73,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -1936,7 +1957,7 @@
     "longname": "src/view.js~View#setAttr",
     "access": null,
     "description": "Sets/removes View element attribute (only if changed)",
-    "lineNumber": 102,
+    "lineNumber": 101,
     "params": [
       {
         "nullable": null,
@@ -1971,7 +1992,7 @@
     "generator": false
   },
   {
-    "__docId__": 73,
+    "__docId__": 74,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -1980,7 +2001,7 @@
     "longname": "src/view.js~View#attrs",
     "access": null,
     "description": null,
-    "lineNumber": 103,
+    "lineNumber": 102,
     "undocument": true,
     "type": {
       "types": [
@@ -1989,7 +2010,7 @@
     }
   },
   {
-    "__docId__": 74,
+    "__docId__": 75,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -1998,7 +2019,7 @@
     "longname": "src/view.js~View#setClass",
     "access": null,
     "description": "Sets/removes View element class (only if changed)",
-    "lineNumber": 124,
+    "lineNumber": 123,
     "params": [
       {
         "nullable": null,
@@ -2032,7 +2053,7 @@
     "generator": false
   },
   {
-    "__docId__": 75,
+    "__docId__": 76,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2041,7 +2062,7 @@
     "longname": "src/view.js~View#classes",
     "access": null,
     "description": null,
-    "lineNumber": 125,
+    "lineNumber": 124,
     "undocument": true,
     "type": {
       "types": [
@@ -2050,7 +2071,7 @@
     }
   },
   {
-    "__docId__": 76,
+    "__docId__": 77,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2059,7 +2080,7 @@
     "longname": "src/view.js~View#setStyle",
     "access": null,
     "description": "Sets/removes View element style (only if changed)",
-    "lineNumber": 145,
+    "lineNumber": 144,
     "params": [
       {
         "nullable": null,
@@ -2094,7 +2115,7 @@
     "generator": false
   },
   {
-    "__docId__": 77,
+    "__docId__": 78,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2103,7 +2124,7 @@
     "longname": "src/view.js~View#styles",
     "access": null,
     "description": null,
-    "lineNumber": 146,
+    "lineNumber": 145,
     "undocument": true,
     "type": {
       "types": [
@@ -2112,7 +2133,7 @@
     }
   },
   {
-    "__docId__": 78,
+    "__docId__": 79,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2121,7 +2142,7 @@
     "longname": "src/view.js~View#setText",
     "access": null,
     "description": "Sets View element textContent (only if changed)",
-    "lineNumber": 164,
+    "lineNumber": 163,
     "params": [
       {
         "nullable": null,
@@ -2145,7 +2166,7 @@
     "generator": false
   },
   {
-    "__docId__": 79,
+    "__docId__": 80,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2154,7 +2175,7 @@
     "longname": "src/view.js~View#text",
     "access": null,
     "description": null,
-    "lineNumber": 169,
+    "lineNumber": 168,
     "undocument": true,
     "type": {
       "types": [
@@ -2163,7 +2184,7 @@
     }
   },
   {
-    "__docId__": 80,
+    "__docId__": 81,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2172,7 +2193,7 @@
     "longname": "src/view.js~View#setHTML",
     "access": null,
     "description": "Sets View element innerHTML (only if changed)",
-    "lineNumber": 178,
+    "lineNumber": 177,
     "params": [
       {
         "nullable": null,
@@ -2196,7 +2217,7 @@
     "generator": false
   },
   {
-    "__docId__": 81,
+    "__docId__": 82,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2205,7 +2226,7 @@
     "longname": "src/view.js~View#html",
     "access": null,
     "description": null,
-    "lineNumber": 183,
+    "lineNumber": 182,
     "undocument": true,
     "type": {
       "types": [
@@ -2214,7 +2235,7 @@
     }
   },
   {
-    "__docId__": 82,
+    "__docId__": 83,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2223,7 +2244,7 @@
     "longname": "src/view.js~View#addListener",
     "access": null,
     "description": "Adds proxy event listener to View",
-    "lineNumber": 194,
+    "lineNumber": 193,
     "params": [
       {
         "nullable": null,
@@ -2242,8 +2263,8 @@
         ],
         "spread": false,
         "optional": false,
-        "name": "callback",
-        "description": "Listener callback"
+        "name": "handler",
+        "description": "Listener handler"
       },
       {
         "nullable": null,
@@ -2267,7 +2288,7 @@
     "generator": false
   },
   {
-    "__docId__": 83,
+    "__docId__": 84,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2276,7 +2297,7 @@
     "longname": "src/view.js~View#eventListeners",
     "access": null,
     "description": null,
-    "lineNumber": 202,
+    "lineNumber": 201,
     "undocument": true,
     "type": {
       "types": [
@@ -2285,7 +2306,7 @@
     }
   },
   {
-    "__docId__": 84,
+    "__docId__": 85,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2293,8 +2314,8 @@
     "memberof": "src/view.js~View",
     "longname": "src/view.js~View#removeListener",
     "access": null,
-    "description": "Removes all proxy event listeners from View, or by name, or by name and callback",
-    "lineNumber": 215,
+    "description": "Removes all proxy event listeners from View, or by name, or by name and handler",
+    "lineNumber": 214,
     "params": [
       {
         "nullable": null,
@@ -2313,8 +2334,8 @@
         ],
         "spread": false,
         "optional": true,
-        "name": "callback",
-        "description": "Listener callback"
+        "name": "handler",
+        "description": "Listener handler"
       }
     ],
     "return": {
@@ -2328,7 +2349,7 @@
     "generator": false
   },
   {
-    "__docId__": 85,
+    "__docId__": 86,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2337,7 +2358,7 @@
     "longname": "src/view.js~View#listeners",
     "access": null,
     "description": null,
-    "lineNumber": 224,
+    "lineNumber": 223,
     "undocument": true,
     "type": {
       "types": [
@@ -2346,7 +2367,7 @@
     }
   },
   {
-    "__docId__": 86,
+    "__docId__": 87,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2355,7 +2376,7 @@
     "longname": "src/view.js~View#addChild",
     "access": null,
     "description": "Adds child View/ViewList to View",
-    "lineNumber": 247,
+    "lineNumber": 246,
     "params": [
       {
         "nullable": null,
@@ -2380,7 +2401,7 @@
     "generator": false
   },
   {
-    "__docId__": 87,
+    "__docId__": 88,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2389,7 +2410,7 @@
     "longname": "src/view.js~View#addBefore",
     "access": null,
     "description": "Adds child View before another View/HTMLElement",
-    "lineNumber": 277,
+    "lineNumber": 276,
     "params": [
       {
         "nullable": null,
@@ -2424,7 +2445,7 @@
     "generator": false
   },
   {
-    "__docId__": 88,
+    "__docId__": 89,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2433,7 +2454,7 @@
     "longname": "src/view.js~View#setChildren",
     "access": null,
     "description": "Replace children with Views or ViewList",
-    "lineNumber": 303,
+    "lineNumber": 302,
     "params": [
       {
         "nullable": null,
@@ -2458,7 +2479,7 @@
     "generator": false
   },
   {
-    "__docId__": 89,
+    "__docId__": 90,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2467,7 +2488,7 @@
     "longname": "src/view.js~View#removeChild",
     "access": null,
     "description": "Remove child View / ViewList",
-    "lineNumber": 345,
+    "lineNumber": 344,
     "params": [
       {
         "nullable": null,
@@ -2492,7 +2513,7 @@
     "generator": false
   },
   {
-    "__docId__": 90,
+    "__docId__": 91,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2501,7 +2522,7 @@
     "longname": "src/view.js~View#update",
     "access": null,
     "description": "Trigger 'update' with data",
-    "lineNumber": 363,
+    "lineNumber": 362,
     "params": [
       {
         "nullable": null,
@@ -2525,7 +2546,7 @@
     "generator": false
   },
   {
-    "__docId__": 91,
+    "__docId__": 92,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2534,12 +2555,12 @@
     "longname": "src/view.js~View#destroy",
     "access": null,
     "description": "Destroy View (remove listeners, children, etc..)",
-    "lineNumber": 369,
+    "lineNumber": 368,
     "params": [],
     "generator": false
   },
   {
-    "__docId__": 92,
+    "__docId__": 93,
     "kind": "file",
     "static": true,
     "variation": null,
@@ -2549,10 +2570,10 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nconst EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, key) => {\n  obj[key] = true;\n  return obj;\n}, {});\n\nimport { Observable } from './observable';\nimport { View } from './view';\nimport { extendable } from './utils';\n\nexport class ViewList extends Observable {\n  /**\n   * @typedef {Object} ViewListOptions\n   * @property {View} [View=View] View Class to create new Views with\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates list of Views to be mounted to a View\n   * @param  {ViewListOptions} options ViewList options\n   * @return {ViewList}\n   */\n  constructor (options) {\n    super();\n\n    /**\n     * Views by key, if key provided\n     * @type {Object}\n     */\n    this.lookup = {};\n    /**\n     * list of Views\n     * @type {Array}\n     */\n    this.views = [];\n\n    for (const key in options) {\n      if (EVENTS[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n  }\n  /**\n   * Sync list of Views with data provided\n   * @param {Array} data Data for syncing list of Views\n   */\n  setData (data) {\n    const views = new Array(data.length);\n    const lookup = {};\n    const currentViews = this.views;\n    const currentLookup = this.lookup;\n    const key = this.key;\n\n    for (let i = 0; i < data.length; i++) {\n      const item = data[i];\n      const id = key && item[key];\n      const ViewClass = this.View || View;\n      const view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();\n\n      for (let j = 0; j < EVENTS.length; j++) {\n        const name = EVENTS[j];\n        view.on(name, (...args) => {\n          this.trigger(name, [view, ...args]);\n        });\n      }\n\n      if (key) lookup[id] = view;\n\n      views[i] = view;\n      view.update(item);\n    }\n    if (key) {\n      for (const id in currentLookup) {\n        if (!lookup[id]) {\n          currentLookup[id].destroy();\n        }\n      }\n    } else {\n      for (let i = views.length; i < currentViews.length; i++) {\n        currentViews[i].destroy();\n      }\n    }\n    this.views = views;\n    this.lookup = lookup;\n    if (this.parent) this.parent.setChildren(...views);\n  }\n}\n\nextendable(ViewList);\n"
+    "content": "\nconst EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, key) => {\n  obj[key] = true;\n  return obj;\n}, {});\n\nimport { Observable } from './observable';\nimport { View } from './view';\nimport { extendable } from './utils';\n\nexport class ViewList extends Observable {\n  /**\n   * @typedef {Object} ViewListOptions\n   * @property {View} [View=View] View Class to create new Views with\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates list of Views to be mounted to a View\n   * @param  {ViewListOptions} options ViewList options\n   * @return {ViewList}\n   */\n  constructor (options) {\n    super();\n\n    /**\n     * Views by key, if key provided\n     * @type {Object}\n     */\n    this.lookup = {};\n    /**\n     * list of Views\n     * @type {Array}\n     */\n    this.views = [];\n\n    for (const key in options) {\n      if (EVENTS[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n  }\n  /**\n   * Sync list of Views with data provided\n   * @param {Array} data Data for syncing list of Views\n   */\n  setData (data) {\n    const views = new Array(data.length);\n    const lookup = {};\n    const currentViews = this.views;\n    const currentLookup = this.lookup;\n    const key = this.key;\n\n    for (let i = 0; i < data.length; i++) {\n      const item = data[i];\n      const id = key && item[key];\n      const ViewClass = this.View || View;\n      const view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();\n\n      for (let j = 0; j < EVENTS.length; j++) {\n        const name = EVENTS[j];\n        view.on(name, (...args) => {\n          this.trigger(name, [view, ...args]);\n        });\n      }\n\n      if (key) lookup[id] = view;\n\n      views[i] = view;\n      view.update(item);\n    }\n    if (key) {\n      for (const id in currentLookup) {\n        if (!lookup[id]) {\n          currentLookup[id].destroy();\n        }\n      }\n    } else {\n      for (let i = views.length; i < currentViews.length; i++) {\n        currentViews[i].destroy();\n      }\n    }\n    this.views = views;\n    this.lookup = lookup;\n    if (this.parent) this.parent.setChildren(...views);\n  }\n  destroy () {\n    this.setData([]);\n    this.off();\n  }\n}\n\nextendable(ViewList);\n"
   },
   {
-    "__docId__": 93,
+    "__docId__": 94,
     "kind": "variable",
     "static": true,
     "variation": null,
@@ -2573,7 +2594,7 @@
     }
   },
   {
-    "__docId__": 94,
+    "__docId__": 95,
     "kind": "class",
     "static": true,
     "variation": null,
@@ -2593,7 +2614,7 @@
     ]
   },
   {
-    "__docId__": 95,
+    "__docId__": 96,
     "kind": "typedef",
     "static": true,
     "variation": null,
@@ -2725,7 +2746,7 @@
     }
   },
   {
-    "__docId__": 96,
+    "__docId__": 97,
     "kind": "constructor",
     "static": false,
     "variation": null,
@@ -2758,7 +2779,7 @@
     "generator": false
   },
   {
-    "__docId__": 97,
+    "__docId__": 98,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2778,7 +2799,7 @@
     }
   },
   {
-    "__docId__": 98,
+    "__docId__": 99,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2798,7 +2819,7 @@
     }
   },
   {
-    "__docId__": 99,
+    "__docId__": 100,
     "kind": "method",
     "static": false,
     "variation": null,
@@ -2823,7 +2844,7 @@
     "generator": false
   },
   {
-    "__docId__": 100,
+    "__docId__": 101,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2841,7 +2862,7 @@
     }
   },
   {
-    "__docId__": 101,
+    "__docId__": 102,
     "kind": "member",
     "static": false,
     "variation": null,
@@ -2860,6 +2881,21 @@
   },
   {
     "__docId__": 103,
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "destroy",
+    "memberof": "src/viewlist.js~ViewList",
+    "longname": "src/viewlist.js~ViewList#destroy",
+    "access": null,
+    "description": null,
+    "lineNumber": 98,
+    "undocument": true,
+    "params": [],
+    "generator": false
+  },
+  {
+    "__docId__": 105,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2872,7 +2908,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 104,
+    "__docId__": 106,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2885,7 +2921,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 105,
+    "__docId__": 107,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2898,7 +2934,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 106,
+    "__docId__": 108,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2911,7 +2947,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 107,
+    "__docId__": 109,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2924,7 +2960,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 108,
+    "__docId__": 110,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2937,7 +2973,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 109,
+    "__docId__": 111,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2950,7 +2986,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 110,
+    "__docId__": 112,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2963,7 +2999,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 111,
+    "__docId__": 113,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2976,7 +3012,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 112,
+    "__docId__": 114,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -2989,7 +3025,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 113,
+    "__docId__": 115,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3002,7 +3038,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 114,
+    "__docId__": 116,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3015,7 +3051,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 115,
+    "__docId__": 117,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3028,7 +3064,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 116,
+    "__docId__": 118,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3041,7 +3077,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 117,
+    "__docId__": 119,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3054,7 +3090,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 118,
+    "__docId__": 120,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3067,7 +3103,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 119,
+    "__docId__": 121,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3080,7 +3116,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 120,
+    "__docId__": 122,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3093,7 +3129,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 121,
+    "__docId__": 123,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3106,7 +3142,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 122,
+    "__docId__": 124,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3119,7 +3155,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 123,
+    "__docId__": 125,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3132,7 +3168,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 124,
+    "__docId__": 126,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3145,7 +3181,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 125,
+    "__docId__": 127,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3158,7 +3194,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 126,
+    "__docId__": 128,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3171,7 +3207,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 127,
+    "__docId__": 129,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3184,7 +3220,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 128,
+    "__docId__": 130,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3197,7 +3233,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 129,
+    "__docId__": 131,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3210,7 +3246,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 130,
+    "__docId__": 132,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3223,7 +3259,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 131,
+    "__docId__": 133,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3236,7 +3272,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 132,
+    "__docId__": 134,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3249,7 +3285,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 133,
+    "__docId__": 135,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3262,7 +3298,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 134,
+    "__docId__": 136,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3275,7 +3311,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 135,
+    "__docId__": 137,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3288,7 +3324,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 136,
+    "__docId__": 138,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3301,7 +3337,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 137,
+    "__docId__": 139,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3314,7 +3350,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 138,
+    "__docId__": 140,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3327,7 +3363,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 139,
+    "__docId__": 141,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3340,7 +3376,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 140,
+    "__docId__": 142,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3353,7 +3389,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 141,
+    "__docId__": 143,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3366,7 +3402,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 142,
+    "__docId__": 144,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3379,7 +3415,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 143,
+    "__docId__": 145,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3392,7 +3428,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 144,
+    "__docId__": 146,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3405,7 +3441,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 145,
+    "__docId__": 147,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3418,7 +3454,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 146,
+    "__docId__": 148,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3431,7 +3467,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 147,
+    "__docId__": 149,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3444,7 +3480,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 148,
+    "__docId__": 150,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3457,7 +3493,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 149,
+    "__docId__": 151,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3470,7 +3506,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 151,
+    "__docId__": 153,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3483,7 +3519,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 152,
+    "__docId__": 154,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3496,7 +3532,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 153,
+    "__docId__": 155,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3509,7 +3545,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 154,
+    "__docId__": 156,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3522,7 +3558,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 155,
+    "__docId__": 157,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3535,7 +3571,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 156,
+    "__docId__": 158,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3548,7 +3584,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 157,
+    "__docId__": 159,
     "kind": "external",
     "static": true,
     "variation": null,
@@ -3561,7 +3597,7 @@
     "builtinExternal": true
   },
   {
-    "__docId__": 158,
+    "__docId__": 160,
     "kind": "external",
     "static": true,
     "variation": null,

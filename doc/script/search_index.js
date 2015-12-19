@@ -36,6 +36,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "frzr/src/easing.js~ease",
+    "variable/index.html#static-variable-ease",
+    "<span>ease</span> <span class=\"search-result-import-path\">frzr/src/easing.js</span>",
+    "variable"
+  ],
+  [
     "frzr/src/el.js~el",
     "function/index.html#static-function-el",
     "<span>el</span> <span class=\"search-result-import-path\">frzr/src/el.js</span>",
@@ -450,9 +456,9 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/ease.js",
-    "file/src/ease.js.html",
-    "src/ease.js",
+    "src/easing.js",
+    "file/src/easing.js.html",
+    "src/easing.js",
     "file"
   ],
   [
@@ -693,6 +699,12 @@ window.esdocSearchIndex = [
     "src/viewlist.js~viewlist#constructor",
     "class/src/viewlist.js~ViewList.html#instance-constructor-constructor",
     "src/viewlist.js~ViewList#constructor",
+    "method"
+  ],
+  [
+    "src/viewlist.js~viewlist#destroy",
+    "class/src/viewlist.js~ViewList.html#instance-method-destroy",
+    "src/viewlist.js~ViewList#destroy",
     "method"
   ],
   [

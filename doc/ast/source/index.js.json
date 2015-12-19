@@ -9,10 +9,10 @@
           "type": "ExportSpecifier",
           "exported": {
             "type": "Identifier",
-            "name": "el",
+            "name": "ease",
             "range": [
               10,
-              12
+              14
             ],
             "loc": {
               "start": {
@@ -21,16 +21,16 @@
               },
               "end": {
                 "line": 2,
-                "column": 11
+                "column": 13
               }
             }
           },
           "local": {
             "type": "Identifier",
-            "name": "el",
+            "name": "ease",
             "range": [
               10,
-              12
+              14
             ],
             "loc": {
               "start": {
@@ -39,13 +39,13 @@
               },
               "end": {
                 "line": 2,
-                "column": 11
+                "column": 13
               }
             }
           },
           "range": [
             10,
-            12
+            14
           ],
           "loc": {
             "start": {
@@ -54,6 +54,98 @@
             },
             "end": {
               "line": 2,
+              "column": 13
+            }
+          }
+        }
+      ],
+      "source": {
+        "type": "Literal",
+        "value": "./easing",
+        "raw": "'./easing'",
+        "range": [
+          22,
+          32
+        ],
+        "loc": {
+          "start": {
+            "line": 2,
+            "column": 21
+          },
+          "end": {
+            "line": 2,
+            "column": 31
+          }
+        }
+      },
+      "range": [
+        1,
+        33
+      ],
+      "loc": {
+        "start": {
+          "line": 2,
+          "column": 0
+        },
+        "end": {
+          "line": 2,
+          "column": 32
+        }
+      }
+    },
+    {
+      "type": "ExportNamedDeclaration",
+      "declaration": null,
+      "specifiers": [
+        {
+          "type": "ExportSpecifier",
+          "exported": {
+            "type": "Identifier",
+            "name": "el",
+            "range": [
+              43,
+              45
+            ],
+            "loc": {
+              "start": {
+                "line": 3,
+                "column": 9
+              },
+              "end": {
+                "line": 3,
+                "column": 11
+              }
+            }
+          },
+          "local": {
+            "type": "Identifier",
+            "name": "el",
+            "range": [
+              43,
+              45
+            ],
+            "loc": {
+              "start": {
+                "line": 3,
+                "column": 9
+              },
+              "end": {
+                "line": 3,
+                "column": 11
+              }
+            }
+          },
+          "range": [
+            43,
+            45
+          ],
+          "loc": {
+            "start": {
+              "line": 3,
+              "column": 9
+            },
+            "end": {
+              "line": 3,
               "column": 11
             }
           }
@@ -64,31 +156,31 @@
         "value": "./el",
         "raw": "'./el'",
         "range": [
-          20,
-          26
+          53,
+          59
         ],
         "loc": {
           "start": {
-            "line": 2,
+            "line": 3,
             "column": 19
           },
           "end": {
-            "line": 2,
+            "line": 3,
             "column": 25
           }
         }
       },
       "range": [
-        1,
-        27
+        34,
+        60
       ],
       "loc": {
         "start": {
-          "line": 2,
+          "line": 3,
           "column": 0
         },
         "end": {
-          "line": 2,
+          "line": 3,
           "column": 26
         }
       }
@@ -103,16 +195,16 @@
             "type": "Identifier",
             "name": "prefix",
             "range": [
-              37,
-              43
+              70,
+              76
             ],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 4,
                 "column": 9
               },
               "end": {
-                "line": 3,
+                "line": 4,
                 "column": 15
               }
             }
@@ -121,31 +213,31 @@
             "type": "Identifier",
             "name": "prefix",
             "range": [
-              37,
-              43
+              70,
+              76
             ],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 4,
                 "column": 9
               },
               "end": {
-                "line": 3,
+                "line": 4,
                 "column": 15
               }
             }
           },
           "range": [
-            37,
-            43
+            70,
+            76
           ],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 4,
               "column": 9
             },
             "end": {
-              "line": 3,
+              "line": 4,
               "column": 15
             }
           }
@@ -156,31 +248,31 @@
         "value": "./prefix",
         "raw": "'./prefix'",
         "range": [
-          51,
-          61
+          84,
+          94
         ],
         "loc": {
           "start": {
-            "line": 3,
+            "line": 4,
             "column": 23
           },
           "end": {
-            "line": 3,
+            "line": 4,
             "column": 33
           }
         }
       },
       "range": [
-        28,
-        62
+        61,
+        95
       ],
       "loc": {
         "start": {
-          "line": 3,
+          "line": 4,
           "column": 0
         },
         "end": {
-          "line": 3,
+          "line": 4,
           "column": 34
         }
       }
@@ -195,16 +287,16 @@
             "type": "Identifier",
             "name": "View",
             "range": [
-              72,
-              76
+              105,
+              109
             ],
             "loc": {
               "start": {
-                "line": 4,
+                "line": 5,
                 "column": 9
               },
               "end": {
-                "line": 4,
+                "line": 5,
                 "column": 13
               }
             }
@@ -213,31 +305,31 @@
             "type": "Identifier",
             "name": "View",
             "range": [
-              72,
-              76
+              105,
+              109
             ],
             "loc": {
               "start": {
-                "line": 4,
+                "line": 5,
                 "column": 9
               },
               "end": {
-                "line": 4,
+                "line": 5,
                 "column": 13
               }
             }
           },
           "range": [
-            72,
-            76
+            105,
+            109
           ],
           "loc": {
             "start": {
-              "line": 4,
+              "line": 5,
               "column": 9
             },
             "end": {
-              "line": 4,
+              "line": 5,
               "column": 13
             }
           }
@@ -248,31 +340,31 @@
         "value": "./view",
         "raw": "'./view'",
         "range": [
-          84,
-          92
+          117,
+          125
         ],
         "loc": {
           "start": {
-            "line": 4,
+            "line": 5,
             "column": 21
           },
           "end": {
-            "line": 4,
+            "line": 5,
             "column": 29
           }
         }
       },
       "range": [
-        63,
-        93
+        96,
+        126
       ],
       "loc": {
         "start": {
-          "line": 4,
+          "line": 5,
           "column": 0
         },
         "end": {
-          "line": 4,
+          "line": 5,
           "column": 30
         }
       }
@@ -287,16 +379,16 @@
             "type": "Identifier",
             "name": "ViewList",
             "range": [
-              103,
-              111
+              136,
+              144
             ],
             "loc": {
               "start": {
-                "line": 5,
+                "line": 6,
                 "column": 9
               },
               "end": {
-                "line": 5,
+                "line": 6,
                 "column": 17
               }
             }
@@ -305,31 +397,31 @@
             "type": "Identifier",
             "name": "ViewList",
             "range": [
-              103,
-              111
+              136,
+              144
             ],
             "loc": {
               "start": {
-                "line": 5,
+                "line": 6,
                 "column": 9
               },
               "end": {
-                "line": 5,
+                "line": 6,
                 "column": 17
               }
             }
           },
           "range": [
-            103,
-            111
+            136,
+            144
           ],
           "loc": {
             "start": {
-              "line": 5,
+              "line": 6,
               "column": 9
             },
             "end": {
-              "line": 5,
+              "line": 6,
               "column": 17
             }
           }
@@ -340,31 +432,31 @@
         "value": "./viewlist",
         "raw": "'./viewlist'",
         "range": [
-          119,
-          131
+          152,
+          164
         ],
         "loc": {
           "start": {
-            "line": 5,
+            "line": 6,
             "column": 25
           },
           "end": {
-            "line": 5,
+            "line": 6,
             "column": 37
           }
         }
       },
       "range": [
-        94,
-        132
+        127,
+        165
       ],
       "loc": {
         "start": {
-          "line": 5,
+          "line": 6,
           "column": 0
         },
         "end": {
-          "line": 5,
+          "line": 6,
           "column": 38
         }
       }
@@ -379,16 +471,16 @@
             "type": "Identifier",
             "name": "Animation",
             "range": [
-              142,
-              151
+              175,
+              184
             ],
             "loc": {
               "start": {
-                "line": 6,
+                "line": 7,
                 "column": 9
               },
               "end": {
-                "line": 6,
+                "line": 7,
                 "column": 18
               }
             }
@@ -397,31 +489,31 @@
             "type": "Identifier",
             "name": "Animation",
             "range": [
-              142,
-              151
+              175,
+              184
             ],
             "loc": {
               "start": {
-                "line": 6,
+                "line": 7,
                 "column": 9
               },
               "end": {
-                "line": 6,
+                "line": 7,
                 "column": 18
               }
             }
           },
           "range": [
-            142,
-            151
+            175,
+            184
           ],
           "loc": {
             "start": {
-              "line": 6,
+              "line": 7,
               "column": 9
             },
             "end": {
-              "line": 6,
+              "line": 7,
               "column": 18
             }
           }
@@ -432,31 +524,31 @@
         "value": "./animation",
         "raw": "'./animation'",
         "range": [
-          159,
-          172
+          192,
+          205
         ],
         "loc": {
           "start": {
-            "line": 6,
+            "line": 7,
             "column": 26
           },
           "end": {
-            "line": 6,
+            "line": 7,
             "column": 39
           }
         }
       },
       "range": [
-        133,
-        173
+        166,
+        206
       ],
       "loc": {
         "start": {
-          "line": 6,
+          "line": 7,
           "column": 0
         },
         "end": {
-          "line": 6,
+          "line": 7,
           "column": 40
         }
       }
@@ -471,16 +563,16 @@
             "type": "Identifier",
             "name": "Observable",
             "range": [
-              183,
-              193
+              216,
+              226
             ],
             "loc": {
               "start": {
-                "line": 7,
+                "line": 8,
                 "column": 9
               },
               "end": {
-                "line": 7,
+                "line": 8,
                 "column": 19
               }
             }
@@ -489,31 +581,31 @@
             "type": "Identifier",
             "name": "Observable",
             "range": [
-              183,
-              193
+              216,
+              226
             ],
             "loc": {
               "start": {
-                "line": 7,
+                "line": 8,
                 "column": 9
               },
               "end": {
-                "line": 7,
+                "line": 8,
                 "column": 19
               }
             }
           },
           "range": [
-            183,
-            193
+            216,
+            226
           ],
           "loc": {
             "start": {
-              "line": 7,
+              "line": 8,
               "column": 9
             },
             "end": {
-              "line": 7,
+              "line": 8,
               "column": 19
             }
           }
@@ -524,31 +616,31 @@
         "value": "./observable",
         "raw": "'./observable'",
         "range": [
-          201,
-          215
+          234,
+          248
         ],
         "loc": {
           "start": {
-            "line": 7,
+            "line": 8,
             "column": 27
           },
           "end": {
-            "line": 7,
+            "line": 8,
             "column": 41
           }
         }
       },
       "range": [
-        174,
-        216
+        207,
+        249
       ],
       "loc": {
         "start": {
-          "line": 7,
+          "line": 8,
           "column": 0
         },
         "end": {
-          "line": 7,
+          "line": 8,
           "column": 42
         }
       }
@@ -563,16 +655,16 @@
             "type": "Identifier",
             "name": "each",
             "range": [
-              226,
-              230
+              259,
+              263
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 9
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 13
               }
             }
@@ -581,31 +673,31 @@
             "type": "Identifier",
             "name": "each",
             "range": [
-              226,
-              230
+              259,
+              263
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 9
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 13
               }
             }
           },
           "range": [
-            226,
-            230
+            259,
+            263
           ],
           "loc": {
             "start": {
-              "line": 8,
+              "line": 9,
               "column": 9
             },
             "end": {
-              "line": 8,
+              "line": 9,
               "column": 13
             }
           }
@@ -616,16 +708,16 @@
             "type": "Identifier",
             "name": "extendable",
             "range": [
-              232,
-              242
+              265,
+              275
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 15
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 25
               }
             }
@@ -634,31 +726,31 @@
             "type": "Identifier",
             "name": "extendable",
             "range": [
-              232,
-              242
+              265,
+              275
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 15
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 25
               }
             }
           },
           "range": [
-            232,
-            242
+            265,
+            275
           ],
           "loc": {
             "start": {
-              "line": 8,
+              "line": 9,
               "column": 15
             },
             "end": {
-              "line": 8,
+              "line": 9,
               "column": 25
             }
           }
@@ -669,16 +761,16 @@
             "type": "Identifier",
             "name": "shuffle",
             "range": [
-              244,
-              251
+              277,
+              284
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 27
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 34
               }
             }
@@ -687,31 +779,31 @@
             "type": "Identifier",
             "name": "shuffle",
             "range": [
-              244,
-              251
+              277,
+              284
             ],
             "loc": {
               "start": {
-                "line": 8,
+                "line": 9,
                 "column": 27
               },
               "end": {
-                "line": 8,
+                "line": 9,
                 "column": 34
               }
             }
           },
           "range": [
-            244,
-            251
+            277,
+            284
           ],
           "loc": {
             "start": {
-              "line": 8,
+              "line": 9,
               "column": 27
             },
             "end": {
-              "line": 8,
+              "line": 9,
               "column": 34
             }
           }
@@ -722,31 +814,31 @@
         "value": "./utils",
         "raw": "'./utils'",
         "range": [
-          259,
-          268
+          292,
+          301
         ],
         "loc": {
           "start": {
-            "line": 8,
+            "line": 9,
             "column": 42
           },
           "end": {
-            "line": 8,
+            "line": 9,
             "column": 51
           }
         }
       },
       "range": [
-        217,
-        269
+        250,
+        302
       ],
       "loc": {
         "start": {
-          "line": 8,
+          "line": 9,
           "column": 0
         },
         "end": {
-          "line": 8,
+          "line": 9,
           "column": 52
         }
       }
@@ -761,16 +853,16 @@
             "type": "Identifier",
             "name": "translate",
             "range": [
-              279,
-              288
+              312,
+              321
             ],
             "loc": {
               "start": {
-                "line": 9,
+                "line": 10,
                 "column": 9
               },
               "end": {
-                "line": 9,
+                "line": 10,
                 "column": 18
               }
             }
@@ -779,31 +871,31 @@
             "type": "Identifier",
             "name": "translate",
             "range": [
-              279,
-              288
+              312,
+              321
             ],
             "loc": {
               "start": {
-                "line": 9,
+                "line": 10,
                 "column": 9
               },
               "end": {
-                "line": 9,
+                "line": 10,
                 "column": 18
               }
             }
           },
           "range": [
-            279,
-            288
+            312,
+            321
           ],
           "loc": {
             "start": {
-              "line": 9,
+              "line": 10,
               "column": 9
             },
             "end": {
-              "line": 9,
+              "line": 10,
               "column": 18
             }
           }
@@ -814,31 +906,31 @@
         "value": "./translate",
         "raw": "'./translate'",
         "range": [
-          296,
-          309
+          329,
+          342
         ],
         "loc": {
           "start": {
-            "line": 9,
+            "line": 10,
             "column": 26
           },
           "end": {
-            "line": 9,
+            "line": 10,
             "column": 39
           }
         }
       },
       "range": [
-        270,
-        310
+        303,
+        343
       ],
       "loc": {
         "start": {
-          "line": 9,
+          "line": 10,
           "column": 0
         },
         "end": {
-          "line": 9,
+          "line": 10,
           "column": 40
         }
       }
@@ -853,16 +945,16 @@
             "type": "Identifier",
             "name": "raf",
             "range": [
-              320,
-              323
+              353,
+              356
             ],
             "loc": {
               "start": {
-                "line": 10,
+                "line": 11,
                 "column": 9
               },
               "end": {
-                "line": 10,
+                "line": 11,
                 "column": 12
               }
             }
@@ -871,31 +963,31 @@
             "type": "Identifier",
             "name": "raf",
             "range": [
-              320,
-              323
+              353,
+              356
             ],
             "loc": {
               "start": {
-                "line": 10,
+                "line": 11,
                 "column": 9
               },
               "end": {
-                "line": 10,
+                "line": 11,
                 "column": 12
               }
             }
           },
           "range": [
-            320,
-            323
+            353,
+            356
           ],
           "loc": {
             "start": {
-              "line": 10,
+              "line": 11,
               "column": 9
             },
             "end": {
-              "line": 10,
+              "line": 11,
               "column": 12
             }
           }
@@ -906,31 +998,31 @@
         "value": "./raf",
         "raw": "'./raf'",
         "range": [
-          331,
-          338
+          364,
+          371
         ],
         "loc": {
           "start": {
-            "line": 10,
+            "line": 11,
             "column": 20
           },
           "end": {
-            "line": 10,
+            "line": 11,
             "column": 27
           }
         }
       },
       "range": [
-        311,
-        339
+        344,
+        372
       ],
       "loc": {
         "start": {
-          "line": 10,
+          "line": 11,
           "column": 0
         },
         "end": {
-          "line": 10,
+          "line": 11,
           "column": 28
         }
       }
@@ -939,7 +1031,7 @@
   "sourceType": "module",
   "range": [
     1,
-    339
+    372
   ],
   "loc": {
     "start": {
@@ -947,7 +1039,7 @@
       "column": 0
     },
     "end": {
-      "line": 10,
+      "line": 11,
       "column": 28
     }
   },

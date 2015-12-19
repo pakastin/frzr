@@ -1,6 +1,6 @@
 {
-  "coverage": "76.47%",
-  "expectCount": 51,
+  "coverage": "73.58%",
+  "expectCount": 53,
   "actualCount": 39,
   "files": {
     "src/animation.js": {
@@ -31,16 +31,24 @@
       ]
     },
     "src/viewlist.js": {
-      "expectCount": 5,
+      "expectCount": 6,
       "actualCount": 4,
       "undocumentLines": [
-        11
+        11,
+        98
       ]
     },
     "src/utils.js": {
       "expectCount": 5,
       "actualCount": 5,
       "undocumentLines": []
+    },
+    "src/easing.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        2
+      ]
     },
     "src/el.js": {
       "expectCount": 1,
