@@ -306,15 +306,15 @@
     /**
      * @typedef {Object} ViewOptions
      * @property {el|HTMLElement} [el=el('div')] DOM element
-     * @property {Function} [init] 'init' callback shortcut
-     * @property {Function} [inited] 'inited' callback shortcut
-     * @property {Function} [mount] 'mount' callback shortcut
-     * @property {Function} [mounted] 'mounted' callback shortcut
-     * @property {Function} [sort] 'sort' callback shortcut
-     * @property {Function} [sorted] 'sorted' callback shortcut
-     * @property {Function} [update] 'update' callback shortcut
-     * @property {Function} [updated] 'updated' callback shortcut
-     * @property {Function} [destroy] 'destroy' callback shortcut
+     * @property {Function} [init] 'init' event handler shortcut
+     * @property {Function} [inited] 'inited' event handler shortcut
+     * @property {Function} [mount] 'mount' event handler shortcut
+     * @property {Function} [mounted] 'mounted' event handler shortcut
+     * @property {Function} [sort] 'sort' event handler shortcut
+     * @property {Function} [sorted] 'sorted' event handler shortcut
+     * @property {Function} [update] 'update' event handler shortcut
+     * @property {Function} [updated] 'updated' event handler shortcut
+     * @property {Function} [destroy] 'destroy' event handler shortcut
      * @property {*} [*] Anything else you want to pass on to View
      */
 
@@ -381,10 +381,9 @@
           _this[key] = options[key];
         }
       }
+
       _this.trigger(EVENT.init, data);
-
       if (!_this.el) _this.el = document.createElement('div');
-
       _this.el.view = _this;
       _this.trigger(EVENT.inited, data);
       return _this;
@@ -488,23 +487,23 @@
     /**
      * Adds proxy event listener to View
      * @param {[type]}   listenerName       Listener name
-     * @param {Function} callback         Listener callback
+     * @param {Function} handler         Listener handler
      * @param {Boolean}   useCapture Use capture or not
      * @return {View}
      */
 
-    View.prototype.addListener = function addListener(listenerName, callback, useCapture) {
+    View.prototype.addListener = function addListener(listenerName, handler, useCapture) {
       var _this2 = this;
 
       var listener = {
         name: listenerName,
-        callback: callback,
+        handler: handler,
         proxy: function proxy() {
           for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
           }
 
-          callback.apply(_this2, args);
+          handler.apply(_this2, args);
         }
       };
       if (!this.eventListeners) this.eventListeners = [];
@@ -515,13 +514,13 @@
       return this;
     };
     /**
-     * Removes all proxy event listeners from View, or by name, or by name and callback
+     * Removes all proxy event listeners from View, or by name, or by name and handler
      * @param  {String}   [listenerName] Listener name
-     * @param  {Function} [callback]   Listener callback
+     * @param  {Function} [handler]   Listener handler
      * @return {View}
      */
 
-    View.prototype.removeListener = function removeListener(listenerName, callback) {
+    View.prototype.removeListener = function removeListener(listenerName, handler) {
       var listeners = this.eventListeners;
       if (!listeners) {
         return this;
@@ -531,7 +530,7 @@
           this.el.removeEventListener(listeners[i].proxy);
         }
         this.listeners = [];
-      } else if (typeof callback === 'undefined') {
+      } else if (typeof handler === 'undefined') {
         for (var i = 0; i < listeners.length; i++) {
           if (listeners[i].name === listenerName) {
             listeners.splice(i--, 1);
@@ -540,7 +539,7 @@
       } else {
         for (var i = 0; i < listeners.length; i++) {
           var listener = listeners[i];
-          if (listener.name === listenerName && callback === listener.callback) {
+          if (listener.name === listenerName && handler === listener.handler) {
             listeners.splice(i--, 1);
           }
         }
@@ -617,7 +616,7 @@
         views[_key2] = arguments[_key2];
       }
 
-      if (views[0].views) {
+      if (views.length && views[0].views) {
         views[0].parent = this;
         if (!views[0].views.length) {
           return this;
@@ -686,9 +685,19 @@
      */
 
     View.prototype.destroy = function destroy() {
-      if (this.parent) this.parent.removeChild(this);
       this.trigger(EVENT.destroy);
-      this.setChildren([]);
+      if (this.parent) this.parent.removeChild(this);
+
+      var traverse = this.el.firstChild;
+
+      while (traverse) {
+        if (traverse.view) {
+          traverse.view.destroy();
+        } else {
+          this.el.removeChild(traverse);
+        }
+        traverse = this.el.firstChild;
+      }
       this.off();
       this.removeListener();
     };
@@ -812,6 +821,11 @@
       this.views = views;
       this.lookup = lookup;
       if (this.parent) (_parent = this.parent).setChildren.apply(_parent, views);
+    };
+
+    ViewList.prototype.destroy = function destroy() {
+      this.setData([]);
+      this.off();
     };
 
     return ViewList;

@@ -7,6 +7,9 @@ exec('npm run build')();
 chokidar.watch('src/**/*.js')
     .on('change', exec('npm run build'));
 
+chokidar.watch('test/**/*.js')
+    .on('change', exec('npm test'));
+
 function exec (cmd) {
   return () => {
     console.log(cmd);

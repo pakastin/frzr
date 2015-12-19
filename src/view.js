@@ -16,15 +16,15 @@ export class View extends Observable {
   /**
    * @typedef {Object} ViewOptions
    * @property {el|HTMLElement} [el=el('div')] DOM element
-   * @property {Function} [init] 'init' callback shortcut
-   * @property {Function} [inited] 'inited' callback shortcut
-   * @property {Function} [mount] 'mount' callback shortcut
-   * @property {Function} [mounted] 'mounted' callback shortcut
-   * @property {Function} [sort] 'sort' callback shortcut
-   * @property {Function} [sorted] 'sorted' callback shortcut
-   * @property {Function} [update] 'update' callback shortcut
-   * @property {Function} [updated] 'updated' callback shortcut
-   * @property {Function} [destroy] 'destroy' callback shortcut
+   * @property {Function} [init] 'init' event handler shortcut
+   * @property {Function} [inited] 'inited' event handler shortcut
+   * @property {Function} [mount] 'mount' event handler shortcut
+   * @property {Function} [mounted] 'mounted' event handler shortcut
+   * @property {Function} [sort] 'sort' event handler shortcut
+   * @property {Function} [sorted] 'sorted' event handler shortcut
+   * @property {Function} [update] 'update' event handler shortcut
+   * @property {Function} [updated] 'updated' event handler shortcut
+   * @property {Function} [destroy] 'destroy' event handler shortcut
    * @property {*} [*] Anything else you want to pass on to View
    */
 
@@ -86,10 +86,9 @@ export class View extends Observable {
         this[key] = options[key];
       }
     }
+
     this.trigger(EVENT.init, data);
-
     if (!this.el) this.el = document.createElement('div');
-
     this.el.view = this;
     this.trigger(EVENT.inited, data);
   }
@@ -187,16 +186,16 @@ export class View extends Observable {
   /**
    * Adds proxy event listener to View
    * @param {[type]}   listenerName       Listener name
-   * @param {Function} callback         Listener callback
+   * @param {Function} handler         Listener handler
    * @param {Boolean}   useCapture Use capture or not
    * @return {View}
    */
-  addListener (listenerName, callback, useCapture) {
+  addListener (listenerName, handler, useCapture) {
     const listener = {
       name: listenerName,
-      callback: callback,
+      handler,
       proxy: (...args) => {
-        callback.apply(this, args);
+        handler.apply(this, args);
       }
     };
     if (!this.eventListeners) this.eventListeners = [];
@@ -207,12 +206,12 @@ export class View extends Observable {
     return this;
   }
   /**
-   * Removes all proxy event listeners from View, or by name, or by name and callback
+   * Removes all proxy event listeners from View, or by name, or by name and handler
    * @param  {String}   [listenerName] Listener name
-   * @param  {Function} [callback]   Listener callback
+   * @param  {Function} [handler]   Listener handler
    * @return {View}
    */
-  removeListener (listenerName, callback) {
+  removeListener (listenerName, handler) {
     const listeners = this.eventListeners;
     if (!listeners) {
       return this;
@@ -222,7 +221,7 @@ export class View extends Observable {
         this.el.removeEventListener(listeners[i].proxy);
       }
       this.listeners = [];
-    } else if (typeof callback === 'undefined') {
+    } else if (typeof handler === 'undefined') {
       for (let i = 0; i < listeners.length; i++) {
         if (listeners[i].name === listenerName) {
           listeners.splice(i--, 1);
@@ -231,7 +230,7 @@ export class View extends Observable {
     } else {
       for (let i = 0; i < listeners.length; i++) {
         const listener = listeners[i];
-        if (listener.name === listenerName && callback === listener.callback) {
+        if (listener.name === listenerName && handler === listener.handler) {
           listeners.splice(i--, 1);
         }
       }
@@ -301,7 +300,7 @@ export class View extends Observable {
    * @return {View}
    */
   setChildren (...views) {
-    if (views[0].views) {
+    if (views.length && views[0].views) {
       views[0].parent = this;
       if (!views[0].views.length) {
         return this;
@@ -367,9 +366,19 @@ export class View extends Observable {
    * Destroy View (remove listeners, children, etc..)
    */
   destroy () {
-    if (this.parent) this.parent.removeChild(this);
     this.trigger(EVENT.destroy);
-    this.setChildren([]);
+    if (this.parent) this.parent.removeChild(this);
+
+    let traverse = this.el.firstChild;
+
+    while (traverse) {
+      if (traverse.view) {
+        traverse.view.destroy();
+      } else {
+        this.el.removeChild(traverse);
+      }
+      traverse = this.el.firstChild;
+    }
     this.off();
     this.removeListener();
   }

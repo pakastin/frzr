@@ -95,6 +95,10 @@ export class ViewList extends Observable {
     this.lookup = lookup;
     if (this.parent) this.parent.setChildren(...views);
   }
+  destroy () {
+    this.setData([]);
+    this.off();
+  }
 }
 
 extendable(ViewList);
