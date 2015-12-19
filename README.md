@@ -20,7 +20,7 @@ http://codepen.io/collection/XKwVMG/
 ## download
 [Development](https://frzr.js.org/dist/frzr.js) (~30 kb uncompressed with full documentation)
 
-[Production](https://frzr.js.org/dist/frzr.min.js) (max* ~10 kb uncompressed & minified)
+[Production](https://frzr.js.org/dist/frzr.min.js) (<10 kb* uncompressed & minified)
 
 \* If you use [Rollup](http://rollupjs.org/) to bundle FRZR, it will only import the bits and parts you're using.
 
