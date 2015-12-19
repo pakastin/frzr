@@ -1,15 +1,15 @@
 {
   "name": "frzr",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "FRZR view library",
   "jsnext:main": "src/index.js",
   "main": "dist/frzr.js",
   "scripts": {
     "start": "node watch",
-    "build": "npm test && npm run build-js && npm run build-doc && npm test",
+    "build": "npm run test && npm run build-doc",
     "build-js": "rollup -n frzr -c .rollup.js -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
     "build-doc": "esdoc -c esdoc.json",
-    "test": "eslint src/**/*.js && browserify test/index.js | tape-run"
+    "test": "eslint src/**/*.js && npm run build-js && browserify test/index.js | tape-run"
   },
   "repository": {
     "type": "git",
