@@ -12,10 +12,10 @@ Made with ♥ + ES6.
 Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org) and [HTML5 Node Garden](https://nodegarden.js.org)
 
 ## documentation
-https://frzr.js.org/doc
+[https://frzr.js.org/doc](https://frzr.js.org/doc)
 
 ## getting started
-http://codepen.io/collection/XKwVMG/
+[http://codepen.io/collection/XKwVMG/](http://codepen.io/collection/XKwVMG/)
 
 ## download
 [Development](https://frzr.js.org/dist/frzr.js) (~30 kb uncompressed with full documentation)
