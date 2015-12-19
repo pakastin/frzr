@@ -21,7 +21,7 @@ export class Animation extends Observable {
    * @param  {Function}   [end]           'end' event handler
    * @return {Animation}
    */
-  constructor ({ delay = 0, duration = 0, easing = ease.quadOut, init, start, progress, end }) {
+  constructor ({ delay = 0, duration = 0, easing = 'quadOut', init, start, progress, end }) {
     super();
 
     const now = Date.now();
@@ -40,7 +40,7 @@ export class Animation extends Observable {
      * Which easing to use
      * @type {String}
      */
-    this.easing = easing;
+    this.easing = ease[easing];
     /**
      * Is animation started?
      * @type {Boolean}

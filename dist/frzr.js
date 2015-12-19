@@ -996,7 +996,7 @@
       var _ref$duration = _ref.duration;
       var duration = _ref$duration === undefined ? 0 : _ref$duration;
       var _ref$easing = _ref.easing;
-      var easing = _ref$easing === undefined ? ease.quadOut : _ref$easing;
+      var easing = _ref$easing === undefined ? 'quadOut' : _ref$easing;
       var init = _ref.init;
       var start = _ref.start;
       var progress = _ref.progress;
@@ -1021,7 +1021,7 @@
        * Which easing to use
        * @type {String}
        */
-      _this.easing = easing;
+      _this.easing = ease[easing];
       /**
        * Is animation started?
        * @type {Boolean}

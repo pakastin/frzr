@@ -78,7 +78,7 @@ test('animation', (t) => {
     init () {
       this.animation = new frzr.Animation({
         duration: 1000,
-        ease: frzr.ease.quartInOut,
+        easing: 'quartInOut',
         progress: (t) => {
           animationFrames++;
           this.setStyle('transform', frzr.translate(100 * (1 - t), '%', 0));
