@@ -10,7 +10,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { Observable } from './observable';\nimport { ease } from './easing';\nimport { raf } from './raf';\n\nconst animations = [];\nlet ticking;\n\nexport class Animation extends Observable {\n  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {\n    super();\n\n    const now = Date.now();\n\n    // calculate animation start/end times\n    this.startTime = now + delay;\n    this.endTime = this.startTime + duration;\n    this.easing = ease[easing] || ease.quadOut;\n\n    this.started = false;\n\n    if (start) this.on('start', start);\n    if (progress) this.on('progress', progress);\n    if (end) this.on('end', end);\n\n    // add animation\n    animations.push(this);\n\n    if (!ticking) {\n      // start ticking\n      ticking = true;\n      raf(tick);\n    }\n  }\n  destroy () {\n    for (let i = 0; i < animations.length; i++) {\n      if (animations[i] === this) {\n        animations.splice(i, 1);\n        return;\n      }\n    }\n  }\n}\n\nfunction tick () {\n  const now = Date.now();\n\n  if (!animations.length) {\n    // stop ticking\n    ticking = false;\n    return;\n  }\n\n  for (let i = 0; i < animations.length; i++) {\n    const animation = animations[i];\n\n    if (now < animation.startTime) {\n      // animation not yet started..\n      continue;\n    }\n    if (!animation.started) {\n      // animation starts\n      animation.started = true;\n      animation.trigger('start');\n    }\n    // animation progress\n    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);\n    if (t > 1) {\n      t = 1;\n    }\n    animation.trigger('progress', animation.easing(t), t);\n    if (now > animation.endTime) {\n      // animation ended\n      animation.trigger('end');\n      animations.splice(i--, 1);\n      continue;\n    }\n  }\n  raf(tick, true);\n}\n"
+    "content": "\nimport { Observable } from './observable';\nimport { ease } from './easing';\nimport { raf } from './raf';\n\nconst animations = [];\nlet ticking;\n\n/**\n * Simple but efficient animation helper with batched requestAnimationFrame\n */\nexport class Animation extends Observable {\n  /**\n   * Create new Animation\n   * @param  {Number}     [delay=0]     Start delay in milliseconds\n   * @param  {Number}     [duration=0]  Duration in milliseconds\n   * @param  {String}     [easing='quadOut']      Possible values: 'linear', 'quadIn', 'quadOut', 'quadInOut', 'cubicIn', 'cubicOut', 'cubicInOut', 'quartIn', 'quartOut', 'quartInOut', 'quintIn', 'quintOut', 'quintInOut', 'bounceIn', 'bounceOut', 'bounceInOut'\n   * @param  {Function}   [init]          'init' event handler\n   * @param  {Function}   [start]         'start' event handler\n   * @param  {Function}   [progress]      'progress' event handler\n   * @param  {Function}   [end]           'end' event handler\n   * @return {Animation}\n   */\n  constructor ({ delay = 0, duration = 0, easing = ease.quadOut, init, start, progress, end }) {\n    super();\n\n    const now = Date.now();\n\n    /**\n     * Calculate when to start the animation\n     * @type {Number}\n     */\n    this.startTime = now + delay;\n    /**\n     * Calculate when to end the animation\n     * @type {Number}\n     */\n    this.endTime = this.startTime + duration;\n    /**\n     * Which easing to use\n     * @type {String}\n     */\n    this.easing = easing;\n    /**\n     * Is animation started?\n     * @type {Boolean}\n     */\n    this.started = false;\n\n    if (init) this.on('init', init);\n    if (start) this.on('start', start);\n    if (progress) this.on('progress', progress);\n    if (end) this.on('end', end);\n\n    // add animation\n    animations.push(this);\n\n    this.trigger('init');\n\n    if (!ticking) {\n      // start ticking\n      ticking = true;\n      raf(tick);\n    }\n  }\n  /**\n   * Destroy the animation\n   */\n  destroy () {\n    for (let i = 0; i < animations.length; i++) {\n      if (animations[i] === this) {\n        animations.splice(i, 1);\n        return;\n      }\n    }\n  }\n}\n\nfunction tick () {\n  const now = Date.now();\n\n  if (!animations.length) {\n    // stop ticking\n    ticking = false;\n    return;\n  }\n\n  for (let i = 0; i < animations.length; i++) {\n    const animation = animations[i];\n\n    if (now < animation.startTime) {\n      // animation not yet started..\n      continue;\n    }\n    if (!animation.started) {\n      // animation starts\n      animation.started = true;\n      animation.trigger('start');\n    }\n    // animation progress\n    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);\n    if (t > 1) {\n      t = 1;\n    }\n    animation.trigger('progress', animation.easing(t), t);\n    if (now > animation.endTime) {\n      // animation ended\n      animation.trigger('end');\n      animations.splice(i--, 1);\n      continue;\n    }\n  }\n  raf(tick, true);\n}\n"
   },
   {
     "__docId__": 1,
@@ -45,9 +45,8 @@
     "export": true,
     "importPath": "frzr/src/animation.js",
     "importStyle": "{Animation}",
-    "description": null,
-    "lineNumber": 9,
-    "undocument": true,
+    "description": "Simple but efficient animation helper with batched requestAnimationFrame",
+    "lineNumber": 12,
     "interface": false,
     "extends": [
       "src/observable~Observable"
@@ -62,26 +61,94 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#constructor",
     "access": null,
-    "description": null,
-    "lineNumber": 10,
-    "undocument": true,
+    "description": "Create new Animation",
+    "lineNumber": 24,
     "params": [
       {
-        "name": "objectPattern",
+        "nullable": null,
         "types": [
-          "{\"delay\": *, \"duration\": *, \"easing\": *, \"start\": *, \"progress\": *, \"end\": *}"
+          "Number"
         ],
-        "defaultRaw": {
-          "delay": null,
-          "duration": null,
-          "easing": null,
-          "start": null,
-          "progress": null,
-          "end": null
-        },
-        "defaultValue": "{\"delay\":null,\"duration\":null,\"easing\":null,\"start\":null,\"progress\":null,\"end\":null}"
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "delay",
+        "description": "Start delay in milliseconds"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
+        "name": "duration",
+        "description": "Duration in milliseconds"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "String"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'quadOut'",
+        "defaultRaw": "'quadOut'",
+        "name": "easing",
+        "description": "Possible values: 'linear', 'quadIn', 'quadOut', 'quadInOut', 'cubicIn', 'cubicOut', 'cubicInOut', 'quartIn', 'quartOut', 'quartInOut', 'quintIn', 'quintOut', 'quintInOut', 'bounceIn', 'bounceOut', 'bounceInOut'"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "init",
+        "description": "'init' event handler"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "start",
+        "description": "'start' event handler"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "progress",
+        "description": "'progress' event handler"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Function"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "end",
+        "description": "'end' event handler"
       }
     ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Animation"
+      ],
+      "spread": false,
+      "description": ""
+    },
     "generator": false
   },
   {
@@ -93,13 +160,15 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#startTime",
     "access": null,
-    "description": null,
-    "lineNumber": 16,
-    "undocument": true,
+    "description": "Calculate when to start the animation",
+    "lineNumber": 33,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Number"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -111,13 +180,15 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#endTime",
     "access": null,
-    "description": null,
-    "lineNumber": 17,
-    "undocument": true,
+    "description": "Calculate when to end the animation",
+    "lineNumber": 38,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Number"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -129,13 +200,15 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#easing",
     "access": null,
-    "description": null,
-    "lineNumber": 18,
-    "undocument": true,
+    "description": "Which easing to use",
+    "lineNumber": 43,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "String"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -147,13 +220,15 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#started",
     "access": null,
-    "description": null,
-    "lineNumber": 20,
-    "undocument": true,
+    "description": "Is animation started?",
+    "lineNumber": 48,
     "type": {
+      "nullable": null,
       "types": [
-        "boolean"
-      ]
+        "Boolean"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -165,9 +240,8 @@
     "memberof": "src/animation.js~Animation",
     "longname": "src/animation.js~Animation#destroy",
     "access": null,
-    "description": null,
-    "lineNumber": 35,
-    "undocument": true,
+    "description": "Destroy the animation",
+    "lineNumber": 69,
     "params": [],
     "generator": false
   },
@@ -184,7 +258,7 @@
     "importPath": "frzr/src/animation.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 45,
+    "lineNumber": 79,
     "undocument": true,
     "params": [],
     "generator": false
@@ -199,8 +273,8 @@
     "longname": "src/easing.js",
     "access": null,
     "description": null,
-    "lineNumber": 2,
-    "content": "\nexport const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };\n\nfunction linear (t) {\n  return t;\n}\n\nfunction quadIn (t) {\n  return Math.pow(t, 2);\n}\n\nfunction quadOut (t) {\n  return 1 - quadIn(1 - t);\n}\n\nfunction quadInOut (t) {\n  if (t < 0.5) {\n    return quadIn(t * 2) / 2;\n  }\n  return 1 - quadIn((1 - t) * 2) / 2;\n}\n\nfunction cubicIn (t) {\n  return Math.pow(t, 3);\n}\n\nfunction cubicOut (t) {\n  return 1 - cubicIn(1 - t);\n}\n\nfunction cubicInOut (t) {\n  if (t < 0.5) {\n    return cubicIn(t * 2) / 2;\n  }\n  return 1 - cubicIn((1 - t) * 2) / 2;\n}\n\nfunction quartIn (t) {\n  return Math.pow(t, 4);\n}\n\nfunction quartOut (t) {\n  return 1 - quartIn(1 - t);\n}\n\nfunction quartInOut (t) {\n  if (t < 0.5) {\n    return quartIn(t * 2) / 2;\n  }\n  return 1 - quartIn((1 - t) * 2) / 2;\n}\n\nfunction quintIn (t) {\n  return Math.pow(t, 5);\n}\n\nfunction quintOut (t) {\n  return 1 - quintOut(1 - t);\n}\n\nfunction quintInOut (t) {\n  if (t < 0.5) {\n    return quintIn(t * 2) / 2;\n  }\n  return 1 - quintIn((1 - t) * 2) / 2;\n}\n\nfunction bounceOut (t) {\n  const s = 7.5625;\n  const p = 2.75;\n\n  if (t < 1 / p) {\n    return s * t * t;\n  }\n  if (t < 2 / p) {\n    t -= 1.5 / p;\n    return s * t * t + 0.75;\n  }\n  if (t < 2.5 / p) {\n    t -= 2.25 / p;\n    return s * t * t + 0.9375;\n  }\n  t -= 2.625 / p;\n  return s * t * t + 0.984375;\n}\n\nfunction bounceIn (t) {\n  return 1 - bounceOut(1 - t);\n}\n\nfunction bounceInOut (t) {\n  if (t < 0.5) {\n    return bounceIn(t * 2) / 2;\n  }\n  return 1 - bounceIn((1 - t) * 2) / 2;\n}\n"
+    "lineNumber": 6,
+    "content": "\n/**\n * Basic easings\n * @type {Object}\n */\nexport const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };\n\nfunction linear (t) {\n  return t;\n}\n\nfunction quadIn (t) {\n  return Math.pow(t, 2);\n}\n\nfunction quadOut (t) {\n  return 1 - quadIn(1 - t);\n}\n\nfunction quadInOut (t) {\n  if (t < 0.5) {\n    return quadIn(t * 2) / 2;\n  }\n  return 1 - quadIn((1 - t) * 2) / 2;\n}\n\nfunction cubicIn (t) {\n  return Math.pow(t, 3);\n}\n\nfunction cubicOut (t) {\n  return 1 - cubicIn(1 - t);\n}\n\nfunction cubicInOut (t) {\n  if (t < 0.5) {\n    return cubicIn(t * 2) / 2;\n  }\n  return 1 - cubicIn((1 - t) * 2) / 2;\n}\n\nfunction quartIn (t) {\n  return Math.pow(t, 4);\n}\n\nfunction quartOut (t) {\n  return 1 - quartIn(1 - t);\n}\n\nfunction quartInOut (t) {\n  if (t < 0.5) {\n    return quartIn(t * 2) / 2;\n  }\n  return 1 - quartIn((1 - t) * 2) / 2;\n}\n\nfunction quintIn (t) {\n  return Math.pow(t, 5);\n}\n\nfunction quintOut (t) {\n  return 1 - quintOut(1 - t);\n}\n\nfunction quintInOut (t) {\n  if (t < 0.5) {\n    return quintIn(t * 2) / 2;\n  }\n  return 1 - quintIn((1 - t) * 2) / 2;\n}\n\nfunction bounceOut (t) {\n  const s = 7.5625;\n  const p = 2.75;\n\n  if (t < 1 / p) {\n    return s * t * t;\n  }\n  if (t < 2 / p) {\n    t -= 1.5 / p;\n    return s * t * t + 0.75;\n  }\n  if (t < 2.5 / p) {\n    t -= 2.25 / p;\n    return s * t * t + 0.9375;\n  }\n  t -= 2.625 / p;\n  return s * t * t + 0.984375;\n}\n\nfunction bounceIn (t) {\n  return 1 - bounceOut(1 - t);\n}\n\nfunction bounceInOut (t) {\n  if (t < 0.5) {\n    return bounceIn(t * 2) / 2;\n  }\n  return 1 - bounceIn((1 - t) * 2) / 2;\n}\n"
   },
   {
     "__docId__": 11,
@@ -214,13 +288,15 @@
     "export": true,
     "importPath": "frzr/src/easing.js",
     "importStyle": "{ease}",
-    "description": null,
-    "lineNumber": 2,
-    "undocument": true,
+    "description": "Basic easings",
+    "lineNumber": 6,
     "type": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Object"
+      ],
+      "spread": false,
+      "description": null
     }
   },
   {
@@ -236,7 +312,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 4,
+    "lineNumber": 8,
     "undocument": true,
     "params": [
       {
@@ -266,7 +342,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 8,
+    "lineNumber": 12,
     "undocument": true,
     "params": [
       {
@@ -296,7 +372,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 12,
+    "lineNumber": 16,
     "undocument": true,
     "params": [
       {
@@ -326,7 +402,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 16,
+    "lineNumber": 20,
     "undocument": true,
     "params": [
       {
@@ -356,7 +432,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 23,
+    "lineNumber": 27,
     "undocument": true,
     "params": [
       {
@@ -386,7 +462,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 27,
+    "lineNumber": 31,
     "undocument": true,
     "params": [
       {
@@ -416,7 +492,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 31,
+    "lineNumber": 35,
     "undocument": true,
     "params": [
       {
@@ -446,7 +522,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 38,
+    "lineNumber": 42,
     "undocument": true,
     "params": [
       {
@@ -476,7 +552,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 42,
+    "lineNumber": 46,
     "undocument": true,
     "params": [
       {
@@ -506,7 +582,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 46,
+    "lineNumber": 50,
     "undocument": true,
     "params": [
       {
@@ -536,7 +612,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 53,
+    "lineNumber": 57,
     "undocument": true,
     "params": [
       {
@@ -566,7 +642,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 57,
+    "lineNumber": 61,
     "undocument": true,
     "params": [
       {
@@ -596,7 +672,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 61,
+    "lineNumber": 65,
     "undocument": true,
     "params": [
       {
@@ -626,7 +702,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 68,
+    "lineNumber": 72,
     "undocument": true,
     "params": [
       {
@@ -656,7 +732,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 87,
+    "lineNumber": 91,
     "undocument": true,
     "params": [
       {
@@ -686,7 +762,7 @@
     "importPath": "frzr/src/easing.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 91,
+    "lineNumber": 95,
     "undocument": true,
     "params": [
       {
@@ -789,8 +865,8 @@
     "longname": "src/observable.js",
     "access": null,
     "description": null,
-    "lineNumber": 2,
-    "content": "\nexport class Observable {\n  /**\n   * Inits listeners\n   * @return {Observable}\n   */\n  constructor () {\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n  }\n  /**\n   * Add listener by name\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  on (eventName, handler) {\n    if (typeof this.listeners[eventName] === 'undefined') {\n      this.listeners[eventName] = [];\n    }\n\n    this.listeners[eventName].push({ handler, one: false });\n\n    return this;\n  }\n  /**\n   * Add listener by name, which triggers only one\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  one (eventName, handler) {\n    if (!this.listeners[eventName]) this.listeners[eventName] = [];\n\n    this.listeners[eventName].push({ handler, one: true });\n\n    return this;\n  }\n  /**\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {...*}          [args]   Call arguments\n   * @return {Observable}\n   */\n  trigger (eventName, ...args) {\n    const listeners = this.listeners[eventName];\n\n    if (!listeners) {\n      return this;\n    }\n\n    for (let i = 0; i < listeners.length; i++) {\n      listeners[i].handler.apply(this, args);\n\n      if (listeners[i].one) {\n        listeners.splice(i--, 1);\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Remove all listeners, or by name, or by name & handler\n   * @param  {String}     [name]      Event name\n   * @param  {Function}   [handler]   Event handler\n   * @return {Observable}\n   */\n  off (name, handler) {\n    if (typeof name === 'undefined') {\n      this.listeners = {};\n    } else if (typeof handler === 'undefined') {\n      this.listeners[name] = [];\n    } else {\n      const listeners = this.listeners[name];\n\n      if (!listeners) {\n        return this;\n      }\n\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].handler === handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n}\n"
+    "lineNumber": 5,
+    "content": "\n/**\n * Simple EventEmitter / Observable\n */\nexport class Observable {\n  /**\n   * Inits listeners\n   * @return {Observable}\n   */\n  constructor () {\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n  }\n  /**\n   * Add listener by name\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  on (eventName, handler) {\n    if (typeof this.listeners[eventName] === 'undefined') {\n      this.listeners[eventName] = [];\n    }\n\n    this.listeners[eventName].push({ handler, one: false });\n\n    return this;\n  }\n  /**\n   * Add listener by name, which triggers only one\n   * @param  {String}     eventName   Event name\n   * @param  {Function}   handler     Event handler\n   * @return {Observable}\n   */\n  one (eventName, handler) {\n    if (!this.listeners[eventName]) this.listeners[eventName] = [];\n\n    this.listeners[eventName].push({ handler, one: true });\n\n    return this;\n  }\n  /**\n   * Triggers listeners by name\n   * @param  {String}     eventName   Event name\n   * @param  {...*}          [args]   Call arguments\n   * @return {Observable}\n   */\n  trigger (eventName, ...args) {\n    const listeners = this.listeners[eventName];\n\n    if (!listeners) {\n      return this;\n    }\n\n    for (let i = 0; i < listeners.length; i++) {\n      listeners[i].handler.apply(this, args);\n\n      if (listeners[i].one) {\n        listeners.splice(i--, 1);\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Remove all listeners, or by name, or by name & handler\n   * @param  {String}     [name]      Event name\n   * @param  {Function}   [handler]   Event handler\n   * @return {Observable}\n   */\n  off (name, handler) {\n    if (typeof name === 'undefined') {\n      this.listeners = {};\n    } else if (typeof handler === 'undefined') {\n      this.listeners[name] = [];\n    } else {\n      const listeners = this.listeners[name];\n\n      if (!listeners) {\n        return this;\n      }\n\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].handler === handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n}\n"
   },
   {
     "__docId__": 32,
@@ -804,9 +880,8 @@
     "export": true,
     "importPath": "frzr/src/observable.js",
     "importStyle": "{Observable}",
-    "description": null,
-    "lineNumber": 2,
-    "undocument": true,
+    "description": "Simple EventEmitter / Observable",
+    "lineNumber": 5,
     "interface": false
   },
   {
@@ -819,7 +894,7 @@
     "longname": "src/observable.js~Observable#constructor",
     "access": null,
     "description": "Inits listeners",
-    "lineNumber": 7,
+    "lineNumber": 10,
     "params": [],
     "return": {
       "nullable": null,
@@ -841,7 +916,7 @@
     "longname": "src/observable.js~Observable#listeners",
     "access": null,
     "description": "Listeners cache",
-    "lineNumber": 12,
+    "lineNumber": 15,
     "type": {
       "nullable": null,
       "types": [
@@ -861,7 +936,7 @@
     "longname": "src/observable.js~Observable#on",
     "access": null,
     "description": "Add listener by name",
-    "lineNumber": 20,
+    "lineNumber": 23,
     "params": [
       {
         "nullable": null,
@@ -904,7 +979,7 @@
     "longname": "src/observable.js~Observable#one",
     "access": null,
     "description": "Add listener by name, which triggers only one",
-    "lineNumber": 35,
+    "lineNumber": 38,
     "params": [
       {
         "nullable": null,
@@ -947,7 +1022,7 @@
     "longname": "src/observable.js~Observable#trigger",
     "access": null,
     "description": "Triggers listeners by name",
-    "lineNumber": 48,
+    "lineNumber": 51,
     "params": [
       {
         "nullable": null,
@@ -990,7 +1065,7 @@
     "longname": "src/observable.js~Observable#off",
     "access": null,
     "description": "Remove all listeners, or by name, or by name & handler",
-    "lineNumber": 71,
+    "lineNumber": 74,
     "params": [
       {
         "nullable": null,
@@ -1033,7 +1108,7 @@
     "longname": "src/observable.js~Observable#listeners",
     "access": null,
     "description": null,
-    "lineNumber": 73,
+    "lineNumber": 76,
     "undocument": true,
     "type": {
       "types": [
@@ -1164,7 +1239,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nconst hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';\n\nexport function raf (cb) {\n  if (hasRequestAnimationFrame) {\n    return window.requestAnimationFrame(cb);\n  } else {\n    return setTimeout(cb, 1000 / 60);\n  }\n}\n\nraf.cancel = function cancel (id) {\n  if (hasRequestAnimationFrame) {\n    window.cancelAnimationFrame(id);\n  } else {\n    clearTimeout(id);\n  }\n};\n"
+    "content": "\nconst hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';\n\n/**\n * Simple requestAnimationFrame polyfill\n * @param  {Function} callback Callback\n * @return {Function} requestAnimationFrame or setTimeout -fallback\n */\nexport function raf (callback) {\n  if (hasRequestAnimationFrame) {\n    return window.requestAnimationFrame(callback);\n  } else {\n    return setTimeout(callback, 1000 / 60);\n  }\n}\n\nraf.cancel = function cancel (id) {\n  if (hasRequestAnimationFrame) {\n    window.cancelAnimationFrame(id);\n  } else {\n    clearTimeout(id);\n  }\n};\n"
   },
   {
     "__docId__": 46,
@@ -1199,21 +1274,27 @@
     "export": true,
     "importPath": "frzr/src/raf.js",
     "importStyle": "{raf}",
-    "description": null,
-    "lineNumber": 4,
-    "undocument": true,
+    "description": "Simple requestAnimationFrame polyfill",
+    "lineNumber": 9,
     "params": [
       {
-        "name": "cb",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "Function"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "callback",
+        "description": "Callback"
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Function"
+      ],
+      "spread": false,
+      "description": "requestAnimationFrame or setTimeout -fallback"
     },
     "generator": false
   },
@@ -1230,7 +1311,7 @@
     "importPath": "frzr/src/raf.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 12,
+    "lineNumber": 17,
     "undocument": true,
     "params": [
       {
@@ -1253,7 +1334,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { prefix } from './prefix';\nimport { isDefined } from './utils';\n\nlet has3d;\n\nexport function translate (x = 0, y = 0, z = 0) {\n  if (typeof has3d === 'undefined') {\n    has3d = check3d();\n  }\n\n  if (has3d || z) {\n    return 'translate3d(' + x + ', ' + y + ', ' + z + ')';\n  } else {\n    return 'translate(' + x + ', ' + y + ')';\n  }\n}\n\nfunction check3d () {\n  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);\n\n  if (!isMobile) {\n    return false;\n  }\n\n  const transform = prefix('transform');\n  const $p = document.createElement('p');\n\n  document.body.appendChild($p);\n  $p.style[transform] = 'translate3d(1px,1px,1px)';\n  has3d = $p.style[transform];\n\n  if (isDefined(has3d) && has3d.length && has3d !== 'none') {\n    has3d = true;\n  } else {\n    has3d = false;\n  }\n\n  document.body.removeChild($p);\n\n  return has3d;\n}\n"
+    "content": "\nimport { prefix } from './prefix';\nimport { isDefined } from './utils';\n\nlet has3d;\n\n/**\n * Create translate(x, y) (desktop), translate3d(x, y, 0) (mobile) or translate3d(x, y, z)\n * @param  {Number} [x=0]   Z-coordinate\n * @param  {Number} [y=0]   Z-coordinate\n * @param  {Number} [z=0]   Z-coordinate\n * @return {String}         CSS string\n */\nexport function translate (x = 0, y = 0, z = 0) {\n  if (typeof has3d === 'undefined') {\n    has3d = check3d();\n  }\n\n  if (has3d || z) {\n    return 'translate3d(' + x + ', ' + y + ', ' + z + ')';\n  } else {\n    return 'translate(' + x + ', ' + y + ')';\n  }\n}\n\nfunction check3d () {\n  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);\n\n  if (!isMobile) {\n    return false;\n  }\n\n  const transform = prefix('transform');\n  const $p = document.createElement('p');\n\n  document.body.appendChild($p);\n  $p.style[transform] = 'translate3d(1px,1px,1px)';\n  has3d = $p.style[transform];\n\n  if (isDefined(has3d) && has3d.length && has3d !== 'none') {\n    has3d = true;\n  } else {\n    has3d = false;\n  }\n\n  document.body.removeChild($p);\n\n  return has3d;\n}\n"
   },
   {
     "__docId__": 50,
@@ -1267,42 +1348,53 @@
     "export": true,
     "importPath": "frzr/src/translate.js",
     "importStyle": "{translate}",
-    "description": null,
-    "lineNumber": 7,
-    "undocument": true,
+    "description": "Create translate(x, y) (desktop), translate3d(x, y, 0) (mobile) or translate3d(x, y, z)",
+    "lineNumber": 14,
     "params": [
       {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
         "name": "x",
-        "optional": true,
-        "types": [
-          "number"
-        ],
-        "defaultRaw": 0,
-        "defaultValue": "0"
+        "description": "Z-coordinate"
       },
       {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
+        "defaultRaw": 0,
         "name": "y",
-        "optional": true,
-        "types": [
-          "number"
-        ],
-        "defaultRaw": 0,
-        "defaultValue": "0"
+        "description": "Z-coordinate"
       },
       {
-        "name": "z",
-        "optional": true,
+        "nullable": null,
         "types": [
-          "number"
+          "Number"
         ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "0",
         "defaultRaw": 0,
-        "defaultValue": "0"
+        "name": "z",
+        "description": "Z-coordinate"
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "String"
+      ],
+      "spread": false,
+      "description": "CSS string"
     },
     "generator": false
   },
@@ -1319,7 +1411,7 @@
     "importPath": "frzr/src/translate.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 19,
+    "lineNumber": 26,
     "undocument": true,
     "params": [],
     "return": {
@@ -1537,7 +1629,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nimport { extendable } from './utils';\nimport { prefix } from './prefix';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' event handler shortcut\n   * @property {Function} [inited] 'inited' event handler shortcut\n   * @property {Function} [mount] 'mount' event handler shortcut\n   * @property {Function} [mounted] 'mounted' event handler shortcut\n   * @property {Function} [sort] 'sort' event handler shortcut\n   * @property {Function} [sorted] 'sorted' event handler shortcut\n   * @property {Function} [update] 'update' event handler shortcut\n   * @property {Function} [updated] 'updated' event handler shortcut\n   * @property {Function} [destroy] 'destroy' event handler shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n\n    this.trigger(EVENT.init, data);\n    if (!this.el) this.el = document.createElement('div');\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} attributeName   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (attributeName, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[attributeName] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(attributeName, value);\n      this.attrs[attributeName] = value;\n    } else {\n      this.el.removeAttribute(attributeName);\n      this.attrs[attributeName] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} className   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (className, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[className] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(className);\n    } else {\n      this.el.classList.remove(className);\n    }\n    this.classes[className] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} propertyName   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (propertyName, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[propertyName] === value) {\n      return this;\n    }\n\n    const prefixed = prefix(propertyName);\n\n    this.el.style[prefixed] = value;\n    this.styles[propertyName] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   listenerName       Listener name\n   * @param {Function} handler         Listener handler\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (listenerName, handler, useCapture) {\n    const listener = {\n      name: listenerName,\n      handler,\n      proxy: (...args) => {\n        handler.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and handler\n   * @param  {String}   [listenerName] Listener name\n   * @param  {Function} [handler]   Listener handler\n   * @return {View}\n   */\n  removeListener (listenerName, handler) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof listenerName === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof handler === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === listenerName) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === listenerName && handler === listener.handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {...View|ViewList} views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views.length && views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    this.trigger(EVENT.destroy);\n    if (this.parent) this.parent.removeChild(this);\n\n    let traverse = this.el.firstChild;\n\n    while (traverse) {\n      if (traverse.view) {\n        traverse.view.destroy();\n      } else {\n        this.el.removeChild(traverse);\n      }\n      traverse = this.el.firstChild;\n    }\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
+    "content": "\nimport { extendable } from './utils';\nimport { prefix } from './prefix';\nimport { Observable } from './observable';\n\nconst EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {\n  obj[name] = name;\n  return obj;\n}, {});\n\n/**\n * VanillaJS helper for single DOM element\n */\nexport class View extends Observable {\n  /**\n   * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement\n   */\n\n  /**\n   * @typedef {Object} ViewOptions\n   * @property {el|HTMLElement} [el=el('div')] DOM element\n   * @property {Function} [init] 'init' event handler shortcut\n   * @property {Function} [inited] 'inited' event handler shortcut\n   * @property {Function} [mount] 'mount' event handler shortcut\n   * @property {Function} [mounted] 'mounted' event handler shortcut\n   * @property {Function} [sort] 'sort' event handler shortcut\n   * @property {Function} [sorted] 'sorted' event handler shortcut\n   * @property {Function} [update] 'update' event handler shortcut\n   * @property {Function} [updated] 'updated' event handler shortcut\n   * @property {Function} [destroy] 'destroy' event handler shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates View\n   * @param  {ViewOptions} [options] View options\n   * @param  {*} [data]    Any data to pass on to init()\n   * @return {View}\n   */\n\n  constructor (options = {}, data) {\n    super();\n\n    /**\n     * el attributes cache\n     * @type {Object}\n     */\n    this.attrs = {};\n    /**\n     * el classNames cache\n     * @type {Object}\n     */\n    this.classes = {};\n    /**\n     * HTMLElement\n     * @type {el|HTMLElement}\n     */\n    this.el = null;\n    /**\n     * Proxy event listeners cache\n     * @type {Array}\n     */\n    this.eventListeners = [];\n    /**\n     * el innerHTML cache\n     * @type {String}\n     */\n    this.html = '';\n    /**\n     * Listeners cache\n     * @type {Object}\n     */\n    this.listeners = {};\n    /**\n     * el styles cache\n     * @type {Object}\n     */\n    this.styles = {};\n    /**\n     * el textContent cache\n     * @type {String}\n     */\n    this.text = '';\n\n    for (const key in options) {\n      if (EVENT[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n\n    this.trigger(EVENT.init, data);\n    if (!this.el) this.el = document.createElement('div');\n    this.el.view = this;\n    this.trigger(EVENT.inited, data);\n  }\n  /**\n   * Sets/removes View element attribute (only if changed)\n   * @param {String} attributeName   Attribute name\n   * @param {*|null} value Attribute value or null to remove\n   * @return {View}\n   */\n  setAttr (attributeName, value) {\n    if (!this.attrs) this.attrs = {};\n\n    if (this.attrs[attributeName] === value) {\n      return this;\n    }\n    if (value || value === '') {\n      this.el.setAttribute(attributeName, value);\n      this.attrs[attributeName] = value;\n    } else {\n      this.el.removeAttribute(attributeName);\n      this.attrs[attributeName] = null;\n    }\n\n    return this;\n  }\n  /**\n   * Sets/removes View element class (only if changed)\n   * @param {String} className   Class name\n   * @param {Boolean} value true / false\n   * @return {View}\n   */\n  setClass (className, value) {\n    if (!this.classes) this.classes = {};\n\n    if (this.classes[className] === value) {\n      return this;\n    }\n    if (value) {\n      this.el.classList.add(className);\n    } else {\n      this.el.classList.remove(className);\n    }\n    this.classes[className] = value;\n\n    return this;\n  }\n  /**\n   * Sets/removes View element style (only if changed)\n   * @param {String} propertyName   Style name\n   * @param {*|null} value Style value or null to remove\n   * @return {View}\n   */\n  setStyle (propertyName, value) {\n    if (!this.styles) this.styles = {};\n\n    if (this.styles[propertyName] === value) {\n      return this;\n    }\n\n    const prefixed = prefix(propertyName);\n\n    this.el.style[prefixed] = value;\n    this.styles[propertyName] = value;\n\n    return this;\n  }\n  /**\n   * Sets View element textContent (only if changed)\n   * @param {String} text Text to be applied to textContent\n   * @return {View}\n   */\n  setText (text) {\n    if (this.text === text) {\n      return this;\n    }\n    this.el.textContent = text;\n    this.text = text;\n\n    return this;\n  }\n  /**\n   * Sets View element innerHTML (only if changed)\n   * @param {String} html HTML string\n   * @return {View}\n   */\n  setHTML (html) {\n    if (this.html === html) {\n      return this;\n    }\n    this.el.innerHTML = html;\n    this.html = html;\n\n    return this;\n  }\n  /**\n   * Adds proxy event listener to View\n   * @param {[type]}   listenerName       Listener name\n   * @param {Function} handler         Listener handler\n   * @param {Boolean}   useCapture Use capture or not\n   * @return {View}\n   */\n  addListener (listenerName, handler, useCapture) {\n    const listener = {\n      name: listenerName,\n      handler,\n      proxy: (...args) => {\n        handler.apply(this, args);\n      }\n    };\n    if (!this.eventListeners) this.eventListeners = [];\n\n    this.eventListeners.push(listener);\n    this.el.addEventListener(name, listener.proxy, useCapture);\n\n    return this;\n  }\n  /**\n   * Removes all proxy event listeners from View, or by name, or by name and handler\n   * @param  {String}   [listenerName] Listener name\n   * @param  {Function} [handler]   Listener handler\n   * @return {View}\n   */\n  removeListener (listenerName, handler) {\n    const listeners = this.eventListeners;\n    if (!listeners) {\n      return this;\n    }\n    if (typeof listenerName === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        this.el.removeEventListener(listeners[i].proxy);\n      }\n      this.listeners = [];\n    } else if (typeof handler === 'undefined') {\n      for (let i = 0; i < listeners.length; i++) {\n        if (listeners[i].name === listenerName) {\n          listeners.splice(i--, 1);\n        }\n      }\n    } else {\n      for (let i = 0; i < listeners.length; i++) {\n        const listener = listeners[i];\n        if (listener.name === listenerName && handler === listener.handler) {\n          listeners.splice(i--, 1);\n        }\n      }\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View/ViewList to View\n   * @param {View|ViewList} child Child View/ViewList to be added\n   * @return {View}\n   */\n  addChild (child) {\n    if (child.views) {\n      child.parent = this;\n      return this.setChildren(...child.views);\n    }\n    let sorting = false;\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.appendChild(child.el);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Adds child View before another View/HTMLElement\n   * @param {View} child  Child View to be added\n   * @param {View|HTMLElement} before Reference View/HTMLElement\n   * @return {View}\n   */\n  addBefore (child, before) {\n    let sorting = false;\n\n    if (child.parent) {\n      sorting = true;\n      child.trigger(EVENT.sort);\n    } else {\n      child.trigger(EVENT.mount);\n    }\n\n    this.el.insertBefore(child.el, before.el || before);\n    child.parent = this;\n\n    if (sorting) {\n      child.trigger(EVENT.sorted);\n    } else {\n      child.trigger(EVENT.mounted);\n    }\n\n    return this;\n  }\n  /**\n   * Replace children with Views or ViewList\n   * @param {...View|ViewList} views [description]\n   * @return {View}\n   */\n  setChildren (...views) {\n    if (views.length && views[0].views) {\n      views[0].parent = this;\n      if (!views[0].views.length) {\n        return this;\n      }\n      this.setChildren(...views[0].views);\n    }\n    let traverse = this.el.firstChild;\n\n    for (let i = 0; i < views.length; i++) {\n      const view = views[i];\n\n      if (traverse === view.el) {\n        traverse = traverse.nextSibling;\n        continue;\n      }\n      if (traverse) {\n        this.addBefore(view, traverse);\n      } else {\n        this.addChild(view);\n      }\n    }\n    while (traverse) {\n      const next = traverse.nextSibling;\n\n      if (traverse.view) {\n        traverse.view.parent.removeChild(traverse.view);\n      } else {\n        this.el.removeChild(traverse);\n      }\n\n      traverse = next;\n    }\n\n    return this;\n  }\n  /**\n   * Remove child View / ViewList\n   * @param  {View|ViewList} child Child View/ViewList to be removed\n   * @return {View}\n   */\n  removeChild (child) {\n    if (!child.parent) {\n      return this;\n    }\n    child.trigger(EVENT.unmount);\n\n    this.el.removeChild(child.el);\n    child.parent = null;\n\n    child.trigger(EVENT.unmounted);\n\n    return this;\n  }\n  /**\n   * Trigger 'update' with data\n   * @param  {*} data Any data\n   * @return {View}\n   */\n  update (data) {\n    this.trigger(EVENT.update, data);\n  }\n  /**\n   * Destroy View (remove listeners, children, etc..)\n   */\n  destroy () {\n    this.trigger(EVENT.destroy);\n    if (this.parent) this.parent.removeChild(this);\n\n    let traverse = this.el.firstChild;\n\n    while (traverse) {\n      if (traverse.view) {\n        traverse.view.destroy();\n      } else {\n        this.el.removeChild(traverse);\n      }\n      traverse = this.el.firstChild;\n    }\n    this.off();\n    this.removeListener();\n  }\n}\n\nextendable(View);\n"
   },
   {
     "__docId__": 59,
@@ -1572,9 +1664,8 @@
     "export": true,
     "importPath": "frzr/src/view.js",
     "importStyle": "{View}",
-    "description": null,
-    "lineNumber": 11,
-    "undocument": true,
+    "description": "VanillaJS helper for single DOM element",
+    "lineNumber": 14,
     "interface": false,
     "extends": [
       "src/observable~Observable"
@@ -1735,7 +1826,7 @@
     "longname": "src/view.js~View#constructor",
     "access": null,
     "description": "Creates View",
-    "lineNumber": 38,
+    "lineNumber": 41,
     "params": [
       {
         "nullable": null,
@@ -1778,7 +1869,7 @@
     "longname": "src/view.js~View#attrs",
     "access": null,
     "description": "el attributes cache",
-    "lineNumber": 45,
+    "lineNumber": 48,
     "type": {
       "nullable": null,
       "types": [
@@ -1798,7 +1889,7 @@
     "longname": "src/view.js~View#classes",
     "access": null,
     "description": "el classNames cache",
-    "lineNumber": 50,
+    "lineNumber": 53,
     "type": {
       "nullable": null,
       "types": [
@@ -1818,7 +1909,7 @@
     "longname": "src/view.js~View#el",
     "access": null,
     "description": "HTMLElement",
-    "lineNumber": 55,
+    "lineNumber": 58,
     "type": {
       "nullable": null,
       "types": [
@@ -1839,7 +1930,7 @@
     "longname": "src/view.js~View#eventListeners",
     "access": null,
     "description": "Proxy event listeners cache",
-    "lineNumber": 60,
+    "lineNumber": 63,
     "type": {
       "nullable": null,
       "types": [
@@ -1859,7 +1950,7 @@
     "longname": "src/view.js~View#html",
     "access": null,
     "description": "el innerHTML cache",
-    "lineNumber": 65,
+    "lineNumber": 68,
     "type": {
       "nullable": null,
       "types": [
@@ -1879,7 +1970,7 @@
     "longname": "src/view.js~View#listeners",
     "access": null,
     "description": "Listeners cache",
-    "lineNumber": 70,
+    "lineNumber": 73,
     "type": {
       "nullable": null,
       "types": [
@@ -1899,7 +1990,7 @@
     "longname": "src/view.js~View#styles",
     "access": null,
     "description": "el styles cache",
-    "lineNumber": 75,
+    "lineNumber": 78,
     "type": {
       "nullable": null,
       "types": [
@@ -1919,7 +2010,7 @@
     "longname": "src/view.js~View#text",
     "access": null,
     "description": "el textContent cache",
-    "lineNumber": 80,
+    "lineNumber": 83,
     "type": {
       "nullable": null,
       "types": [
@@ -1939,7 +2030,7 @@
     "longname": "src/view.js~View#el",
     "access": null,
     "description": null,
-    "lineNumber": 91,
+    "lineNumber": 94,
     "undocument": true,
     "type": {
       "types": [
@@ -1957,7 +2048,7 @@
     "longname": "src/view.js~View#setAttr",
     "access": null,
     "description": "Sets/removes View element attribute (only if changed)",
-    "lineNumber": 101,
+    "lineNumber": 104,
     "params": [
       {
         "nullable": null,
@@ -2001,7 +2092,7 @@
     "longname": "src/view.js~View#attrs",
     "access": null,
     "description": null,
-    "lineNumber": 102,
+    "lineNumber": 105,
     "undocument": true,
     "type": {
       "types": [
@@ -2019,7 +2110,7 @@
     "longname": "src/view.js~View#setClass",
     "access": null,
     "description": "Sets/removes View element class (only if changed)",
-    "lineNumber": 123,
+    "lineNumber": 126,
     "params": [
       {
         "nullable": null,
@@ -2062,7 +2153,7 @@
     "longname": "src/view.js~View#classes",
     "access": null,
     "description": null,
-    "lineNumber": 124,
+    "lineNumber": 127,
     "undocument": true,
     "type": {
       "types": [
@@ -2080,7 +2171,7 @@
     "longname": "src/view.js~View#setStyle",
     "access": null,
     "description": "Sets/removes View element style (only if changed)",
-    "lineNumber": 144,
+    "lineNumber": 147,
     "params": [
       {
         "nullable": null,
@@ -2124,7 +2215,7 @@
     "longname": "src/view.js~View#styles",
     "access": null,
     "description": null,
-    "lineNumber": 145,
+    "lineNumber": 148,
     "undocument": true,
     "type": {
       "types": [
@@ -2142,7 +2233,7 @@
     "longname": "src/view.js~View#setText",
     "access": null,
     "description": "Sets View element textContent (only if changed)",
-    "lineNumber": 163,
+    "lineNumber": 166,
     "params": [
       {
         "nullable": null,
@@ -2175,7 +2266,7 @@
     "longname": "src/view.js~View#text",
     "access": null,
     "description": null,
-    "lineNumber": 168,
+    "lineNumber": 171,
     "undocument": true,
     "type": {
       "types": [
@@ -2193,7 +2284,7 @@
     "longname": "src/view.js~View#setHTML",
     "access": null,
     "description": "Sets View element innerHTML (only if changed)",
-    "lineNumber": 177,
+    "lineNumber": 180,
     "params": [
       {
         "nullable": null,
@@ -2226,7 +2317,7 @@
     "longname": "src/view.js~View#html",
     "access": null,
     "description": null,
-    "lineNumber": 182,
+    "lineNumber": 185,
     "undocument": true,
     "type": {
       "types": [
@@ -2244,7 +2335,7 @@
     "longname": "src/view.js~View#addListener",
     "access": null,
     "description": "Adds proxy event listener to View",
-    "lineNumber": 193,
+    "lineNumber": 196,
     "params": [
       {
         "nullable": null,
@@ -2297,7 +2388,7 @@
     "longname": "src/view.js~View#eventListeners",
     "access": null,
     "description": null,
-    "lineNumber": 201,
+    "lineNumber": 204,
     "undocument": true,
     "type": {
       "types": [
@@ -2315,7 +2406,7 @@
     "longname": "src/view.js~View#removeListener",
     "access": null,
     "description": "Removes all proxy event listeners from View, or by name, or by name and handler",
-    "lineNumber": 214,
+    "lineNumber": 217,
     "params": [
       {
         "nullable": null,
@@ -2358,7 +2449,7 @@
     "longname": "src/view.js~View#listeners",
     "access": null,
     "description": null,
-    "lineNumber": 223,
+    "lineNumber": 226,
     "undocument": true,
     "type": {
       "types": [
@@ -2376,7 +2467,7 @@
     "longname": "src/view.js~View#addChild",
     "access": null,
     "description": "Adds child View/ViewList to View",
-    "lineNumber": 246,
+    "lineNumber": 249,
     "params": [
       {
         "nullable": null,
@@ -2410,7 +2501,7 @@
     "longname": "src/view.js~View#addBefore",
     "access": null,
     "description": "Adds child View before another View/HTMLElement",
-    "lineNumber": 276,
+    "lineNumber": 279,
     "params": [
       {
         "nullable": null,
@@ -2454,7 +2545,7 @@
     "longname": "src/view.js~View#setChildren",
     "access": null,
     "description": "Replace children with Views or ViewList",
-    "lineNumber": 302,
+    "lineNumber": 305,
     "params": [
       {
         "nullable": null,
@@ -2488,7 +2579,7 @@
     "longname": "src/view.js~View#removeChild",
     "access": null,
     "description": "Remove child View / ViewList",
-    "lineNumber": 344,
+    "lineNumber": 347,
     "params": [
       {
         "nullable": null,
@@ -2522,7 +2613,7 @@
     "longname": "src/view.js~View#update",
     "access": null,
     "description": "Trigger 'update' with data",
-    "lineNumber": 362,
+    "lineNumber": 365,
     "params": [
       {
         "nullable": null,
@@ -2555,7 +2646,7 @@
     "longname": "src/view.js~View#destroy",
     "access": null,
     "description": "Destroy View (remove listeners, children, etc..)",
-    "lineNumber": 368,
+    "lineNumber": 371,
     "params": [],
     "generator": false
   },
@@ -2570,7 +2661,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "\nconst EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, key) => {\n  obj[key] = true;\n  return obj;\n}, {});\n\nimport { Observable } from './observable';\nimport { View } from './view';\nimport { extendable } from './utils';\n\nexport class ViewList extends Observable {\n  /**\n   * @typedef {Object} ViewListOptions\n   * @property {View} [View=View] View Class to create new Views with\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates list of Views to be mounted to a View\n   * @param  {ViewListOptions} options ViewList options\n   * @return {ViewList}\n   */\n  constructor (options) {\n    super();\n\n    /**\n     * Views by key, if key provided\n     * @type {Object}\n     */\n    this.lookup = {};\n    /**\n     * list of Views\n     * @type {Array}\n     */\n    this.views = [];\n\n    for (const key in options) {\n      if (EVENTS[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n  }\n  /**\n   * Sync list of Views with data provided\n   * @param {Array} data Data for syncing list of Views\n   */\n  setData (data) {\n    const views = new Array(data.length);\n    const lookup = {};\n    const currentViews = this.views;\n    const currentLookup = this.lookup;\n    const key = this.key;\n\n    for (let i = 0; i < data.length; i++) {\n      const item = data[i];\n      const id = key && item[key];\n      const ViewClass = this.View || View;\n      const view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();\n\n      for (let j = 0; j < EVENTS.length; j++) {\n        const name = EVENTS[j];\n        view.on(name, (...args) => {\n          this.trigger(name, [view, ...args]);\n        });\n      }\n\n      if (key) lookup[id] = view;\n\n      views[i] = view;\n      view.update(item);\n    }\n    if (key) {\n      for (const id in currentLookup) {\n        if (!lookup[id]) {\n          currentLookup[id].destroy();\n        }\n      }\n    } else {\n      for (let i = views.length; i < currentViews.length; i++) {\n        currentViews[i].destroy();\n      }\n    }\n    this.views = views;\n    this.lookup = lookup;\n    if (this.parent) this.parent.setChildren(...views);\n  }\n  destroy () {\n    this.setData([]);\n    this.off();\n  }\n}\n\nextendable(ViewList);\n"
+    "content": "\nconst EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, key) => {\n  obj[key] = true;\n  return obj;\n}, {});\n\nimport { Observable } from './observable';\nimport { View } from './view';\nimport { extendable } from './utils';\n\n/**\n * VanillaJS helper for list of DOM elements\n */\n\nexport class ViewList extends Observable {\n  /**\n   * @typedef {Object} ViewListOptions\n   * @property {View} [View=View] View Class to create new Views with\n   * @property {Function} [init] 'init' callback shortcut\n   * @property {Function} [inited] 'inited' callback shortcut\n   * @property {Function} [mount] 'mount' callback shortcut\n   * @property {Function} [mounted] 'mounted' callback shortcut\n   * @property {Function} [sort] 'sort' callback shortcut\n   * @property {Function} [sorted] 'sorted' callback shortcut\n   * @property {Function} [update] 'update' callback shortcut\n   * @property {Function} [updated] 'updated' callback shortcut\n   * @property {Function} [destroy] 'destroy' callback shortcut\n   * @property {*} [*] Anything else you want to pass on to View\n   */\n\n  /**\n   * Creates list of Views to be mounted to a View\n   * @param  {ViewListOptions} options ViewList options\n   * @return {ViewList}\n   */\n  constructor (options) {\n    super();\n\n    /**\n     * Views by key, if key provided\n     * @type {Object}\n     */\n    this.lookup = {};\n    /**\n     * list of Views\n     * @type {Array}\n     */\n    this.views = [];\n\n    for (const key in options) {\n      if (EVENTS[key]) {\n        this.on(key, options[key]);\n      } else {\n        this[key] = options[key];\n      }\n    }\n  }\n  /**\n   * Sync list of Views with data provided\n   * @param {Array} data Data for syncing list of Views\n   */\n  setData (data) {\n    const views = new Array(data.length);\n    const lookup = {};\n    const currentViews = this.views;\n    const currentLookup = this.lookup;\n    const key = this.key;\n\n    for (let i = 0; i < data.length; i++) {\n      const item = data[i];\n      const id = key && item[key];\n      const ViewClass = this.View || View;\n      const view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();\n\n      for (let j = 0; j < EVENTS.length; j++) {\n        const name = EVENTS[j];\n        view.on(name, (...args) => {\n          this.trigger(name, [view, ...args]);\n        });\n      }\n\n      if (key) lookup[id] = view;\n\n      views[i] = view;\n      view.update(item);\n    }\n    if (key) {\n      for (const id in currentLookup) {\n        if (!lookup[id]) {\n          currentLookup[id].destroy();\n        }\n      }\n    } else {\n      for (let i = views.length; i < currentViews.length; i++) {\n        currentViews[i].destroy();\n      }\n    }\n    this.views = views;\n    this.lookup = lookup;\n    if (this.parent) this.parent.setChildren(...views);\n  }\n  /**\n   * Destroy ViewList\n   */\n  destroy () {\n    this.setData([]);\n    this.off();\n  }\n}\n\nextendable(ViewList);\n"
   },
   {
     "__docId__": 94,
@@ -2605,9 +2696,8 @@
     "export": true,
     "importPath": "frzr/src/viewlist.js",
     "importStyle": "{ViewList}",
-    "description": null,
-    "lineNumber": 11,
-    "undocument": true,
+    "description": "VanillaJS helper for list of DOM elements",
+    "lineNumber": 15,
     "interface": false,
     "extends": [
       "src/observable~Observable"
@@ -2755,7 +2845,7 @@
     "longname": "src/viewlist.js~ViewList#constructor",
     "access": null,
     "description": "Creates list of Views to be mounted to a View",
-    "lineNumber": 32,
+    "lineNumber": 36,
     "params": [
       {
         "nullable": null,
@@ -2788,7 +2878,7 @@
     "longname": "src/viewlist.js~ViewList#lookup",
     "access": null,
     "description": "Views by key, if key provided",
-    "lineNumber": 39,
+    "lineNumber": 43,
     "type": {
       "nullable": null,
       "types": [
@@ -2808,7 +2898,7 @@
     "longname": "src/viewlist.js~ViewList#views",
     "access": null,
     "description": "list of Views",
-    "lineNumber": 44,
+    "lineNumber": 48,
     "type": {
       "nullable": null,
       "types": [
@@ -2828,7 +2918,7 @@
     "longname": "src/viewlist.js~ViewList#setData",
     "access": null,
     "description": "Sync list of Views with data provided",
-    "lineNumber": 58,
+    "lineNumber": 62,
     "params": [
       {
         "nullable": null,
@@ -2853,7 +2943,7 @@
     "longname": "src/viewlist.js~ViewList#views",
     "access": null,
     "description": null,
-    "lineNumber": 94,
+    "lineNumber": 98,
     "undocument": true,
     "type": {
       "types": [
@@ -2871,7 +2961,7 @@
     "longname": "src/viewlist.js~ViewList#lookup",
     "access": null,
     "description": null,
-    "lineNumber": 95,
+    "lineNumber": 99,
     "undocument": true,
     "type": {
       "types": [
@@ -2888,9 +2978,8 @@
     "memberof": "src/viewlist.js~ViewList",
     "longname": "src/viewlist.js~ViewList#destroy",
     "access": null,
-    "description": null,
-    "lineNumber": 98,
-    "undocument": true,
+    "description": "Destroy ViewList",
+    "lineNumber": 105,
     "params": [],
     "generator": false
   },

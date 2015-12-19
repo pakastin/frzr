@@ -62,19 +62,48 @@ import { raf } from &apos;./raf&apos;;
 const animations = [];
 let ticking;
 
+/**
+ * Simple but efficient animation helper with batched requestAnimationFrame
+ */
 export class Animation extends Observable {
-  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {
+  /**
+   * Create new Animation
+   * @param  {Number}     [delay=0]     Start delay in milliseconds
+   * @param  {Number}     [duration=0]  Duration in milliseconds
+   * @param  {String}     [easing=&apos;quadOut&apos;]      Possible values: &apos;linear&apos;, &apos;quadIn&apos;, &apos;quadOut&apos;, &apos;quadInOut&apos;, &apos;cubicIn&apos;, &apos;cubicOut&apos;, &apos;cubicInOut&apos;, &apos;quartIn&apos;, &apos;quartOut&apos;, &apos;quartInOut&apos;, &apos;quintIn&apos;, &apos;quintOut&apos;, &apos;quintInOut&apos;, &apos;bounceIn&apos;, &apos;bounceOut&apos;, &apos;bounceInOut&apos;
+   * @param  {Function}   [init]          &apos;init&apos; event handler
+   * @param  {Function}   [start]         &apos;start&apos; event handler
+   * @param  {Function}   [progress]      &apos;progress&apos; event handler
+   * @param  {Function}   [end]           &apos;end&apos; event handler
+   * @return {Animation}
+   */
+  constructor ({ delay = 0, duration = 0, easing = ease.quadOut, init, start, progress, end }) {
     super();
 
     const now = Date.now();
 
-    // calculate animation start/end times
+    /**
+     * Calculate when to start the animation
+     * @type {Number}
+     */
     this.startTime = now + delay;
+    /**
+     * Calculate when to end the animation
+     * @type {Number}
+     */
     this.endTime = this.startTime + duration;
-    this.easing = ease[easing] || ease.quadOut;
-
+    /**
+     * Which easing to use
+     * @type {String}
+     */
+    this.easing = easing;
+    /**
+     * Is animation started?
+     * @type {Boolean}
+     */
     this.started = false;
 
+    if (init) this.on(&apos;init&apos;, init);
     if (start) this.on(&apos;start&apos;, start);
     if (progress) this.on(&apos;progress&apos;, progress);
     if (end) this.on(&apos;end&apos;, end);
@@ -82,12 +111,17 @@ export class Animation extends Observable {
     // add animation
     animations.push(this);
 
+    this.trigger(&apos;init&apos;);
+
     if (!ticking) {
       // start ticking
       ticking = true;
       raf(tick);
     }
   }
+  /**
+   * Destroy the animation
+   */
   destroy () {
     for (let i = 0; i &lt; animations.length; i++) {
       if (animations[i] === this) {
