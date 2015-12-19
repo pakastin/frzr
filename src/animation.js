@@ -7,7 +7,7 @@ const animations = [];
 let ticking;
 
 export class Animation extends Observable {
-  constructor ({ delay = 0, duration = 0, easing, start, progress, end }) {
+  constructor ({ delay = 0, duration = 0, easing, init, start, progress, end }) {
     super();
 
     const now = Date.now();
@@ -19,12 +19,15 @@ export class Animation extends Observable {
 
     this.started = false;
 
+    if (init) this.on('init', init);
     if (start) this.on('start', start);
     if (progress) this.on('progress', progress);
     if (end) this.on('end', end);
 
     // add animation
     animations.push(this);
+
+    this.trigger('init');
 
     if (!ticking) {
       // start ticking
