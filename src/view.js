@@ -8,6 +8,9 @@ const EVENT = 'init inited mount mounted unmount unmounted sort sorted update up
   return obj;
 }, {});
 
+/**
+ * VanillaJS helper for single DOM element
+ */
 export class View extends Observable {
   /**
    * @external {HTMLElement} https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement

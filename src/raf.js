@@ -1,11 +1,16 @@
 
 const hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';
 
-export function raf (cb) {
+/**
+ * Simple requestAnimationFrame polyfill
+ * @param  {Function} callback Callback
+ * @return {Function} requestAnimationFrame or setTimeout -fallback
+ */
+export function raf (callback) {
   if (hasRequestAnimationFrame) {
-    return window.requestAnimationFrame(cb);
+    return window.requestAnimationFrame(callback);
   } else {
-    return setTimeout(cb, 1000 / 60);
+    return setTimeout(callback, 1000 / 60);
   }
 }
 

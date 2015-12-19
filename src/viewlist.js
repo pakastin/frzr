@@ -8,6 +8,10 @@ import { Observable } from './observable';
 import { View } from './view';
 import { extendable } from './utils';
 
+/**
+ * VanillaJS helper for list of DOM elements
+ */
+
 export class ViewList extends Observable {
   /**
    * @typedef {Object} ViewListOptions
@@ -95,6 +99,9 @@ export class ViewList extends Observable {
     this.lookup = lookup;
     if (this.parent) this.parent.setChildren(...views);
   }
+  /**
+   * Destroy ViewList
+   */
   destroy () {
     this.setData([]);
     this.off();

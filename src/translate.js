@@ -4,6 +4,13 @@ import { isDefined } from './utils';
 
 let has3d;
 
+/**
+ * Create translate(x, y) (desktop), translate3d(x, y, 0) (mobile) or translate3d(x, y, z)
+ * @param  {Number} [x=0]   Z-coordinate
+ * @param  {Number} [y=0]   Z-coordinate
+ * @param  {Number} [z=0]   Z-coordinate
+ * @return {String}         CSS string
+ */
 export function translate (x = 0, y = 0, z = 0) {
   if (typeof has3d === 'undefined') {
     has3d = check3d();

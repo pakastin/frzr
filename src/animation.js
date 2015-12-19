@@ -6,17 +6,45 @@ import { raf } from './raf';
 const animations = [];
 let ticking;
 
+/**
+ * Simple but efficient animation helper with batched requestAnimationFrame
+ */
 export class Animation extends Observable {
-  constructor ({ delay = 0, duration = 0, easing, init, start, progress, end }) {
+  /**
+   * Create new Animation
+   * @param  {Number}     [delay=0]     Start delay in milliseconds
+   * @param  {Number}     [duration=0]  Duration in milliseconds
+   * @param  {String}     [easing='quadOut']      Possible values: 'linear', 'quadIn', 'quadOut', 'quadInOut', 'cubicIn', 'cubicOut', 'cubicInOut', 'quartIn', 'quartOut', 'quartInOut', 'quintIn', 'quintOut', 'quintInOut', 'bounceIn', 'bounceOut', 'bounceInOut'
+   * @param  {Function}   [init]          'init' event handler
+   * @param  {Function}   [start]         'start' event handler
+   * @param  {Function}   [progress]      'progress' event handler
+   * @param  {Function}   [end]           'end' event handler
+   * @return {Animation}
+   */
+  constructor ({ delay = 0, duration = 0, easing = ease.quadOut, init, start, progress, end }) {
     super();
 
     const now = Date.now();
 
-    // calculate animation start/end times
+    /**
+     * Calculate when to start the animation
+     * @type {Number}
+     */
     this.startTime = now + delay;
+    /**
+     * Calculate when to end the animation
+     * @type {Number}
+     */
     this.endTime = this.startTime + duration;
-    this.easing = ease[easing] || ease.quadOut;
-
+    /**
+     * Which easing to use
+     * @type {String}
+     */
+    this.easing = easing;
+    /**
+     * Is animation started?
+     * @type {Boolean}
+     */
     this.started = false;
 
     if (init) this.on('init', init);
@@ -35,6 +63,9 @@ export class Animation extends Observable {
       raf(tick);
     }
   }
+  /**
+   * Destroy the animation
+   */
   destroy () {
     for (let i = 0; i < animations.length; i++) {
       if (animations[i] === this) {

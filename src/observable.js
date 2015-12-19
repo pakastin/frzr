@@ -1,4 +1,7 @@
 
+/**
+ * Simple EventEmitter / Observable
+ */
 export class Observable {
   /**
    * Inits listeners

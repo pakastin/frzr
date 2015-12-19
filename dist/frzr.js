@@ -37,6 +37,10 @@
   };
 
   babelHelpers;
+  /**
+   * Basic easings
+   * @type {Object}
+   */
   var ease = { linear: linear, quadIn: quadIn, quadOut: quadOut, quadInOut: quadInOut, cubicIn: cubicIn, cubicOut: cubicOut, cubicInOut: cubicInOut, quartIn: quartIn, quartOut: quartOut, quartInOut: quartInOut, quintIn: quintIn, quintOut: quintOut, quintInOut: quintInOut, bounceIn: bounceIn, bounceOut: bounceOut, bounceInOut: bounceInOut };
 
   function linear(t) {
@@ -282,6 +286,9 @@
     return _el;
   }
 
+  /**
+   * Simple EventEmitter / Observable
+   */
   var Observable = (function () {
     /**
      * Inits listeners
@@ -392,6 +399,9 @@
     return obj;
   }, {});
 
+  /**
+   * VanillaJS helper for single DOM element
+   */
   var View = (function (_Observable) {
     babelHelpers.inherits(View, _Observable);
 
@@ -808,6 +818,10 @@
     return obj;
   }, {});
 
+  /**
+   * VanillaJS helper for list of DOM elements
+   */
+
   var ViewList = (function (_Observable) {
     babelHelpers.inherits(ViewList, _Observable);
 
@@ -918,6 +932,9 @@
       this.lookup = lookup;
       if (this.parent) (_parent = this.parent).setChildren.apply(_parent, views);
     };
+    /**
+     * Destroy ViewList
+     */
 
     ViewList.prototype.destroy = function destroy() {
       this.setData([]);
@@ -931,11 +948,16 @@
 
   var hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';
 
-  function raf(cb) {
+  /**
+   * Simple requestAnimationFrame polyfill
+   * @param  {Function} callback Callback
+   * @return {Function} requestAnimationFrame or setTimeout -fallback
+   */
+  function raf(callback) {
     if (hasRequestAnimationFrame) {
-      return window.requestAnimationFrame(cb);
+      return window.requestAnimationFrame(callback);
     } else {
-      return setTimeout(cb, 1000 / 60);
+      return setTimeout(callback, 1000 / 60);
     }
   }
 
@@ -950,15 +972,32 @@
   var animations = [];
   var ticking = undefined;
 
+  /**
+   * Simple but efficient animation helper with batched requestAnimationFrame
+   */
   var Animation = (function (_Observable) {
     babelHelpers.inherits(Animation, _Observable);
+
+    /**
+     * Create new Animation
+     * @param  {Number}     [delay=0]     Start delay in milliseconds
+     * @param  {Number}     [duration=0]  Duration in milliseconds
+     * @param  {String}     [easing='quadOut']      Possible values: 'linear', 'quadIn', 'quadOut', 'quadInOut', 'cubicIn', 'cubicOut', 'cubicInOut', 'quartIn', 'quartOut', 'quartInOut', 'quintIn', 'quintOut', 'quintInOut', 'bounceIn', 'bounceOut', 'bounceInOut'
+     * @param  {Function}   [init]          'init' event handler
+     * @param  {Function}   [start]         'start' event handler
+     * @param  {Function}   [progress]      'progress' event handler
+     * @param  {Function}   [end]           'end' event handler
+     * @return {Animation}
+     */
 
     function Animation(_ref) {
       var _ref$delay = _ref.delay;
       var delay = _ref$delay === undefined ? 0 : _ref$delay;
       var _ref$duration = _ref.duration;
       var duration = _ref$duration === undefined ? 0 : _ref$duration;
-      var easing = _ref.easing;
+      var _ref$easing = _ref.easing;
+      var easing = _ref$easing === undefined ? ease.quadOut : _ref$easing;
+      var init = _ref.init;
       var start = _ref.start;
       var progress = _ref.progress;
       var end = _ref.end;
@@ -968,19 +1007,36 @@
 
       var now = Date.now();
 
-      // calculate animation start/end times
+      /**
+       * Calculate when to start the animation
+       * @type {Number}
+       */
       _this.startTime = now + delay;
+      /**
+       * Calculate when to end the animation
+       * @type {Number}
+       */
       _this.endTime = _this.startTime + duration;
-      _this.easing = ease[easing] || ease.quadOut;
-
+      /**
+       * Which easing to use
+       * @type {String}
+       */
+      _this.easing = easing;
+      /**
+       * Is animation started?
+       * @type {Boolean}
+       */
       _this.started = false;
 
+      if (init) _this.on('init', init);
       if (start) _this.on('start', start);
       if (progress) _this.on('progress', progress);
       if (end) _this.on('end', end);
 
       // add animation
       animations.push(_this);
+
+      _this.trigger('init');
 
       if (!ticking) {
         // start ticking
@@ -989,6 +1045,9 @@
       }
       return _this;
     }
+    /**
+     * Destroy the animation
+     */
 
     Animation.prototype.destroy = function destroy() {
       for (var i = 0; i < animations.length; i++) {
@@ -1041,6 +1100,13 @@
 
   var has3d = undefined;
 
+  /**
+   * Create translate(x, y) (desktop), translate3d(x, y, 0) (mobile) or translate3d(x, y, z)
+   * @param  {Number} [x=0]   Z-coordinate
+   * @param  {Number} [y=0]   Z-coordinate
+   * @param  {Number} [z=0]   Z-coordinate
+   * @return {String}         CSS string
+   */
   function translate() {
     var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
     var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];

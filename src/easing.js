@@ -1,4 +1,8 @@
 
+/**
+ * Basic easings
+ * @type {Object}
+ */
 export const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };
 
 function linear (t) {
