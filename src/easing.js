@@ -1,5 +1,5 @@
 
-export default { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };
+export const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };
 
 function linear (t) {
   return t;

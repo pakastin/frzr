@@ -1,6 +1,6 @@
 
 import { Observable } from './observable';
-import ease from './ease';
+import { ease } from './easing';
 import { raf } from './raf';
 
 const animations = [];

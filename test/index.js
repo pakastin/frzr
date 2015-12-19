@@ -1,4 +1,6 @@
 
+'use strict';
+
 const frzr = require('../dist/frzr.js');
 const test = require('tape');
 const body = new frzr.View({
@@ -23,7 +25,7 @@ test('create and destroy view', (t) => {
 });
 
 test('create, update and destroy viewlist', (t) => {
-  t.plan(4);
+  t.plan(3);
 
   const body = new frzr.View({
     el: document.body
@@ -60,4 +62,33 @@ test('create, update and destroy viewlist', (t) => {
   li.destroy();
 
   t.equal(document.body.innerHTML, '<ul></ul>', 'ViewList destroyed');
+
+  ul.destroy();
+});
+
+test('animation', (t) => {
+  t.plan(1);
+
+  let animationFrames = 0;
+
+  const p = new frzr.View({
+    el: frzr.el('p', {
+      text: 'Hello'
+    }),
+    init () {
+      this.animation = new frzr.Animation({
+        duration: 1000,
+        ease: frzr.ease.quartInOut,
+        progress: (t) => {
+          animationFrames++;
+          this.setStyle('transform', frzr.translate(100 * (1 - t), '%', 0));
+        },
+        end () {
+          t.pass(`Animation worked (${animationFrames} fps)`);
+        }
+      });
+    }
+  });
+
+  body.addChild(p);
 });

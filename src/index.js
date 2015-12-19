@@ -1,4 +1,5 @@
 
+export { ease } from './easing';
 export { el } from './el';
 export { prefix } from './prefix';
 export { View } from './view';
