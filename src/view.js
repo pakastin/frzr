@@ -296,7 +296,7 @@ export class View extends Observable {
   }
   /**
    * Replace children with Views or ViewList
-   * @param {View|ViewList} ...views [description]
+   * @param {...View|ViewList} views [description]
    * @return {View}
    */
   setChildren (...views) {

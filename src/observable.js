@@ -42,7 +42,7 @@ export class Observable {
   /**
    * Triggers listeners by name
    * @param  {String}     eventName   Event name
-   * @param  {*}          [...args]   Call arguments
+   * @param  {...*}          [args]   Call arguments
    * @return {Observable}
    */
   trigger (eventName, ...args) {
