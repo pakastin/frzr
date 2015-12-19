@@ -5,9 +5,9 @@
 
 Cool new javascript view library.
 
-[![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
-
 Made with ♥ + ES6.
+
+[![FRZR logo](https://frzr.js.org/img/logo.svg)](https://frzr.js.org)
 
 Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org) and [HTML5 Node Garden](https://nodegarden.js.org)
 
