@@ -1,7 +1,7 @@
 
 import { Observable } from './observable';
 import { ease } from './easing';
-import { raf } from './raf';
+import { baf } from './baf';
 
 const animations = [];
 let ticking;
@@ -60,7 +60,7 @@ export class Animation extends Observable {
     if (!ticking) {
       // start ticking
       ticking = true;
-      raf(tick);
+      baf(tick);
     }
   }
   /**
@@ -110,5 +110,5 @@ function tick () {
       continue;
     }
   }
-  raf(tick, true);
+  baf(tick);
 }

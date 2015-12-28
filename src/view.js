@@ -1,6 +1,6 @@
 
+import { el } from './el';
 import { extendable } from './utils';
-import { prefix } from './prefix';
 import { Observable } from './observable';
 
 const EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce((obj, name) => {
@@ -42,16 +42,6 @@ export class View extends Observable {
     super();
 
     /**
-     * el attributes cache
-     * @type {Object}
-     */
-    this.attrs = {};
-    /**
-     * el classNames cache
-     * @type {Object}
-     */
-    this.classes = {};
-    /**
      * HTMLElement
      * @type {el|HTMLElement}
      */
@@ -62,29 +52,22 @@ export class View extends Observable {
      */
     this.eventListeners = [];
     /**
-     * el innerHTML cache
-     * @type {String}
-     */
-    this.html = '';
-    /**
      * Listeners cache
      * @type {Object}
      */
     this.listeners = {};
-    /**
-     * el styles cache
-     * @type {Object}
-     */
-    this.styles = {};
-    /**
-     * el textContent cache
-     * @type {String}
-     */
-    this.text = '';
 
     for (const key in options) {
       if (EVENT[key]) {
         this.on(key, options[key]);
+      } else if (key === 'el') {
+        if (typeof options.el === 'string') {
+          this.el = document.createElement(options.el);
+        } else if (options.el instanceof Array) {
+          this.el = el(options.el[0], options.el[1]);
+        } else {
+          this.el = options.el;
+        }
       } else {
         this[key] = options[key];
       }
@@ -102,17 +85,8 @@ export class View extends Observable {
    * @return {View}
    */
   setAttr (attributeName, value) {
-    if (!this.attrs) this.attrs = {};
-
-    if (this.attrs[attributeName] === value) {
-      return this;
-    }
-    if (value || value === '') {
-      this.el.setAttribute(attributeName, value);
-      this.attrs[attributeName] = value;
-    } else {
-      this.el.removeAttribute(attributeName);
-      this.attrs[attributeName] = null;
+    if (!this.el[attributeName] === value) {
+      this.el[attributeName] = value;
     }
 
     return this;
@@ -124,17 +98,13 @@ export class View extends Observable {
    * @return {View}
    */
   setClass (className, value) {
-    if (!this.classes) this.classes = {};
-
-    if (this.classes[className] === value) {
-      return this;
+    if (this.el.classList.contains(className) !== value) {
+      if (value) {
+        this.el.classList.add(className);
+      } else {
+        this.el.classList.remove(className);
+      }
     }
-    if (value) {
-      this.el.classList.add(className);
-    } else {
-      this.el.classList.remove(className);
-    }
-    this.classes[className] = value;
 
     return this;
   }
@@ -145,16 +115,9 @@ export class View extends Observable {
    * @return {View}
    */
   setStyle (propertyName, value) {
-    if (!this.styles) this.styles = {};
-
-    if (this.styles[propertyName] === value) {
-      return this;
+    if (this.el.style[propertyName] !== value) {
+      this.el.style[propertyName] = value;
     }
-
-    const prefixed = prefix(propertyName);
-
-    this.el.style[prefixed] = value;
-    this.styles[propertyName] = value;
 
     return this;
   }
@@ -164,11 +127,9 @@ export class View extends Observable {
    * @return {View}
    */
   setText (text) {
-    if (this.text === text) {
-      return this;
+    if (this.el.textContent !== text) {
+      this.el.textContent = text;
     }
-    this.el.textContent = text;
-    this.text = text;
 
     return this;
   }
@@ -178,11 +139,9 @@ export class View extends Observable {
    * @return {View}
    */
   setHTML (html) {
-    if (this.html === html) {
-      return this;
+    if (this.el.innerHTML !== html) {
+      this.el.innerHTML = html;
     }
-    this.el.innerHTML = html;
-    this.html = html;
 
     return this;
   }
@@ -204,7 +163,7 @@ export class View extends Observable {
     if (!this.eventListeners) this.eventListeners = [];
 
     this.eventListeners.push(listener);
-    this.el.addEventListener(name, listener.proxy, useCapture);
+    this.el.addEventListener(listenerName, listener.proxy, useCapture);
 
     return this;
   }

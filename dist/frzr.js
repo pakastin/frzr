@@ -437,22 +437,12 @@
       babelHelpers.classCallCheck(this, View);
 
       /**
-       * el attributes cache
-       * @type {Object}
+       * HTMLElement
+       * @type {el|HTMLElement}
        */
 
       var _this = babelHelpers.possibleConstructorReturn(this, _Observable.call(this));
 
-      _this.attrs = {};
-      /**
-       * el classNames cache
-       * @type {Object}
-       */
-      _this.classes = {};
-      /**
-       * HTMLElement
-       * @type {el|HTMLElement}
-       */
       _this.el = null;
       /**
        * Proxy event listeners cache
@@ -460,29 +450,22 @@
        */
       _this.eventListeners = [];
       /**
-       * el innerHTML cache
-       * @type {String}
-       */
-      _this.html = '';
-      /**
        * Listeners cache
        * @type {Object}
        */
       _this.listeners = {};
-      /**
-       * el styles cache
-       * @type {Object}
-       */
-      _this.styles = {};
-      /**
-       * el textContent cache
-       * @type {String}
-       */
-      _this.text = '';
 
       for (var key in options) {
         if (EVENT[key]) {
           _this.on(key, options[key]);
+        } else if (key === 'el') {
+          if (typeof options.el === 'string') {
+            _this.el = document.createElement(options.el);
+          } else if (options.el instanceof Array) {
+            _this.el = el(options.el[0], options.el[1]);
+          } else {
+            _this.el = options.el;
+          }
         } else {
           _this[key] = options[key];
         }
@@ -502,17 +485,8 @@
      */
 
     View.prototype.setAttr = function setAttr(attributeName, value) {
-      if (!this.attrs) this.attrs = {};
-
-      if (this.attrs[attributeName] === value) {
-        return this;
-      }
-      if (value || value === '') {
-        this.el.setAttribute(attributeName, value);
-        this.attrs[attributeName] = value;
-      } else {
-        this.el.removeAttribute(attributeName);
-        this.attrs[attributeName] = null;
+      if (!this.el[attributeName] === value) {
+        this.el[attributeName] = value;
       }
 
       return this;
@@ -525,17 +499,13 @@
      */
 
     View.prototype.setClass = function setClass(className, value) {
-      if (!this.classes) this.classes = {};
-
-      if (this.classes[className] === value) {
-        return this;
+      if (this.el.classList.contains(className) !== value) {
+        if (value) {
+          this.el.classList.add(className);
+        } else {
+          this.el.classList.remove(className);
+        }
       }
-      if (value) {
-        this.el.classList.add(className);
-      } else {
-        this.el.classList.remove(className);
-      }
-      this.classes[className] = value;
 
       return this;
     };
@@ -547,16 +517,9 @@
      */
 
     View.prototype.setStyle = function setStyle(propertyName, value) {
-      if (!this.styles) this.styles = {};
-
-      if (this.styles[propertyName] === value) {
-        return this;
+      if (this.el.style[propertyName] !== value) {
+        this.el.style[propertyName] = value;
       }
-
-      var prefixed = prefix(propertyName);
-
-      this.el.style[prefixed] = value;
-      this.styles[propertyName] = value;
 
       return this;
     };
@@ -567,11 +530,9 @@
      */
 
     View.prototype.setText = function setText(text) {
-      if (this.text === text) {
-        return this;
+      if (this.el.textContent !== text) {
+        this.el.textContent = text;
       }
-      this.el.textContent = text;
-      this.text = text;
 
       return this;
     };
@@ -582,11 +543,9 @@
      */
 
     View.prototype.setHTML = function setHTML(html) {
-      if (this.html === html) {
-        return this;
+      if (this.el.innerHTML !== html) {
+        this.el.innerHTML = html;
       }
-      this.el.innerHTML = html;
-      this.html = html;
 
       return this;
     };
@@ -615,7 +574,7 @@
       if (!this.eventListeners) this.eventListeners = [];
 
       this.eventListeners.push(listener);
-      this.el.addEventListener(name, listener.proxy, useCapture);
+      this.el.addEventListener(listenerName, listener.proxy, useCapture);
 
       return this;
     };
@@ -969,6 +928,36 @@
     }
   };
 
+  var requestedAnimationFrames = [];
+  var ticking$1 = undefined;
+
+  /**
+   * Batched requestAnimationFrame
+   * @param  {Function} callback Callback
+   * @return {Function} requestAnimationFrame or setTimeout -fallback
+   */
+  function baf(callback) {
+    requestedAnimationFrames.push(callback);
+    if (ticking$1) return;
+
+    ticking$1 = raf(function () {
+      ticking$1 = false;
+      var animationFrames = requestedAnimationFrames.splice(0, requestedAnimationFrames.length);
+
+      for (var i = 0; i < animationFrames.length; i++) {
+        animationFrames[i]();
+      }
+    });
+  }
+
+  baf.cancel = function cancel(cb) {
+    for (var i = 0; i < requestedAnimationFrames.length; i++) {
+      if (requestedAnimationFrames[i] === cb) {
+        requestedAnimationFrames.splice(i--, 1);
+      }
+    }
+  };
+
   var animations = [];
   var ticking = undefined;
 
@@ -1041,7 +1030,7 @@
       if (!ticking) {
         // start ticking
         ticking = true;
-        raf(tick);
+        baf(tick);
       }
       return _this;
     }
@@ -1095,7 +1084,7 @@
         continue;
       }
     }
-    raf(tick, true);
+    baf(tick);
   }
 
   var has3d = undefined;
@@ -1159,6 +1148,7 @@
   exports.extendable = extendable;
   exports.shuffle = shuffle;
   exports.translate = translate;
+  exports.baf = baf;
   exports.raf = raf;
 
 }));
