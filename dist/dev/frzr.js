@@ -836,7 +836,7 @@
      * @param {Array} data Data for syncing list of Views
      */
 
-    ViewList.prototype.setData = function setData(data) {
+    ViewList.prototype.update = function update(data) {
       var _parent,
           _this2 = this;
 
@@ -896,7 +896,7 @@
      */
 
     ViewList.prototype.destroy = function destroy() {
-      this.setData([]);
+      this.update([]);
       this.off();
     };
 
