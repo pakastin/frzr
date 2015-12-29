@@ -485,7 +485,7 @@
      */
 
     View.prototype.setAttr = function setAttr(attributeName, value) {
-      if (this.el[attributeName] !== value) {
+      if (!this.el[attributeName] === value) {
         this.el[attributeName] = value;
       }
 

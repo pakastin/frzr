@@ -85,7 +85,7 @@ export class View extends Observable {
    * @return {View}
    */
   setAttr (attributeName, value) {
-    if (!this.el[attributeName] === value) {
+    if (this.el[attributeName] !== value) {
       this.el[attributeName] = value;
     }
 

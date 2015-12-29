@@ -59,7 +59,7 @@ export class ViewList extends Observable {
    * Sync list of Views with data provided
    * @param {Array} data Data for syncing list of Views
    */
-  setData (data) {
+  update (data) {
     const views = new Array(data.length);
     const lookup = {};
     const currentViews = this.views;
@@ -103,7 +103,7 @@ export class ViewList extends Observable {
    * Destroy ViewList
    */
   destroy () {
-    this.setData([]);
+    this.update([]);
     this.off();
   }
 }
