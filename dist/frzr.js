@@ -209,14 +209,9 @@
       return (function (_Class) {
         babelHelpers.inherits(ExtendedClass, _Class);
 
-        function ExtendedClass() {
+        function ExtendedClass(data) {
           babelHelpers.classCallCheck(this, ExtendedClass);
-
-          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-          }
-
-          return babelHelpers.possibleConstructorReturn(this, _Class.call.apply(_Class, [this, options].concat(args)));
+          return babelHelpers.possibleConstructorReturn(this, _Class.call(this, options, data));
         }
 
         return ExtendedClass;
@@ -691,16 +686,16 @@
       var traverse = this.el.firstChild;
 
       for (var i = 0; i < views.length; i++) {
-        var view = views[i];
+        var _view = views[i];
 
-        if (traverse === view.el) {
+        if (traverse === _view.el) {
           traverse = traverse.nextSibling;
           continue;
         }
         if (traverse) {
-          this.addBefore(view, traverse);
+          this.addBefore(_view, traverse);
         } else {
-          this.addChild(view);
+          this.addChild(_view);
         }
       }
       while (traverse) {
@@ -771,6 +766,16 @@
   })(Observable);
 
   extendable(View);
+
+  function view(options, data) {
+    return new View(options, data);
+  }
+
+  view.extend = function extend(options) {
+    return function extendedView(data) {
+      return new View(options, data);
+    };
+  };
 
   var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, key) {
     obj[key] = true;
@@ -904,6 +909,16 @@
   })(Observable);
 
   extendable(ViewList);
+
+  function viewList(options) {
+    return new ViewList(options);
+  }
+
+  viewList.extend = function extend(options) {
+    return function extendedViewList(data) {
+      return new ViewList(options, data);
+    };
+  };
 
   var hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';
 
@@ -1140,7 +1155,9 @@
   exports.ease = ease;
   exports.el = el;
   exports.prefix = prefix;
+  exports.view = view;
   exports.View = View;
+  exports.viewList = viewList;
   exports.ViewList = ViewList;
   exports.Animation = Animation;
   exports.Observable = Observable;

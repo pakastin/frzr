@@ -69,8 +69,8 @@ export function shuffle (array) {
 export function extendable (Class) {
   Class.extend = function extend (options) {
     return class ExtendedClass extends Class {
-      constructor (...args) {
-        super(options, ...args);
+      constructor (data) {
+        super(options, data);
       }
     };
   };

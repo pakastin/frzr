@@ -347,3 +347,13 @@ export class View extends Observable {
 }
 
 extendable(View);
+
+export function view (options, data) {
+  return new View(options, data);
+}
+
+view.extend = function extend (options) {
+  return function extendedView (data) {
+    return new View(options, data);
+  };
+};

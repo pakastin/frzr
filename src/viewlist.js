@@ -109,3 +109,13 @@ export class ViewList extends Observable {
 }
 
 extendable(ViewList);
+
+export function viewList (options) {
+  return new ViewList(options);
+}
+
+viewList.extend = function extend (options) {
+  return function extendedViewList (data) {
+    return new ViewList(options, data);
+  };
+};
