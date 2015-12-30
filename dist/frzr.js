@@ -275,7 +275,7 @@
           _el.style[prefixedProperty] = value;
         });
       } else {
-        _el.setAttribute(key, attributes[key]);
+        _el[key] = attributes[key];
       }
     }
     return _el;
