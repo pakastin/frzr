@@ -110,6 +110,11 @@ export class ViewList extends Observable {
 
 extendable(ViewList);
 
+/**
+ * ViewList factory
+ * @param  {ViewListOptions} options ViewList options
+ * @return {ViewList}
+ */
 export function viewList (options) {
   return new ViewList(options);
 }

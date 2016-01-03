@@ -348,6 +348,12 @@ export class View extends Observable {
 
 extendable(View);
 
+/**
+ * View factory
+ * @param  {ViewOptions} [options] View options
+ * @param  {*} [data]    Any data to pass on to init()
+ * @return {View}
+ */
 export function view (options, data) {
   return new View(options, data);
 }
