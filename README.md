@@ -11,7 +11,7 @@ Made with ♥ + ES6.
 Also check out my little open source vanilla js [HTML5 Deck of Cards](https://deck-of-cards.js.org) and [HTML5 Node Garden](https://nodegarden.js.org)
 
 ## introduction
-[http://freezer.js.org/minimum-viable-view-library/](freezer.js.org)
+[http://freezer.js.org/minimum-viable-view-library/](http://freezer.js.org/minimum-viable-view-library/)
 
 ## getting started
 [http://codepen.io/collection/XKwVMG/](http://codepen.io/collection/XKwVMG/)
