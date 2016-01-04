@@ -165,6 +165,10 @@ extend(View.prototype, {
     return this;
   },
   setChildren: function (views) {
+    if (views.views) {
+      views.parent = this;
+      return this.setChildren(views.views);
+    }
     var traverse = this.el.firstChild;
 
     for (var i = 0; i < views.length; i++) {
