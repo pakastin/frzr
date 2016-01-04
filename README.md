@@ -17,9 +17,9 @@ Also check out my little open source vanilla js [HTML5 Deck of Cards](https://de
 [http://codepen.io/collection/XKwVMG/](http://codepen.io/collection/XKwVMG/)
 
 ## download
-[Development](https://frzr.js.org/dist/frzr.js) (<20 kb uncompressed)
+[Development](https://frzr.js.org/dist/frzr.js) (< 20 kb uncompressed)
 
-[Production](https://frzr.js.org/dist/frzr.min.js) (<10 kb uncompressed & minified)
+[Production](https://frzr.js.org/dist/frzr.min.js) (< 10 kb uncompressed & minified)
 
 ### Installing from NPM
 
