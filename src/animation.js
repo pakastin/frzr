@@ -1,83 +1,62 @@
 
 import { Observable } from './observable';
 import { ease } from './easing';
-import { raf } from './raf';
+import { baf } from './baf';
+import { extend, inherits } from './utils';
 
-const animations = [];
-let ticking;
+var animations = [];
+var ticking;
 
-/**
- * Simple but efficient animation helper with batched requestAnimationFrame
- */
-export class Animation extends Observable {
-  /**
-   * Create new Animation
-   * @param  {Number}     [delay=0]     Start delay in milliseconds
-   * @param  {Number}     [duration=0]  Duration in milliseconds
-   * @param  {String}     [easing='quadOut']      Possible values: 'linear', 'quadIn', 'quadOut', 'quadInOut', 'cubicIn', 'cubicOut', 'cubicInOut', 'quartIn', 'quartOut', 'quartInOut', 'quintIn', 'quintOut', 'quintInOut', 'bounceIn', 'bounceOut', 'bounceInOut'
-   * @param  {Function}   [init]          'init' event handler
-   * @param  {Function}   [start]         'start' event handler
-   * @param  {Function}   [progress]      'progress' event handler
-   * @param  {Function}   [end]           'end' event handler
-   * @return {Animation}
-   */
-  constructor ({ delay = 0, duration = 0, easing = 'quadOut', init, start, progress, end }) {
-    super();
+export function Animation (options) {
+  Observable.call(this);
 
-    const now = Date.now();
+  var delay = options.delay || 0;
+  var duration = options.duration || 0;
+  var easing = options.easing || 'quadOut';
+  var init = options.init;
+  var start = options.start;
+  var progress = options.progress;
+  var end = options.end;
 
-    /**
-     * Calculate when to start the animation
-     * @type {Number}
-     */
-    this.startTime = now + delay;
-    /**
-     * Calculate when to end the animation
-     * @type {Number}
-     */
-    this.endTime = this.startTime + duration;
-    /**
-     * Which easing to use
-     * @type {String}
-     */
-    this.easing = ease[easing];
-    /**
-     * Is animation started?
-     * @type {Boolean}
-     */
-    this.started = false;
+  var now = Date.now();
 
-    if (init) this.on('init', init);
-    if (start) this.on('start', start);
-    if (progress) this.on('progress', progress);
-    if (end) this.on('end', end);
+  this.startTime = now + delay;
+  this.endTime = this.startTime + duration;
+  this.easing = ease[easing];
+  this.started = false;
 
-    // add animation
-    animations.push(this);
+  if (init) this.on('init', init);
+  if (start) this.on('start', start);
+  if (progress) this.on('progress', progress);
+  if (end) this.on('end', end);
 
-    this.trigger('init');
+  // add animation
+  animations.push(this);
 
-    if (!ticking) {
-      // start ticking
-      ticking = true;
-      raf(tick);
-    }
+  this.trigger('init');
+
+  if (!ticking) {
+    // start ticking
+    ticking = true;
+    baf(tick);
   }
-  /**
-   * Destroy the animation
-   */
-  destroy () {
-    for (let i = 0; i < animations.length; i++) {
+}
+
+inherits(Animation, Observable);
+
+extend(Animation.prototype, {
+  destroy: function () {
+    for (var i = 0; i < animations.length; i++) {
       if (animations[i] === this) {
         animations.splice(i, 1);
         return;
       }
     }
   }
-}
+});
 
 function tick () {
-  const now = Date.now();
+  var now = Date.now();
 
   if (!animations.length) {
     // stop ticking
@@ -85,8 +64,8 @@ function tick () {
     return;
   }
 
-  for (let i = 0; i < animations.length; i++) {
-    const animation = animations[i];
+  for (var i = 0; i < animations.length; i++) {
+    var animation = animations[i];
 
     if (now < animation.startTime) {
       // animation not yet started..
@@ -98,7 +77,7 @@ function tick () {
       animation.trigger('start');
     }
     // animation progress
-    let t = (now - animation.startTime) / (animation.endTime - animation.startTime);
+    var t = (now - animation.startTime) / (animation.endTime - animation.startTime);
     if (t > 1) {
       t = 1;
     }
@@ -110,5 +89,5 @@ function tick () {
       continue;
     }
   }
-  raf(tick, true);
+  baf(tick);
 }
