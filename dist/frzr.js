@@ -359,7 +359,7 @@
         name: listenerName,
         handler: handler,
         proxy: function (e) {
-          handler.apply(this, e);
+          handler.call(this, e);
         }
       };
       if (!this.eventListeners) this.eventListeners = [];
