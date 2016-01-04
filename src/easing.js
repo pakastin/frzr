@@ -1,9 +1,22 @@
 
-/**
- * Basic easings
- * @type {Object}
- */
-export const ease = { linear, quadIn, quadOut, quadInOut, cubicIn, cubicOut, cubicInOut, quartIn, quartOut, quartInOut, quintIn, quintOut, quintInOut, bounceIn, bounceOut, bounceInOut };
+export var ease = {
+  linear: linear,
+  quadIn: quadIn,
+  quadOut: quadOut,
+  quadInOut: quadInOut,
+  cubicIn: cubicIn,
+  cubicOut: cubicOut,
+  cubicInOut: cubicInOut,
+  quartIn: quartIn,
+  quartOut: quartOut,
+  quartInOut: quartInOut,
+  quintIn: quintIn,
+  quintOut: quintOut,
+  quintInOut: quintInOut,
+  bounceIn: bounceIn,
+  bounceOut: bounceOut,
+  bounceInOut: bounceInOut
+};
 
 function linear (t) {
   return t;
@@ -70,8 +83,8 @@ function quintInOut (t) {
 }
 
 function bounceOut (t) {
-  const s = 7.5625;
-  const p = 2.75;
+  var s = 7.5625;
+  var p = 2.75;
 
   if (t < 1 / p) {
     return s * t * t;

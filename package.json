@@ -6,10 +6,9 @@
   "main": "dist/frzr.js",
   "scripts": {
     "start": "node watch",
-    "build": "npm run test && npm run build-doc",
-    "build-js": "rollup -n frzr -c .rollup.js -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
-    "build-doc": "esdoc -c esdoc.json",
-    "test": "eslint src/**/*.js && npm run build-js && browserify test/index.js | tape-run"
+    "build": "npm run test",
+    "build-js": "rollup -n frzr -f umd -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
+    "test": "npm run build-js && browserify test/index.js | tape-run"
   },
   "repository": {
     "type": "git",
@@ -27,19 +26,9 @@
   },
   "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "babel-preset-es2015-rollup": "github:pakastin/babel-preset-es2015-rollup-loose",
-    "babel-preset-es2015-rollup-loose": "github:pakastin/babel-preset-es2015-rollup-loose",
     "browserify": "^12.0.1",
     "chokidar": "^1.4.1",
-    "esdoc": "^0.4.3",
-    "eslint": "^1.10.3",
-    "eslint-config-airbnb": "^2.1.1",
-    "express": "^4.13.3",
-    "jsdoc": "^3.4.0",
-    "rollup": "^0.21.2",
-    "rollup-plugin-babel": "^2.2.0",
-    "rollup-plugin-npm": "^1.1.0",
-    "standard": "^5.4.1",
+    "rollup": "^0.24.0",
     "tape": "^4.2.2",
     "tape-run": "^2.1.0",
     "uglify-js": "^2.6.1"
