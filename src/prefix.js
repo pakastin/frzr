@@ -1,5 +1,5 @@
 
-var style = (global.document && document.createElement('p').style) || {};
+var style = (typeof document !== 'undefined') ? (document.createElement('p').style) : {};
 var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
 var memoized = {};
 
