@@ -127,7 +127,7 @@ extend(Observable.prototype, {
   }
 });
 
-var style = (global.document && document.createElement('p').style) || {};
+var style = (typeof document !== 'undefined') ? (document.createElement('p').style) : {};
 var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
 var memoized = {};
 
@@ -780,11 +780,11 @@ viewList.extend = function extend (options) {
   };
 };
 
-var hasRequestAnimationFrame = typeof global.requestAnimationFrame !== 'undefined';
+var hasRequestAnimationFrame = typeof requestAnimationFrame !== 'undefined';
 
 function raf (callback) {
   if (hasRequestAnimationFrame) {
-    return global.requestAnimationFrame(callback);
+    return requestAnimationFrame(callback);
   } else {
     return setTimeout(callback, 1000 / 60);
   }
@@ -792,7 +792,7 @@ function raf (callback) {
 
 raf.cancel = function cancel (id) {
   if (hasRequestAnimationFrame) {
-    global.cancelAnimationFrame(id);
+    cancelAnimationFrame(id);
   } else {
     clearTimeout(id);
   }
