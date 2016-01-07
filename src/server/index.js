@@ -1,5 +1,5 @@
 
-var HTMLElement = require('./htmlelement');
+import { HTMLElement } from './htmlelement';
 
 global.document = {
   createElement (tagName) {
@@ -11,6 +11,10 @@ global.document = {
 
 global.window = {}
 
+global.navigator = {
+  userAgent: ''
+}
+
 import { View } from '../index';
 
 export var server = true;
@@ -19,5 +23,3 @@ export { ease, el, prefix, view, View, viewList, ViewList, Animation, Observable
 View.prototype.render = function () {
   return this.el.render();
 }
-
-module.export = frzr;

@@ -1,9 +1,9 @@
 
-var hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';
+var hasRequestAnimationFrame = typeof global.requestAnimationFrame !== 'undefined';
 
 export function raf (callback) {
   if (hasRequestAnimationFrame) {
-    return window.requestAnimationFrame(callback);
+    return global.requestAnimationFrame(callback);
   } else {
     return setTimeout(callback, 1000 / 60);
   }
@@ -11,7 +11,7 @@ export function raf (callback) {
 
 raf.cancel = function cancel (id) {
   if (hasRequestAnimationFrame) {
-    window.cancelAnimationFrame(id);
+    global.cancelAnimationFrame(id);
   } else {
     clearTimeout(id);
   }

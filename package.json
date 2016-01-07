@@ -9,8 +9,8 @@
     "start": "node watch",
     "build": "npm run test && npm run build-server-js",
     "build-js": "rollup -n frzr -f umd -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
-    "build-server-js": "rollup -n frzr -f umd -i src/server/index.js -o dist/frzr-server.js",
-    "test": "npm run build-js && browserify test/index.js | tape-run"
+    "build-server-js": "rollup -n frzr -f cjs -i src/server/index.js -o dist/frzr-server.js",
+    "test": "npm run build-js && npm run build-server-js && tape test/server.js && browserify test/index.js | tape-run"
   },
   "repository": {
     "type": "git",

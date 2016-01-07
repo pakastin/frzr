@@ -1,8 +1,9 @@
 
-var ClassList = require('./classlist');
+import { ClassList } from './classlist';
 
-function HTMLElement (options) {
+export function HTMLElement (options) {
   this.childNodes = [];
+  this.style = {};
 
   for (var key in options) {
     this[key] = options[key];
@@ -29,6 +30,14 @@ HTMLElement.prototype.render = function () {
       }
     } else if (key === 'innerHTML') {
       content = this.innerHTML;
+    } else if (key === 'style') {
+      var styles = '';
+      for (var styleName in this.style) {
+        styles += styleName + ':' + this.style[styleName] + ';';
+      }
+      if (styles && styles.length) {
+        attributes.push('style="' + styles + '"');
+      }
     } else if (key === 'textContent') {
       content = this.textContent;
     } else if (key !== 'view' && key !== 'tagName' && key !== 'parentNode') {
@@ -48,6 +57,9 @@ HTMLElement.prototype.render = function () {
     return '<' + this.tagName + '>';
   }
 }
+
+HTMLElement.prototype.addEventListener = function () {}
+HTMLElement.prototype.removeEventListener = function () {}
 
 HTMLElement.prototype.appendChild = function (child) {
   child.parentNode = this;
@@ -92,7 +104,7 @@ Object.defineProperties(HTMLElement.prototype, {
   },
   nextSibling: {
     get: function () {
-      var siblings = this.parent.childNodes;
+      var siblings = this.parentNode.childNodes;
 
       for (var i = 0; i < siblings.length; i++) {
         if (siblings[i] === this) {
@@ -102,8 +114,6 @@ Object.defineProperties(HTMLElement.prototype, {
     }
   }
 });
-
-module.exports = HTMLElement;
 
 function childRenderer (child) {
   return child.render();

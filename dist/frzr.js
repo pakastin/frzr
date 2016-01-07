@@ -178,7 +178,7 @@
     };
   }
 
-  var style = document.createElement('p').style;
+  var style = (global.document && document.createElement('p').style) || {};
   var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
   var memoized = {};
 
@@ -212,6 +212,14 @@
       for (var key in attributes) {
         if (key === 'text') {
           element.textContent = attributes[key];
+        } else if (key === 'style') {
+          if (frzr.server) {
+            for (var styleName in attributes.style) {
+              element.style[styleName] = attributes.style[styleName];
+            }
+          } else {
+            element.style = attributes.style;
+          }
         } else if (key === 'html') {
           element.innerHTML = attributes[key];
         } else {
@@ -623,11 +631,11 @@
     };
   };
 
-  var hasRequestAnimationFrame = typeof window.requestAnimationFrame !== 'undefined';
+  var hasRequestAnimationFrame = typeof global.requestAnimationFrame !== 'undefined';
 
   function raf (callback) {
     if (hasRequestAnimationFrame) {
-      return window.requestAnimationFrame(callback);
+      return global.requestAnimationFrame(callback);
     } else {
       return setTimeout(callback, 1000 / 60);
     }
@@ -635,7 +643,7 @@
 
   raf.cancel = function cancel (id) {
     if (hasRequestAnimationFrame) {
-      window.cancelAnimationFrame(id);
+      global.cancelAnimationFrame(id);
     } else {
       clearTimeout(id);
     }
