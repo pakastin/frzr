@@ -2,7 +2,7 @@
 [![Build status](https://travis-ci.org/pakastin/frzr.svg)](https://travis-ci.org/pakastin/frzr) 
 [![Join the chat at https://gitter.im/pakastin/frzr](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pakastin/frzr?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 
-Cool new javascript view library.
+Cool new javascript view library for browser & node.js.
 
 Made with ♥ + ES6.
 
