@@ -1,6 +1,6 @@
 
 import { el } from './el';
-import { extend, extendable, inherits } from './utils';
+import { define, extendable, inherits } from './utils';
 import { Observable } from './observable';
 
 var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
@@ -37,7 +37,7 @@ export function View (options, data) {
   this.trigger(EVENT.inited, data);
 }
 inherits(View, Observable);
-extend(View.prototype, {
+define(View.prototype, {
   setAttr: function (attributeName, value) {
     if (this.el[attributeName] !== value) {
       this.el[attributeName] = value;
@@ -78,11 +78,12 @@ extend(View.prototype, {
     return this;
   },
   addListener: function (listenerName, handler, useCapture) {
+    var view = this;
     var listener = {
       name: listenerName,
       handler: handler,
       proxy: function (e) {
-        handler.call(this, e);
+        handler.call(view, e);
       }
     };
     if (!this.eventListeners) this.eventListeners = [];
@@ -163,6 +164,16 @@ extend(View.prototype, {
     }
 
     return this;
+  },
+  addAfter: function (child, after) {
+    var afterEl = after.el || after;
+    var nextAfterEl = afterEl.nextSibling;
+
+    if (nextAfterEl) {
+      this.addBefore(child, nextAfterEl);
+    } else {
+      this.addChild(child);
+    }
   },
   setChildren: function (views) {
     if (views.views) {

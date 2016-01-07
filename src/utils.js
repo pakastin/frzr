@@ -33,6 +33,14 @@ export function inherits (Class, SuperClass) {
   });
 }
 
+export function define (target, properties) {
+  for (var propertyName in properties) {
+    Object.defineProperty(target, propertyName, {
+      value: properties[propertyName]
+    });
+  }
+}
+
 export function extend (target, properties) {
   for (var propertyName in properties) {
     target[propertyName] = properties[propertyName];

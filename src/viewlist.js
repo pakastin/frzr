@@ -6,7 +6,7 @@ var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update upd
 
 import { Observable } from './observable';
 import { View } from './view';
-import { extend, extendable, inherits } from './utils';
+import { define, extendable, inherits } from './utils';
 
 export function ViewList (options) {
   Observable.call(this);
@@ -25,7 +25,7 @@ export function ViewList (options) {
 
 inherits(ViewList, Observable);
 
-extend(ViewList.prototype, {
+define(ViewList.prototype, {
   update: function (data) {
     var viewList = this;
     var views = new Array(data.length);

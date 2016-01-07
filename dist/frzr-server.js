@@ -4,119 +4,6 @@
   (factory((global.frzr = {})));
 }(this, function (exports) { 'use strict';
 
-  var ease = {
-    linear: linear,
-    quadIn: quadIn,
-    quadOut: quadOut,
-    quadInOut: quadInOut,
-    cubicIn: cubicIn,
-    cubicOut: cubicOut,
-    cubicInOut: cubicInOut,
-    quartIn: quartIn,
-    quartOut: quartOut,
-    quartInOut: quartInOut,
-    quintIn: quintIn,
-    quintOut: quintOut,
-    quintInOut: quintInOut,
-    bounceIn: bounceIn,
-    bounceOut: bounceOut,
-    bounceInOut: bounceInOut
-  };
-
-  function linear (t) {
-    return t;
-  }
-
-  function quadIn (t) {
-    return Math.pow(t, 2);
-  }
-
-  function quadOut (t) {
-    return 1 - quadIn(1 - t);
-  }
-
-  function quadInOut (t) {
-    if (t < 0.5) {
-      return quadIn(t * 2) / 2;
-    }
-    return 1 - quadIn((1 - t) * 2) / 2;
-  }
-
-  function cubicIn (t) {
-    return Math.pow(t, 3);
-  }
-
-  function cubicOut (t) {
-    return 1 - cubicIn(1 - t);
-  }
-
-  function cubicInOut (t) {
-    if (t < 0.5) {
-      return cubicIn(t * 2) / 2;
-    }
-    return 1 - cubicIn((1 - t) * 2) / 2;
-  }
-
-  function quartIn (t) {
-    return Math.pow(t, 4);
-  }
-
-  function quartOut (t) {
-    return 1 - quartIn(1 - t);
-  }
-
-  function quartInOut (t) {
-    if (t < 0.5) {
-      return quartIn(t * 2) / 2;
-    }
-    return 1 - quartIn((1 - t) * 2) / 2;
-  }
-
-  function quintIn (t) {
-    return Math.pow(t, 5);
-  }
-
-  function quintOut (t) {
-    return 1 - quintOut(1 - t);
-  }
-
-  function quintInOut (t) {
-    if (t < 0.5) {
-      return quintIn(t * 2) / 2;
-    }
-    return 1 - quintIn((1 - t) * 2) / 2;
-  }
-
-  function bounceOut (t) {
-    var s = 7.5625;
-    var p = 2.75;
-
-    if (t < 1 / p) {
-      return s * t * t;
-    }
-    if (t < 2 / p) {
-      t -= 1.5 / p;
-      return s * t * t + 0.75;
-    }
-    if (t < 2.5 / p) {
-      t -= 2.25 / p;
-      return s * t * t + 0.9375;
-    }
-    t -= 2.625 / p;
-    return s * t * t + 0.984375;
-  }
-
-  function bounceIn (t) {
-    return 1 - bounceOut(1 - t);
-  }
-
-  function bounceInOut (t) {
-    if (t < 0.5) {
-      return bounceIn(t * 2) / 2;
-    }
-    return 1 - bounceIn((1 - t) * 2) / 2;
-  }
-
   function each (array, iterator) {
     for (var i = 0; i < array.length; i++) {
       iterator(array[i], i);
@@ -176,50 +63,6 @@
 
       return ExtendedClass;
     };
-  }
-
-  var style = document.createElement('p').style;
-  var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
-  var memoized = {};
-
-  function prefix (propertyName) {
-    if (typeof memoized[propertyName] !== 'undefined') {
-      return memoized[propertyName];
-    }
-
-    if (typeof style[propertyName] !== 'undefined') {
-      memoized[propertyName] = propertyName;
-      return propertyName;
-    }
-
-    var camelCase = propertyName[0].toUpperCase() + propertyName.slice(1);
-
-    for (var i = 0, len = prefixes.length; i < len; i++) {
-      var test = prefixes[i] + camelCase;
-
-      if (typeof style[test] !== 'undefined') {
-        memoized[propertyName] = test;
-
-        return test;
-      }
-    }
-  }
-
-  function el (tagName, attributes) {
-    var element = document.createElement(tagName || 'div');
-
-    if (attributes) {
-      for (var key in attributes) {
-        if (key === 'text') {
-          element.textContent = attributes[key];
-        } else if (key === 'html') {
-          element.innerHTML = attributes[key];
-        } else {
-          element[key] = attributes[key];
-        }
-      }
-    }
-    return element;
   }
 
   function Observable () {
@@ -287,6 +130,50 @@
       return this;
     }
   });
+
+  var style = document.createElement('p').style;
+  var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
+  var memoized = {};
+
+  function prefix (propertyName) {
+    if (typeof memoized[propertyName] !== 'undefined') {
+      return memoized[propertyName];
+    }
+
+    if (typeof style[propertyName] !== 'undefined') {
+      memoized[propertyName] = propertyName;
+      return propertyName;
+    }
+
+    var camelCase = propertyName[0].toUpperCase() + propertyName.slice(1);
+
+    for (var i = 0, len = prefixes.length; i < len; i++) {
+      var test = prefixes[i] + camelCase;
+
+      if (typeof style[test] !== 'undefined') {
+        memoized[propertyName] = test;
+
+        return test;
+      }
+    }
+  }
+
+  function el (tagName, attributes) {
+    var element = document.createElement(tagName || 'div');
+
+    if (attributes) {
+      for (var key in attributes) {
+        if (key === 'text') {
+          element.textContent = attributes[key];
+        } else if (key === 'html') {
+          element.innerHTML = attributes[key];
+        } else {
+          element[key] = attributes[key];
+        }
+      }
+    }
+    return element;
+  }
 
   var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
     obj[name] = name;
@@ -541,6 +428,119 @@
     };
   };
 
+  var ease = {
+    linear: linear,
+    quadIn: quadIn,
+    quadOut: quadOut,
+    quadInOut: quadInOut,
+    cubicIn: cubicIn,
+    cubicOut: cubicOut,
+    cubicInOut: cubicInOut,
+    quartIn: quartIn,
+    quartOut: quartOut,
+    quartInOut: quartInOut,
+    quintIn: quintIn,
+    quintOut: quintOut,
+    quintInOut: quintInOut,
+    bounceIn: bounceIn,
+    bounceOut: bounceOut,
+    bounceInOut: bounceInOut
+  };
+
+  function linear (t) {
+    return t;
+  }
+
+  function quadIn (t) {
+    return Math.pow(t, 2);
+  }
+
+  function quadOut (t) {
+    return 1 - quadIn(1 - t);
+  }
+
+  function quadInOut (t) {
+    if (t < 0.5) {
+      return quadIn(t * 2) / 2;
+    }
+    return 1 - quadIn((1 - t) * 2) / 2;
+  }
+
+  function cubicIn (t) {
+    return Math.pow(t, 3);
+  }
+
+  function cubicOut (t) {
+    return 1 - cubicIn(1 - t);
+  }
+
+  function cubicInOut (t) {
+    if (t < 0.5) {
+      return cubicIn(t * 2) / 2;
+    }
+    return 1 - cubicIn((1 - t) * 2) / 2;
+  }
+
+  function quartIn (t) {
+    return Math.pow(t, 4);
+  }
+
+  function quartOut (t) {
+    return 1 - quartIn(1 - t);
+  }
+
+  function quartInOut (t) {
+    if (t < 0.5) {
+      return quartIn(t * 2) / 2;
+    }
+    return 1 - quartIn((1 - t) * 2) / 2;
+  }
+
+  function quintIn (t) {
+    return Math.pow(t, 5);
+  }
+
+  function quintOut (t) {
+    return 1 - quintOut(1 - t);
+  }
+
+  function quintInOut (t) {
+    if (t < 0.5) {
+      return quintIn(t * 2) / 2;
+    }
+    return 1 - quintIn((1 - t) * 2) / 2;
+  }
+
+  function bounceOut (t) {
+    var s = 7.5625;
+    var p = 2.75;
+
+    if (t < 1 / p) {
+      return s * t * t;
+    }
+    if (t < 2 / p) {
+      t -= 1.5 / p;
+      return s * t * t + 0.75;
+    }
+    if (t < 2.5 / p) {
+      t -= 2.25 / p;
+      return s * t * t + 0.9375;
+    }
+    t -= 2.625 / p;
+    return s * t * t + 0.984375;
+  }
+
+  function bounceIn (t) {
+    return 1 - bounceOut(1 - t);
+  }
+
+  function bounceInOut (t) {
+    if (t < 0.5) {
+      return bounceIn(t * 2) / 2;
+    }
+    return 1 - bounceIn((1 - t) * 2) / 2;
+  }
+
   var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, key) {
     obj[key] = true;
     return obj;
@@ -793,6 +793,26 @@
     return has3d;
   }
 
+  var HTMLElement = require('./htmlelement');
+
+  global.document = {
+    createElement (tagName) {
+      return new HTMLElement({
+        tagName: tagName
+      });
+    }
+  };
+
+  global.window = {}
+
+  var server = true;
+  View.prototype.render = function () {
+    return this.el.render();
+  }
+
+  module.export = frzr;
+
+  exports.server = server;
   exports.ease = ease;
   exports.el = el;
   exports.prefix = prefix;
