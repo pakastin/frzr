@@ -213,12 +213,12 @@
         if (key === 'text') {
           element.textContent = attributes[key];
         } else if (key === 'style') {
-          if (frzr.server) {
-            for (var styleName in attributes.style) {
-              element.style[styleName] = attributes.style[styleName];
+          var styles = attributes.style.split(';');
+          for (var i = 0; i < styles.length; i++) {
+            var styleParts = styles[i].split(':');
+            if (styleParts.length > 1) {
+              element.style[styleParts[0].trim()] = styleParts[1].trim();
             }
-          } else {
-            element.style = attributes.style;
           }
         } else if (key === 'html') {
           element.innerHTML = attributes[key];
