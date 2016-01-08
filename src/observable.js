@@ -1,8 +1,12 @@
 
 import { extend } from './utils';
 
-export function Observable () {
+export function Observable (options) {
   this.listeners = {};
+
+  for (var key in options) {
+    this[key] = options[key];
+  }
 }
 
 extend(Observable.prototype, {
