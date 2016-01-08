@@ -207,9 +207,7 @@
 
   function el (tagName, attributes) {
     attributes = attributes || {};
-    if (tagName === 'text') {
-      var element = document.createTextNode(attributes.text || attributes.textContent || '');
-    } else if (attributes.svg) {
+    if (attributes.svg) {
       var element =  document.createElementNS("http://www.w3.org/2000/svg", "svg")
     } else {
       var element = document.createElement(tagName || 'div');
@@ -315,6 +313,8 @@
   function View (options, data) {
     Observable.call(this);
 
+    options = options || {};
+
     this.el = null;
     this.eventListeners = [];
     this.listeners = {};
@@ -322,6 +322,8 @@
     for (var key in options) {
       if (EVENT[key]) {
         this.on(key, options[key]);
+      } else if (key === 'text') {
+          this.el = document.createTextNode(options.text || '');
       } else if (key === 'el') {
         if (typeof options.el === 'string') {
           this.el = document.createElement(options.el);
@@ -336,7 +338,9 @@
     }
 
     this.trigger(EVENT.init, data);
-    if (!this.el) this.el = document.createElement('div');
+    if (!this.el) {
+      this.el = document.createElement('div');
+    }
     this.el.view = this;
     this.trigger(EVENT.inited, data);
   }

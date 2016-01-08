@@ -4,9 +4,7 @@ import { prefix } from './prefix';
 
 export function el (tagName, attributes) {
   attributes = attributes || {};
-  if (tagName === 'text') {
-    var element = document.createTextNode(attributes.text || attributes.textContent || '');
-  } else if (attributes.svg) {
+  if (attributes.svg) {
     var element =  document.createElementNS("http://www.w3.org/2000/svg", "svg")
   } else {
     var element = document.createElement(tagName || 'div');
