@@ -1,15 +1,19 @@
 
-import { extend } from './utils';
+import { define } from './utils';
 
 export function Observable (options) {
-  this.listeners = {};
+  Object.defineProperty(this, 'listeners', {
+    enumerable: false,
+    value: {},
+    writable: true
+  });
 
   for (var key in options) {
     this[key] = options[key];
   }
 }
 
-extend(Observable.prototype, {
+define(Observable.prototype, {
   on: function (eventName, handler) {
     if (typeof this.listeners[eventName] === 'undefined') {
       this.listeners[eventName] = [];
@@ -70,3 +74,7 @@ extend(Observable.prototype, {
     return this;
   }
 });
+
+export function observable (options) {
+  return new Observable(options);
+}

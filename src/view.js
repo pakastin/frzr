@@ -42,7 +42,9 @@ export function View (options, data) {
   this.el.view = this;
   this.trigger(EVENT.inited, data);
 }
+
 inherits(View, Observable);
+
 define(View.prototype, {
   setAttr: function (attributeName, value) {
     if (this.el[attributeName] !== value) {

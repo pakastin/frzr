@@ -2,7 +2,7 @@
 import { Observable } from './observable';
 import { ease } from './easing';
 import { baf } from './baf';
-import { extend, inherits } from './utils';
+import { define, inherits } from './utils';
 
 var animations = [];
 var ticking;
@@ -44,7 +44,7 @@ export function Animation (options) {
 
 inherits(Animation, Observable);
 
-extend(Animation.prototype, {
+define(Animation.prototype, {
   destroy: function () {
     for (var i = 0; i < animations.length; i++) {
       if (animations[i] === this) {
@@ -54,6 +54,10 @@ extend(Animation.prototype, {
     }
   }
 });
+
+export function animation (options) {
+  return new Animation(options);
+}
 
 function tick () {
   var now = Date.now();
