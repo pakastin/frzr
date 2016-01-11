@@ -236,14 +236,18 @@
   }
 
   function Observable (options) {
-    this.listeners = {};
+    Object.defineProperty(this, 'listeners', {
+      enumerable: false,
+      value: {},
+      writable: true
+    });
 
     for (var key in options) {
       this[key] = options[key];
     }
   }
 
-  extend(Observable.prototype, {
+  define(Observable.prototype, {
     on: function (eventName, handler) {
       if (typeof this.listeners[eventName] === 'undefined') {
         this.listeners[eventName] = [];
@@ -305,6 +309,10 @@
     }
   });
 
+  function observable (options) {
+    return new Observable(options);
+  }
+
   var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
     obj[name] = name;
     return obj;
@@ -344,7 +352,9 @@
     this.el.view = this;
     this.trigger(EVENT.inited, data);
   }
+
   inherits(View, Observable);
+
   define(View.prototype, {
     setAttr: function (attributeName, value) {
       if (this.el[attributeName] !== value) {
@@ -729,7 +739,7 @@
 
   inherits(Animation, Observable);
 
-  extend(Animation.prototype, {
+  define(Animation.prototype, {
     destroy: function () {
       for (var i = 0; i < animations.length; i++) {
         if (animations[i] === this) {
@@ -739,6 +749,10 @@
       }
     }
   });
+
+  function animation (options) {
+    return new Animation(options);
+  }
 
   function tick () {
     var now = Date.now();
@@ -823,7 +837,9 @@
   exports.View = View;
   exports.viewList = viewList;
   exports.ViewList = ViewList;
+  exports.animation = animation;
   exports.Animation = Animation;
+  exports.observable = observable;
   exports.Observable = Observable;
   exports.define = define;
   exports.each = each;
