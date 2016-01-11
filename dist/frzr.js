@@ -123,10 +123,6 @@
     }
   }
 
-  function isDefined (check) {
-    return typeof check !== 'undefined' || check !== null;
-  }
-
   function shuffle (array) {
     if (!array || !array.length) {
       return array;
@@ -819,7 +815,7 @@
     $p.style[transform] = 'translate3d(1px,1px,1px)';
     has3d = $p.style[transform];
 
-    if (isDefined(has3d) && has3d.length && has3d !== 'none') {
+    if (typeof has3d !== 'undefined' && has3d !== null && has3d.length && has3d !== 'none') {
       has3d = true;
     } else {
       has3d = false;

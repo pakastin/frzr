@@ -5,10 +5,6 @@ export function each (array, iterator) {
   }
 }
 
-export function isDefined (check) {
-  return typeof check !== 'undefined' || check !== null;
-}
-
 export function shuffle (array) {
   if (!array || !array.length) {
     return array;
