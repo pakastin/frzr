@@ -1,6 +1,5 @@
 
 import { prefix } from './prefix';
-import { isDefined } from './utils';
 
 var has3d;
 
