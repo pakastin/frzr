@@ -45,7 +45,7 @@ define(ViewList.prototype, {
     for (var i = 0; i < data.length; i++) {
       var item = data[i];
       var id = key && item[key];
-      var ViewClass = this.View || View;
+      var ViewClass = this.View || this.view || View;
       var view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();
 
       for (var j = 0; j < EVENTS.length; j++) {
