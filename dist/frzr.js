@@ -318,7 +318,7 @@
     if (!(this instanceof View)) {
       return new View(options, data);
     }
-    
+
     Observable.call(this);
 
     options = options || {};
@@ -333,11 +333,13 @@
       for (var key in options) {
         if (EVENT[key]) {
           this.on(key, options[key]);
-        } else if (key === 'text') {
+        } else if (key === 'text' && !options.el) {
             this.el = document.createTextNode(options.text || '');
         } else if (key === 'el') {
           if (typeof options.el === 'string') {
             this.el = document.createElement(options.el);
+            if (options.text) this.el.textContent = options.text;
+            if (options.html) this.el.innerHTML = options.html;
           } else if (options.el instanceof Array) {
             this.el = el(options.el[0], options.el[1]);
           } else {
