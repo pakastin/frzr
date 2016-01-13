@@ -14,6 +14,11 @@ export function ViewList (options) {
   this.lookup = {};
   this.views = [];
 
+  if (options instanceof View) {
+    this.View = options;
+    return;
+  }
+
   for (var key in options) {
     if (EVENTS[key]) {
       this.on(key, options[key]);
