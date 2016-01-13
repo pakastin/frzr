@@ -323,21 +323,25 @@
     this.eventListeners = [];
     this.listeners = {};
 
-    for (var key in options) {
-      if (EVENT[key]) {
-        this.on(key, options[key]);
-      } else if (key === 'text') {
-          this.el = document.createTextNode(options.text || '');
-      } else if (key === 'el') {
-        if (typeof options.el === 'string') {
-          this.el = document.createElement(options.el);
-        } else if (options.el instanceof Array) {
-          this.el = el(options.el[0], options.el[1]);
+    if (window.HTMLElement && (options instanceof window.HTMLElement)) {
+      this.el = options;
+    } else {
+      for (var key in options) {
+        if (EVENT[key]) {
+          this.on(key, options[key]);
+        } else if (key === 'text') {
+            this.el = document.createTextNode(options.text || '');
+        } else if (key === 'el') {
+          if (typeof options.el === 'string') {
+            this.el = document.createElement(options.el);
+          } else if (options.el instanceof Array) {
+            this.el = el(options.el[0], options.el[1]);
+          } else {
+            this.el = options.el;
+          }
         } else {
-          this.el = options.el;
+          this[key] = options[key];
         }
-      } else {
-        this[key] = options[key];
       }
     }
 
@@ -581,11 +585,15 @@
     this.lookup = {};
     this.views = [];
 
-    for (var key in options) {
-      if (EVENTS[key]) {
-        this.on(key, options[key]);
-      } else {
-        this[key] = options[key];
+    if (typeof options === 'function') {
+      this.View = options;
+    } else {
+      for (var key in options) {
+        if (EVENTS[key]) {
+          this.on(key, options[key]);
+        } else {
+          this[key] = options[key];
+        }
       }
     }
   }
