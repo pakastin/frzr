@@ -1,3 +1,4 @@
+
 export function ClassList (el) {
   var classNames = (this.className && this.className.split(' ')) || [];
 

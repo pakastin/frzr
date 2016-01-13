@@ -1,3 +1,4 @@
+
 export function renderer (handler) {
   var nextRender = noOp;
   var rendering = false;

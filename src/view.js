@@ -9,6 +9,10 @@ var EVENT = 'init inited mount mounted unmount unmounted sort sorted update upda
 }, {});
 
 export function View (options, data) {
+  if (!(this instanceof View)) {
+    return new View(options, data);
+  }
+  
   Observable.call(this);
 
   options = options || {};
@@ -258,12 +262,4 @@ define(View.prototype, {
 
 extendable(View);
 
-export function view (options, data) {
-  return new View(options, data);
-}
-
-view.extend = function extend (options) {
-  return function extendedView (data) {
-    return new View(options, data);
-  };
-};
+export var view = View;

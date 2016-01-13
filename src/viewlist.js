@@ -9,6 +9,10 @@ import { View } from './view';
 import { define, extendable, inherits } from './utils';
 
 export function ViewList (options) {
+  if (!(this instanceof ViewList)) {
+    return new ViewList(options, data);
+  }
+
   Observable.call(this);
 
   this.lookup = {};
@@ -79,12 +83,5 @@ define(ViewList.prototype, {
 
 extendable(ViewList);
 
-export function viewList (options) {
-  return new ViewList(options);
-}
-
-viewList.extend = function extend (options) {
-  return function extendedViewList (data) {
-    return new ViewList(options, data);
-  };
-};
+export var viewlist = ViewList;
+export var viewList = ViewList;
