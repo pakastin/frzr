@@ -579,7 +579,7 @@
 
   function ViewList (options) {
     if (!(this instanceof ViewList)) {
-      return new ViewList(options, data);
+      return new ViewList(options);
     }
 
     Observable.call(this);

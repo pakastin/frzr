@@ -728,7 +728,7 @@ var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update upd
 
 function ViewList (options) {
   if (!(this instanceof ViewList)) {
-    return new ViewList(options, data);
+    return new ViewList(options);
   }
 
   Observable.call(this);
