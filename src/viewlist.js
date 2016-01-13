@@ -16,14 +16,13 @@ export function ViewList (options) {
 
   if (options instanceof View) {
     this.View = options;
-    return;
-  }
-
-  for (var key in options) {
-    if (EVENTS[key]) {
-      this.on(key, options[key]);
-    } else {
-      this[key] = options[key];
+  } else {
+    for (var key in options) {
+      if (EVENTS[key]) {
+        this.on(key, options[key]);
+      } else {
+        this[key] = options[key];
+      }
     }
   }
 }
