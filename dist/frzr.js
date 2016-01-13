@@ -315,6 +315,10 @@
   }, {});
 
   function View (options, data) {
+    if (!(this instanceof View)) {
+      return new View(options, data);
+    }
+    
     Observable.call(this);
 
     options = options || {};
@@ -564,15 +568,7 @@
 
   extendable(View);
 
-  function view (options, data) {
-    return new View(options, data);
-  }
-
-  view.extend = function extend (options) {
-    return function extendedView (data) {
-      return new View(options, data);
-    };
-  };
+  var view = View;
 
   var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, key) {
     obj[key] = true;
@@ -580,6 +576,10 @@
   }, {});
 
   function ViewList (options) {
+    if (!(this instanceof ViewList)) {
+      return new ViewList(options, data);
+    }
+
     Observable.call(this);
 
     this.lookup = {};
@@ -650,15 +650,8 @@
 
   extendable(ViewList);
 
-  function viewList (options) {
-    return new ViewList(options);
-  }
-
-  viewList.extend = function extend (options) {
-    return function extendedViewList (data) {
-      return new ViewList(options, data);
-    };
-  };
+  var viewlist = ViewList;
+  var viewList = ViewList;
 
   var hasRequestAnimationFrame = typeof requestAnimationFrame !== 'undefined';
 
@@ -857,20 +850,21 @@
   exports.ease = ease;
   exports.el = el;
   exports.prefix = prefix;
-  exports.view = view;
   exports.View = View;
-  exports.viewList = viewList;
+  exports.view = view;
   exports.ViewList = ViewList;
-  exports.animation = animation;
+  exports.viewlist = viewlist;
+  exports.viewList = viewList;
   exports.Animation = Animation;
-  exports.observable = observable;
+  exports.animation = animation;
   exports.Observable = Observable;
-  exports.define = define;
+  exports.observable = observable;
   exports.each = each;
+  exports.shuffle = shuffle;
+  exports.inherits = inherits;
+  exports.define = define;
   exports.extend = extend;
   exports.extendable = extendable;
-  exports.inherits = inherits;
-  exports.shuffle = shuffle;
   exports.renderer = renderer;
   exports.translate = translate;
   exports.baf = baf;
