@@ -7,6 +7,7 @@ export { viewList, ViewList } from './viewlist';
 export { animation, Animation } from './animation';
 export { observable, Observable } from './observable';
 export { define, each, extend, extendable, inherits, shuffle } from './utils';
+export { renderer } from './renderer';
 export { translate } from './translate';
 export { baf } from './baf';
 export { raf } from './raf';
