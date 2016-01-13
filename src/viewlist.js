@@ -14,7 +14,7 @@ export function ViewList (options) {
   this.lookup = {};
   this.views = [];
 
-  if (options instanceof View) {
+  if (typeof options === 'function') {
     this.View = options;
   } else {
     for (var key in options) {
