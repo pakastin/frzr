@@ -944,6 +944,26 @@ function tick () {
   baf(tick);
 }
 
+function renderer (handler) {
+  var nextRender = noOp;
+  var rendering = false;
+
+  return function needRender () {
+    if (rendering) {
+      nextRender = needRender;
+      return;
+    }
+    rendering = true;
+    handler(function () {
+      rendering = false;
+      var _nextRender = nextRender;
+      nextRender = noOp;
+      _nextRender();
+    });
+  }
+}
+function noOp () {};
+
 var has3d;
 
 function translate (x, y, z) {
@@ -1020,6 +1040,7 @@ exports.extend = extend;
 exports.extendable = extendable;
 exports.inherits = inherits;
 exports.shuffle = shuffle;
+exports.renderer = renderer;
 exports.translate = translate;
 exports.baf = baf;
 exports.raf = raf;
