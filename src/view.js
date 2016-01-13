@@ -17,7 +17,7 @@ export function View (options, data) {
   this.eventListeners = [];
   this.listeners = {};
 
-  if (options instanceof HTMLElement) {
+  if (window.HTMLElement && (options instanceof window.HTMLElement)) {
     this.el = options;
   } else {
     for (var key in options) {
