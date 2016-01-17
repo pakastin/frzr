@@ -572,8 +572,8 @@
 
   var view = View;
 
-  var EVENTS = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, key) {
-    obj[key] = true;
+  var EVENT$1 = 'init inited update updated destroy'.split(' ').reduce(function (obj, key) {
+    obj[key] = key;
     return obj;
   }, {});
 
@@ -591,19 +591,23 @@
       this.View = options;
     } else {
       for (var key in options) {
-        if (EVENTS[key]) {
+        if (EVENT$1[key]) {
           this.on(key, options[key]);
         } else {
           this[key] = options[key];
         }
       }
     }
+    this.trigger(EVENT$1.init);
+    this.trigger(EVENT$1.inited);
   }
 
   inherits(ViewList, Observable);
 
   define(ViewList.prototype, {
     update: function (data) {
+      this.trigger(EVENT$1.update, data);
+
       var viewList = this;
       var views = new Array(data.length);
       var lookup = {};
@@ -616,13 +620,6 @@
         var id = key && item[key];
         var ViewClass = this.View || this.view || View;
         var view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();
-
-        for (var j = 0; j < EVENTS.length; j++) {
-          var name = EVENTS[j];
-          view.on(name, function (data) {
-            viewList.trigger(name, view, data);
-          });
-        }
 
         if (key) lookup[id] = view;
 
@@ -643,8 +640,11 @@
       this.views = views;
       this.lookup = lookup;
       if (this.parent) this.parent.setChildren(views);
+
+      this.trigger(EVENT$1.updated);
     },
     destroy: function () {
+      this.trigger(EVENT$1.destroy);
       this.update([]);
       this.off();
     }
