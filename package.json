@@ -7,6 +7,7 @@
   "main": "dist/frzr-server.js",
   "scripts": {
     "start": "node watch",
+    "deploy": "gh-pages -d dist",
     "build": "npm run test && npm run build-server-js",
     "build-js": "rollup -n frzr -f umd -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
     "build-server-js": "rollup -n frzr -f cjs -i src/server/index.js -o dist/frzr-server.js",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "browserify": "^13.0.0",
     "chokidar": "^1.4.1",
+    "gh-pages": "^0.8.0",
     "rollup": "^0.24.0",
     "tape": "^4.2.2",
     "tape-run": "^2.1.0",
