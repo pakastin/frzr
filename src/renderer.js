@@ -3,7 +3,7 @@ export function renderer (handler) {
   var nextRender = noOp;
   var rendering = false;
 
-  return function needRender () {
+  return function needRender (data) {
     if (rendering) {
       nextRender = needRender;
       return;
@@ -14,7 +14,7 @@ export function renderer (handler) {
       var _nextRender = nextRender;
       nextRender = noOp;
       _nextRender();
-    });
+    }, data);
   }
 }
 function noOp () {};
