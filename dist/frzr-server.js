@@ -943,9 +943,10 @@ function renderer (handler) {
   var nextRender = noOp;
   var rendering = false;
 
-  return function needRender () {
+  return function needRender (data) {
     if (rendering) {
       nextRender = needRender;
+      data = data;
       return;
     }
     rendering = true;
@@ -953,8 +954,8 @@ function renderer (handler) {
       rendering = false;
       var _nextRender = nextRender;
       nextRender = noOp;
-      _nextRender();
-    });
+      _nextRender(data);
+    }, data);
   }
 }
 function noOp () {};
