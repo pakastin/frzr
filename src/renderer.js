@@ -6,6 +6,7 @@ export function renderer (handler) {
   return function needRender (data) {
     if (rendering) {
       nextRender = needRender;
+      data = data;
       return;
     }
     rendering = true;
@@ -13,7 +14,7 @@ export function renderer (handler) {
       rendering = false;
       var _nextRender = nextRender;
       nextRender = noOp;
-      _nextRender();
+      _nextRender(data);
     }, data);
   }
 }
