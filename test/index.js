@@ -88,3 +88,18 @@ test('animation', function (t) {
 
   body.addChild(p);
 });
+
+test('renderer', function (t) {
+  t.plan(2);
+  var updated = 0;
+  var rendered = 0;
+  var updater = frzr.renderer(function (next, data) {
+    setTimeout(function () {
+      t.equal(data, rendered++ ? 2 : 0);
+      next();
+    }, 50);
+  });
+  updater(updated++);
+  updater(updated++);
+  updater(updated++);
+});

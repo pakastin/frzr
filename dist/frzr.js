@@ -792,11 +792,13 @@
 
   function renderer (handler) {
     var nextRender = noOp;
+    var nextData = null;
     var rendering = false;
 
     return function needRender (data) {
       if (rendering) {
         nextRender = needRender;
+        nextData = data;
         data = data;
         return;
       }
@@ -804,8 +806,10 @@
       handler(function () {
         rendering = false;
         var _nextRender = nextRender;
+        var _nextData = nextData;
         nextRender = noOp;
-        _nextRender(data);
+        nextData = null;
+        _nextRender(_nextData);
       }, data);
     }
   }
