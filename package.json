@@ -29,12 +29,12 @@
   },
   "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "browserify": "^13.0.0",
-    "chokidar": "^1.4.1",
-    "gh-pages": "^0.8.0",
-    "rollup": "^0.24.0",
-    "tape": "^4.2.2",
-    "tape-run": "^2.1.0",
-    "uglify-js": "^2.6.1"
+    "browserify": "~13.0.0",
+    "chokidar": "~1.4.2",
+    "gh-pages": "~0.8.0",
+    "rollup": "~0.25.1",
+    "tape": "~4.4.0",
+    "tape-run": "~2.1.2",
+    "uglify-js": "~2.6.1"
   }
 }
