@@ -1,460 +1,5 @@
 'use strict';
 
-function each (array, iterator) {
-  for (var i = 0; i < array.length; i++) {
-    iterator(array[i], i);
-  }
-}
-
-function shuffle (array) {
-  if (!array || !array.length) {
-    return array;
-  }
-
-  for (var i = array.length - 1; i > 0; i--) {
-    var rnd = Math.random() * i | 0;
-    var temp = array[i];
-
-    array[i] = array[rnd];
-    array[rnd] = temp;
-  }
-
-  return array;
-}
-
-function inherits (Class, SuperClass) {
-  Class.prototype = Object.create(SuperClass.prototype, {
-    constructor: {
-      value: Class
-    }
-  });
-}
-
-function define (target, properties) {
-  for (var propertyName in properties) {
-    Object.defineProperty(target, propertyName, {
-      value: properties[propertyName]
-    });
-  }
-}
-
-function extend (target, properties) {
-  for (var propertyName in properties) {
-    target[propertyName] = properties[propertyName];
-  }
-  return target;
-}
-
-function extendable (Class) {
-  Class.extend = function extend (options) {
-    function ExtendedClass (data) {
-      Class.call(this, options, data);
-    }
-
-    inherits(ExtendedClass, Class);
-
-    return ExtendedClass;
-  };
-}
-
-function Observable (options) {
-  Object.defineProperty(this, 'listeners', {
-    enumerable: false,
-    value: {},
-    writable: true
-  });
-
-  for (var key in options) {
-    this[key] = options[key];
-  }
-}
-
-define(Observable.prototype, {
-  on: function (eventName, handler) {
-    if (typeof this.listeners[eventName] === 'undefined') {
-      this.listeners[eventName] = [];
-    }
-
-    this.listeners[eventName].push({ handler: handler, one: false });
-
-    return this;
-  },
-  one: function (eventName, handler) {
-    if (!this.listeners[eventName]) this.listeners[eventName] = [];
-
-    this.listeners[eventName].push({ handler: handler, one: true });
-
-    return this;
-  },
-  trigger: function (eventName) {
-    var listeners = this.listeners[eventName];
-
-    if (!listeners) {
-      return this;
-    }
-
-    var args = new Array(arguments.length - 1);
-
-    for (var i = 1; i < arguments.length; i++) {
-      args[i - 1] = arguments[i];
-    }
-
-    for (i = 0; i < listeners.length; i++) {
-      listeners[i].handler.apply(this, args);
-
-      if (listeners[i].one) {
-        listeners.splice(i--, 1);
-      }
-    }
-
-    return this;
-  },
-  off: function (name, handler) {
-    if (typeof name === 'undefined') {
-      this.listeners = {};
-    } else if (typeof handler === 'undefined') {
-      this.listeners[name] = [];
-    } else {
-      var listeners = this.listeners[name];
-
-      if (!listeners) {
-        return this;
-      }
-
-      for (var i = 0; i < listeners.length; i++) {
-        if (listeners[i].handler === handler) {
-          listeners.splice(i--, 1);
-        }
-      }
-    }
-    return this;
-  }
-});
-
-function observable (options) {
-  return new Observable(options);
-}
-
-var style = (typeof document !== 'undefined') ? (document.createElement('p').style) : {};
-var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
-var memoized = {};
-
-function prefix (propertyName) {
-  if (typeof memoized[propertyName] !== 'undefined') {
-    return memoized[propertyName];
-  }
-
-  if (typeof style[propertyName] !== 'undefined') {
-    memoized[propertyName] = propertyName;
-    return propertyName;
-  }
-
-  var camelCase = propertyName[0].toUpperCase() + propertyName.slice(1);
-
-  for (var i = 0, len = prefixes.length; i < len; i++) {
-    var test = prefixes[i] + camelCase;
-
-    if (typeof style[test] !== 'undefined') {
-      memoized[propertyName] = test;
-
-      return test;
-    }
-  }
-}
-
-function el (tagName, attributes) {
-  attributes = attributes || {};
-  if (attributes.svg) {
-    var element =  document.createElementNS("http://www.w3.org/2000/svg", "svg")
-  } else {
-    var element = document.createElement(tagName || 'div');
-  }
-
-  for (var key in attributes) {
-    if (key === 'text') {
-      element.textContent = attributes.text;
-    } else if (key === 'svg') {
-      continue;
-    } else if (key === 'style') {
-      var styles = attributes.style.split(';');
-      for (var i = 0; i < styles.length; i++) {
-        var styleParts = styles[i].split(':');
-        if (styleParts.length > 1) {
-          element.style[styleParts[0].trim()] = styleParts[1].trim();
-        }
-      }
-    } else if (key === 'html') {
-      element.innerHTML = attributes[key];
-    } else {
-      element[key] = attributes[key];
-    }
-  }
-  return element;
-}
-
-var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
-  obj[name] = name;
-  return obj;
-}, {});
-
-function View (options, data) {
-  if (!(this instanceof View)) {
-    return new View(options, data);
-  }
-
-  Observable.call(this);
-
-  options = options || {};
-
-  this.el = null;
-  this.eventListeners = [];
-  this.listeners = {};
-
-  if (window.HTMLElement && (options instanceof window.HTMLElement)) {
-    this.el = options;
-  } else {
-    for (var key in options) {
-      if (EVENT[key]) {
-        this.on(key, options[key]);
-      } else if (key === 'text' && !options.el) {
-          this.el = document.createTextNode(options.text || '');
-      } else if (key === 'el') {
-        if (typeof options.el === 'string') {
-          this.el = document.createElement(options.el);
-          if (options.text) this.el.textContent = options.text;
-          if (options.html) this.el.innerHTML = options.html;
-        } else if (options.el instanceof Array) {
-          this.el = el(options.el[0], options.el[1]);
-        } else {
-          this.el = options.el;
-        }
-      } else {
-        this[key] = options[key];
-      }
-    }
-  }
-
-  this.trigger(EVENT.init, data);
-  if (!this.el) {
-    this.el = document.createElement('div');
-  }
-  this.el.view = this;
-  this.trigger(EVENT.inited, data);
-}
-
-inherits(View, Observable);
-
-define(View.prototype, {
-  setAttr: function (attributeName, value) {
-    if (this.el[attributeName] !== value) {
-      this.el[attributeName] = value;
-    }
-
-    return this;
-  },
-  setClass: function (className, value) {
-    if (this.el.classList.contains(className) !== value) {
-      if (value) {
-        this.el.classList.add(className);
-      } else {
-        this.el.classList.remove(className);
-      }
-    }
-
-    return this;
-  },
-  setStyle: function (propertyName, value) {
-    if (this.el.style[propertyName] !== value) {
-      this.el.style[propertyName] = value;
-    }
-
-    return this;
-  },
-  setText: function (text) {
-    if (this.el.textContent !== text) {
-      this.el.textContent = text;
-    }
-
-    return this;
-  },
-  setHTML: function (html) {
-    if (this.el.innerHTML !== html) {
-      this.el.innerHTML = html;
-    }
-
-    return this;
-  },
-  addListener: function (listenerName, handler, useCapture) {
-    var view = this;
-    var listener = {
-      name: listenerName,
-      handler: handler,
-      proxy: function (e) {
-        handler.call(view, e);
-      }
-    };
-    if (!this.eventListeners) this.eventListeners = [];
-
-    this.eventListeners.push(listener);
-    this.el.addEventListener(listenerName, listener.proxy, useCapture);
-
-    return this;
-  },
-  removeListener: function (listenerName, handler) {
-    var listeners = this.eventListeners;
-    if (!listeners) {
-      return this;
-    }
-    if (typeof listenerName === 'undefined') {
-      for (var i = 0; i < listeners.length; i++) {
-        this.el.removeEventListener(listeners[i].proxy);
-      }
-      this.listeners = [];
-    } else if (typeof handler === 'undefined') {
-      for (var i = 0; i < listeners.length; i++) {
-        if (listeners[i].name === listenerName) {
-          listeners.splice(i--, 1);
-        }
-      }
-    } else {
-      for (var i = 0; i < listeners.length; i++) {
-        var listener = listeners[i];
-        if (listener.name === listenerName && handler === listener.handler) {
-          listeners.splice(i--, 1);
-        }
-      }
-    }
-
-    return this;
-  },
-  addChild: function (child) {
-    if (child.views) {
-      child.parent = this;
-      return this.setChildren(child.views);
-    }
-    var sorting = false;
-    if (child.parent) {
-      sorting = true;
-      child.trigger(EVENT.sort);
-    } else {
-      child.trigger(EVENT.mount);
-    }
-
-    this.el.appendChild(child.el);
-    child.parent = this;
-
-    if (sorting) {
-      child.trigger(EVENT.sorted);
-    } else {
-      child.trigger(EVENT.mounted);
-    }
-
-    return this;
-  },
-  addBefore: function (child, before) {
-    var sorting = false;
-
-    if (child.parent) {
-      sorting = true;
-      child.trigger(EVENT.sort);
-    } else {
-      child.trigger(EVENT.mount);
-    }
-
-    this.el.insertBefore(child.el, before.el || before);
-    child.parent = this;
-
-    if (sorting) {
-      child.trigger(EVENT.sorted);
-    } else {
-      child.trigger(EVENT.mounted);
-    }
-
-    return this;
-  },
-  addAfter: function (child, after) {
-    var afterEl = after.el || after;
-    var nextAfterEl = afterEl.nextSibling;
-
-    if (nextAfterEl) {
-      this.addBefore(child, nextAfterEl);
-    } else {
-      this.addChild(child);
-    }
-  },
-  setChildren: function (views) {
-    if (views.views) {
-      views.parent = this;
-      return this.setChildren(views.views);
-    }
-    var traverse = this.el.firstChild;
-
-    for (var i = 0; i < views.length; i++) {
-      var view = views[i];
-
-      if (traverse === view.el) {
-        traverse = traverse.nextSibling;
-        continue;
-      }
-      if (traverse) {
-        this.addBefore(view, traverse);
-      } else {
-        this.addChild(view);
-      }
-    }
-    while (traverse) {
-      var next = traverse.nextSibling;
-
-      if (traverse.view) {
-        traverse.view.parent.removeChild(traverse.view);
-      } else {
-        this.el.removeChild(traverse);
-      }
-
-      traverse = next;
-    }
-
-    return this;
-  },
-  removeChild: function (child) {
-    if (!child.parent) {
-      return this;
-    }
-    child.trigger(EVENT.unmount);
-
-    this.el.removeChild(child.el);
-    child.parent = null;
-
-    child.trigger(EVENT.unmounted);
-
-    return this;
-  },
-  update: function (data) {
-    this.trigger(EVENT.update, data);
-  },
-  destroy: function () {
-    this.trigger(EVENT.destroy);
-    if (this.parent) this.parent.removeChild(this);
-
-    var traverse = this.el.firstChild;
-
-    while (traverse) {
-      if (traverse.view) {
-        traverse.view.destroy();
-      } else {
-        this.el.removeChild(traverse);
-      }
-      traverse = this.el.firstChild;
-    }
-    this.off();
-    this.removeListener();
-  }
-});
-
-extendable(View);
-
-var view = View;
-
 function ClassList (el) {
   var classNames = (this.className && this.className.split(' ')) || [];
 
@@ -720,6 +265,464 @@ function bounceInOut (t) {
   }
   return 1 - bounceIn((1 - t) * 2) / 2;
 }
+
+function each (array, iterator) {
+  for (var i = 0; i < array.length; i++) {
+    iterator(array[i], i);
+  }
+}
+
+function shuffle (array) {
+  if (!array || !array.length) {
+    return array;
+  }
+
+  for (var i = array.length - 1; i > 0; i--) {
+    var rnd = Math.random() * i | 0;
+    var temp = array[i];
+
+    array[i] = array[rnd];
+    array[rnd] = temp;
+  }
+
+  return array;
+}
+
+function inherits (Class, SuperClass) {
+  Class.prototype = Object.create(SuperClass.prototype, {
+    constructor: {
+      value: Class
+    }
+  });
+}
+
+function define (target, properties) {
+  for (var propertyName in properties) {
+    Object.defineProperty(target, propertyName, {
+      value: properties[propertyName]
+    });
+  }
+}
+
+function extend (target, properties) {
+  for (var propertyName in properties) {
+    target[propertyName] = properties[propertyName];
+  }
+  return target;
+}
+
+function extendable (Class) {
+  Class.extend = function extend (options) {
+    function ExtendedClass (data) {
+      if (!(this instanceof ExtendedClass)) {
+        return new ExtendedClass(data);
+      }
+      Class.call(this, options, data);
+    }
+
+    inherits(ExtendedClass, Class);
+
+    return ExtendedClass;
+  };
+}
+
+var style = (typeof document !== 'undefined') ? (document.createElement('p').style) : {};
+var prefixes = ['webkit', 'moz', 'Moz', 'ms', 'o'];
+var memoized = {};
+
+function prefix (propertyName) {
+  if (typeof memoized[propertyName] !== 'undefined') {
+    return memoized[propertyName];
+  }
+
+  if (typeof style[propertyName] !== 'undefined') {
+    memoized[propertyName] = propertyName;
+    return propertyName;
+  }
+
+  var camelCase = propertyName[0].toUpperCase() + propertyName.slice(1);
+
+  for (var i = 0, len = prefixes.length; i < len; i++) {
+    var test = prefixes[i] + camelCase;
+
+    if (typeof style[test] !== 'undefined') {
+      memoized[propertyName] = test;
+
+      return test;
+    }
+  }
+}
+
+function el (tagName, attributes) {
+  attributes = attributes || {};
+  if (attributes.svg) {
+    var element =  document.createElementNS("http://www.w3.org/2000/svg", "svg")
+  } else {
+    var element = document.createElement(tagName || 'div');
+  }
+
+  for (var key in attributes) {
+    if (key === 'text') {
+      element.textContent = attributes.text;
+    } else if (key === 'svg') {
+      continue;
+    } else if (key === 'style') {
+      var styles = attributes.style.split(';');
+      for (var i = 0; i < styles.length; i++) {
+        var styleParts = styles[i].split(':');
+        if (styleParts.length > 1) {
+          element.style[styleParts[0].trim()] = styleParts[1].trim();
+        }
+      }
+    } else if (key === 'html') {
+      element.innerHTML = attributes[key];
+    } else {
+      element[key] = attributes[key];
+    }
+  }
+  return element;
+}
+
+function Observable (options) {
+  Object.defineProperty(this, 'listeners', {
+    enumerable: false,
+    value: {},
+    writable: true
+  });
+
+  for (var key in options) {
+    this[key] = options[key];
+  }
+}
+
+define(Observable.prototype, {
+  on: function (eventName, handler) {
+    if (typeof this.listeners[eventName] === 'undefined') {
+      this.listeners[eventName] = [];
+    }
+
+    this.listeners[eventName].push({ handler: handler, one: false });
+
+    return this;
+  },
+  one: function (eventName, handler) {
+    if (!this.listeners[eventName]) this.listeners[eventName] = [];
+
+    this.listeners[eventName].push({ handler: handler, one: true });
+
+    return this;
+  },
+  trigger: function (eventName) {
+    var listeners = this.listeners[eventName];
+
+    if (!listeners) {
+      return this;
+    }
+
+    var args = new Array(arguments.length - 1);
+
+    for (var i = 1; i < arguments.length; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    for (i = 0; i < listeners.length; i++) {
+      listeners[i].handler.apply(this, args);
+
+      if (listeners[i].one) {
+        listeners.splice(i--, 1);
+      }
+    }
+
+    return this;
+  },
+  off: function (name, handler) {
+    if (typeof name === 'undefined') {
+      this.listeners = {};
+    } else if (typeof handler === 'undefined') {
+      this.listeners[name] = [];
+    } else {
+      var listeners = this.listeners[name];
+
+      if (!listeners) {
+        return this;
+      }
+
+      for (var i = 0; i < listeners.length; i++) {
+        if (listeners[i].handler === handler) {
+          listeners.splice(i--, 1);
+        }
+      }
+    }
+    return this;
+  }
+});
+
+function observable (options) {
+  return new Observable(options);
+}
+
+var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
+  obj[name] = name;
+  return obj;
+}, {});
+
+function View (options, data) {
+  if (!(this instanceof View)) {
+    return new View(options, data);
+  }
+
+  Observable.call(this);
+
+  options = options || {};
+
+  this.el = null;
+  this.eventListeners = [];
+  this.listeners = {};
+
+  if (window.HTMLElement && (options instanceof window.HTMLElement)) {
+    this.el = options;
+  } else {
+    for (var key in options) {
+      if (EVENT[key]) {
+        this.on(key, options[key]);
+      } else if (key === 'text' && !options.el) {
+          this.el = document.createTextNode(options.text || '');
+      } else if (key === 'el') {
+        if (typeof options.el === 'string') {
+          this.el = document.createElement(options.el);
+          if (options.text) this.el.textContent = options.text;
+          if (options.html) this.el.innerHTML = options.html;
+        } else if (options.el instanceof Array) {
+          this.el = el(options.el[0], options.el[1]);
+        } else {
+          this.el = options.el;
+        }
+      } else {
+        this[key] = options[key];
+      }
+    }
+  }
+
+  this.trigger(EVENT.init, data);
+  if (!this.el) {
+    this.el = document.createElement('div');
+  }
+  this.el.view = this;
+  this.trigger(EVENT.inited, data);
+}
+
+inherits(View, Observable);
+
+define(View.prototype, {
+  setAttr: function (attributeName, value) {
+    if (this.el[attributeName] !== value) {
+      this.el[attributeName] = value;
+    }
+
+    return this;
+  },
+  setClass: function (className, value) {
+    if (this.el.classList.contains(className) !== value) {
+      if (value) {
+        this.el.classList.add(className);
+      } else {
+        this.el.classList.remove(className);
+      }
+    }
+
+    return this;
+  },
+  setStyle: function (propertyName, value) {
+    if (this.el.style[propertyName] !== value) {
+      this.el.style[propertyName] = value;
+    }
+
+    return this;
+  },
+  setText: function (text) {
+    if (this.el.textContent !== text) {
+      this.el.textContent = text;
+    }
+
+    return this;
+  },
+  setHTML: function (html) {
+    if (this.el.innerHTML !== html) {
+      this.el.innerHTML = html;
+    }
+
+    return this;
+  },
+  addListener: function (listenerName, handler, useCapture) {
+    var view = this;
+    var listener = {
+      name: listenerName,
+      handler: handler,
+      proxy: function (e) {
+        handler.call(view, e);
+      }
+    };
+    if (!this.eventListeners) this.eventListeners = [];
+
+    this.eventListeners.push(listener);
+    this.el.addEventListener(listenerName, listener.proxy, useCapture);
+
+    return this;
+  },
+  removeListener: function (listenerName, handler) {
+    var listeners = this.eventListeners;
+    if (!listeners) {
+      return this;
+    }
+    if (typeof listenerName === 'undefined') {
+      for (var i = 0; i < listeners.length; i++) {
+        this.el.removeEventListener(listeners[i].proxy);
+      }
+      this.listeners = [];
+    } else if (typeof handler === 'undefined') {
+      for (var i = 0; i < listeners.length; i++) {
+        if (listeners[i].name === listenerName) {
+          listeners.splice(i--, 1);
+        }
+      }
+    } else {
+      for (var i = 0; i < listeners.length; i++) {
+        var listener = listeners[i];
+        if (listener.name === listenerName && handler === listener.handler) {
+          listeners.splice(i--, 1);
+        }
+      }
+    }
+
+    return this;
+  },
+  addChild: function (child) {
+    if (child.views) {
+      child.parent = this;
+      return this.setChildren(child.views);
+    }
+    var sorting = false;
+    if (child.parent) {
+      sorting = true;
+      child.trigger(EVENT.sort);
+    } else {
+      child.trigger(EVENT.mount);
+    }
+
+    this.el.appendChild(child.el);
+    child.parent = this;
+
+    if (sorting) {
+      child.trigger(EVENT.sorted);
+    } else {
+      child.trigger(EVENT.mounted);
+    }
+
+    return this;
+  },
+  addBefore: function (child, before) {
+    var sorting = false;
+
+    if (child.parent) {
+      sorting = true;
+      child.trigger(EVENT.sort);
+    } else {
+      child.trigger(EVENT.mount);
+    }
+
+    this.el.insertBefore(child.el, before.el || before);
+    child.parent = this;
+
+    if (sorting) {
+      child.trigger(EVENT.sorted);
+    } else {
+      child.trigger(EVENT.mounted);
+    }
+
+    return this;
+  },
+  addAfter: function (child, after) {
+    var afterEl = after.el || after;
+    var nextAfterEl = afterEl.nextSibling;
+
+    if (nextAfterEl) {
+      this.addBefore(child, nextAfterEl);
+    } else {
+      this.addChild(child);
+    }
+  },
+  setChildren: function (views) {
+    if (views.views) {
+      views.parent = this;
+      return this.setChildren(views.views);
+    }
+    var traverse = this.el.firstChild;
+
+    for (var i = 0; i < views.length; i++) {
+      var view = views[i];
+
+      if (traverse === view.el) {
+        traverse = traverse.nextSibling;
+        continue;
+      }
+      if (traverse) {
+        this.addBefore(view, traverse);
+      } else {
+        this.addChild(view);
+      }
+    }
+    while (traverse) {
+      var next = traverse.nextSibling;
+
+      if (traverse.view) {
+        traverse.view.parent.removeChild(traverse.view);
+      } else {
+        this.el.removeChild(traverse);
+      }
+
+      traverse = next;
+    }
+
+    return this;
+  },
+  removeChild: function (child) {
+    if (!child.parent) {
+      return this;
+    }
+    child.trigger(EVENT.unmount);
+
+    this.el.removeChild(child.el);
+    child.parent = null;
+
+    child.trigger(EVENT.unmounted);
+
+    return this;
+  },
+  update: function (data) {
+    this.trigger(EVENT.update, data);
+  },
+  destroy: function () {
+    this.trigger(EVENT.destroy);
+    if (this.parent) this.parent.removeChild(this);
+
+    var traverse = this.el.firstChild;
+
+    while (traverse) {
+      if (traverse.view) {
+        traverse.view.destroy();
+      } else {
+        this.el.removeChild(traverse);
+      }
+      traverse = this.el.firstChild;
+    }
+    this.off();
+    this.removeListener();
+  }
+});
+
+extendable(View);
+
+var view = View;
 
 var EVENT$1 = 'init inited update updated destroy'.split(' ').reduce(function (obj, key) {
   obj[key] = key;
