@@ -47,6 +47,9 @@ export function extend (target, properties) {
 export function extendable (Class) {
   Class.extend = function extend (options) {
     function ExtendedClass (data) {
+      if (!(this instanceof ExtendedClass)) {
+        return new ExtendedClass(data);
+      }
       Class.call(this, options, data);
     }
 
