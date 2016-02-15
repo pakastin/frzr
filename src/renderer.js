@@ -1,25 +1,24 @@
 
 export function renderer (handler) {
-  var nextRender = noOp;
   var nextData = null;
   var rendering = false;
+  var needRender = false;
 
-  return function needRender (data) {
+  return function requestRender (data) {
     if (rendering) {
-      nextRender = needRender;
+      needRender = true;
       nextData = data;
-      data = data;
       return;
     }
     rendering = true;
+    needRender = false;
+    nextData = null;
+    
     handler(function () {
       rendering = false;
-      var _nextRender = nextRender;
-      var _nextData = nextData;
-      nextRender = noOp;
-      nextData = null;
-      _nextRender(_nextData);
+      if (needRender) {
+        requestRender(nextData);
+      }
     }, data);
   }
 }
-function noOp () {};
