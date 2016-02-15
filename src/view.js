@@ -8,9 +8,9 @@ var EVENT = 'init inited mount mounted unmount unmounted sort sorted update upda
   return obj;
 }, {});
 
-export function View (options, data, children) {
+export function View (options, data) {
   if (!(this instanceof View)) {
-    return new View(options, data, children);
+    return new View(options, data);
   }
 
   Observable.call(this);
@@ -43,9 +43,6 @@ export function View (options, data, children) {
         this[key] = options[key];
       }
     }
-  }
-  for (var key in children) {
-    this[key] = children[key];
   }
   this.trigger(EVENT.init, data);
   if (!this.el) {
@@ -264,17 +261,6 @@ define(View.prototype, {
   }
 });
 
-View.extend = function extend (options) {
-  function ExtendedView (data, children) {
-    if (!(this instanceof ExtendedView)) {
-      return new ExtendedView(data, options, children);
-    }
-    View.call(this, options, data, children);
-  }
-
-  inherits(ExtendedView, View);
-
-  return ExtendedView;
-};
+extendable(View);
 
 export var view = View;
