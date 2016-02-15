@@ -44,15 +44,14 @@ export function View (options, data, children) {
       }
     }
   }
-
+  for (var key in children) {
+    this[key] = children[key];
+  }
   this.trigger(EVENT.init, data);
   if (!this.el) {
     this.el = document.createElement('div');
   }
   this.el.view = this;
-  for (var key in children) {
-    this[key] = children[key];
-  }
   this.trigger(EVENT.inited, data);
 }
 
