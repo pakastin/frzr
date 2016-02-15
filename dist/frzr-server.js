@@ -466,9 +466,9 @@ var EVENT = 'init inited mount mounted unmount unmounted sort sorted update upda
   return obj;
 }, {});
 
-function View (options, data) {
+function View (options, data, children) {
   if (!(this instanceof View)) {
-    return new View(options, data);
+    return new View(options, data, children);
   }
 
   Observable.call(this);
@@ -508,6 +508,9 @@ function View (options, data) {
     this.el = document.createElement('div');
   }
   this.el.view = this;
+  for (var key in children) {
+    this[key] = children[key];
+  }
   this.trigger(EVENT.inited, data);
 }
 
@@ -720,7 +723,18 @@ define(View.prototype, {
   }
 });
 
-extendable(View);
+View.extend = function extend (options) {
+  function ExtendedView (data, children) {
+    if (!(this instanceof ExtendedView)) {
+      return new ExtendedView(data, options, children);
+    }
+    View.call(this, options, data, children);
+  }
+
+  inherits(ExtendedView, View);
+
+  return ExtendedView;
+};
 
 var view = View;
 
