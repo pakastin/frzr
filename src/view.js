@@ -56,8 +56,14 @@ inherits(View, Observable);
 
 define(View.prototype, {
   setAttr: function (attributeName, value) {
-    if (this.el[attributeName] !== value) {
-      this.el[attributeName] = value;
+    if (this.el[attributeName] != null) {
+      if (this.el[attributeName] !== value) {
+        this.el[attributeName] = value;
+      }
+    } else {
+      if (this.el.getAttribute(attributeName) !== value) {
+        this.el.setAttribute(attributeName);
+      }
     }
 
     return this;

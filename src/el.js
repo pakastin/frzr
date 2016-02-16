@@ -26,7 +26,11 @@ export function el (tagName, attributes) {
     } else if (key === 'html') {
       element.innerHTML = attributes[key];
     } else {
-      element[key] = attributes[key];
+      if (element[key] != null) {
+        element[key] = attributes[key];
+      } else {
+        element.setAttribute(key, attributes[key]);
+      }
     }
   }
   return element;
