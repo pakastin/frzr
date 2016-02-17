@@ -228,7 +228,11 @@
       } else if (key === 'html') {
         element.innerHTML = attributes[key];
       } else {
-        element[key] = attributes[key];
+        if (element[key] != null) {
+          element[key] = attributes[key];
+        } else {
+          element.setAttribute(key, attributes[key]);
+        }
       }
     }
     return element;
@@ -365,8 +369,14 @@
 
   define(View.prototype, {
     setAttr: function (attributeName, value) {
-      if (this.el[attributeName] !== value) {
-        this.el[attributeName] = value;
+      if (this.el[attributeName] != null) {
+        if (this.el[attributeName] !== value) {
+          this.el[attributeName] = value;
+        }
+      } else {
+        if (this.el.getAttribute(attributeName) !== value) {
+          this.el.setAttribute(attributeName);
+        }
       }
 
       return this;
@@ -793,29 +803,28 @@
   }
 
   function renderer (handler) {
-    var nextRender = noOp;
     var nextData = null;
     var rendering = false;
+    var needRender = false;
 
-    return function needRender (data) {
+    return function requestRender (data) {
       if (rendering) {
-        nextRender = needRender;
+        needRender = true;
         nextData = data;
-        data = data;
         return;
       }
       rendering = true;
+      needRender = false;
+      nextData = null;
+      
       handler(function () {
         rendering = false;
-        var _nextRender = nextRender;
-        var _nextData = nextData;
-        nextRender = noOp;
-        nextData = null;
-        _nextRender(_nextData);
+        if (needRender) {
+          requestRender(nextData);
+        }
       }, data);
     }
   }
-  function noOp () {};
 
   var has3d;
 
