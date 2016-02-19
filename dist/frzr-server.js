@@ -377,177 +377,88 @@ function el (tagName, attributes) {
     } else if (key === 'html') {
       element.innerHTML = attributes[key];
     } else {
-      if (element[key] != null) {
-        element[key] = attributes[key];
-      } else {
-        element.setAttribute(key, attributes[key]);
-      }
+      element[key] = attributes[key];
     }
   }
   return element;
 }
 
-function Observable (obj) {
-  if (!(this instanceof Observable)) {
-    return new Observable(obj);
-  };
+function Observable (options) {
   Object.defineProperty(this, 'listeners', {
+    enumerable: false,
     value: {},
     writable: true
   });
-  Object.defineProperty(this, 'asyncListeners', {
-    value: {},
-    writable: true
-  });
-  if (obj) {
-    for (var key in obj) {
-      this[key] = obj[key];
-    }
+
+  for (var key in options) {
+    this[key] = options[key];
   }
 }
 
-Observable.prototype.on = on(false);
-Observable.prototype.one = on(true);
-Observable.prototype.off = off;
-Observable.prototype.trigger = trigger;
-Observable.prototype.onAsync = onAsync(false);
-Observable.prototype.oneAsync = onAsync(true);
-Observable.prototype.offAsync = offAsync;
-Observable.prototype.triggerAsync = triggerAsync;
+define(Observable.prototype, {
+  on: function (eventName, handler) {
+    if (typeof this.listeners[eventName] === 'undefined') {
+      this.listeners[eventName] = [];
+    }
 
-function on (one) {
-  return function on (name, handler, ctx) {
-    var listeners = this.listeners[name];
+    this.listeners[eventName].push({ handler: handler, one: false });
+
+    return this;
+  },
+  one: function (eventName, handler) {
+    if (!this.listeners[eventName]) this.listeners[eventName] = [];
+
+    this.listeners[eventName].push({ handler: handler, one: true });
+
+    return this;
+  },
+  trigger: function (eventName) {
+    var listeners = this.listeners[eventName];
 
     if (!listeners) {
-      listeners = this.listeners[name] = [];
+      return this;
     }
 
-    listeners.push({
-      one: one,
-      handler: handler,
-      ctx: ctx
-    });
+    var args = new Array(arguments.length - 1);
+
+    for (var i = 1; i < arguments.length; i++) {
+      args[i - 1] = arguments[i];
+    }
+
+    for (i = 0; i < listeners.length; i++) {
+      listeners[i].handler.apply(this, args);
+
+      if (listeners[i].one) {
+        listeners.splice(i--, 1);
+      }
+    }
 
     return this;
-  }
-}
+  },
+  off: function (name, handler) {
+    if (typeof name === 'undefined') {
+      this.listeners = {};
+    } else if (typeof handler === 'undefined') {
+      this.listeners[name] = [];
+    } else {
+      var listeners = this.listeners[name];
 
-function off (name, handler, ctx) {
-  if (!name) {
-    this.listeners = {};
-  } else if (!handler) {
-    this.listeners[name] = [];
-  }
-  var listeners = this.listeners[name];
-  if (!listeners) {
+      if (!listeners) {
+        return this;
+      }
+
+      for (var i = 0; i < listeners.length; i++) {
+        if (listeners[i].handler === handler) {
+          listeners.splice(i--, 1);
+        }
+      }
+    }
     return this;
   }
-  for (var i = 0; i < listeners.length; i++) {
-    var listener = listeners[i];
-    if (listener.handler !== handler) {
-      continue;
-    }
-    if (ctx && listener.ctx !== ctx) {
-      continue;
-    }
-    listeners.splice(i--, 1);
-  }
-}
+});
 
-function trigger (name) {
-  var args = new Array(arguments.length - 1);
-
-  for (var i = 0; i < args.length; i++) {
-    args[i] = arguments[i + 1];
-  }
-
-  var listeners = this.listeners[name];
-
-  if (!listeners) {
-    return this;
-  }
-
-  for (var i = 0; i < listeners.length; i++) {
-    var listener = listeners[i];
-    if (listener.one) {
-      listeners.splice(i--, 1);
-    }
-    listener.handler.apply(listener.ctx || this, args);
-  }
-}
-
-function onAsync (one) {
-  return function (name, handler, ctx) {
-    var listeners = this.asyncListeners[name];
-
-    if (!listeners) {
-      listeners = this.asyncListeners[name] = [];
-    }
-
-    listeners.push({
-      one: one,
-      handler: handler,
-      ctx: ctx
-    });
-
-    return this;
-  }
-}
-
-function offAsync (name, handler, ctx) {
-  if (!name) {
-    this.asyncListeners = {};
-    return this;
-  }
-
-  if (!handler) {
-    this.asyncListeners[name] = [];
-    return this;
-  }
-
-  var listeners = this.asyncListeners[name];
-  for (var i = 0; i < listeners.length; i++) {
-    var listener = listeners[i];
-    if (listener.handler !== handler) {
-      continue;
-    }
-    if (ctx && listener.ctx !== ctx) {
-      continue;
-    }
-    listeners.splice(i--, 1);
-  }
-}
-
-function triggerAsync (name, cb, data) {
-  var listeners = this.asyncListeners[name];
-
-  if (!listeners) {
-    cb(null, data);
-    return;
-  }
-
-  var i = 0;
-
-  trigger(null, data);
-
-  function trigger (err, data) {
-    if (err) {
-      cb(err);
-      return;
-    }
-    if (i > listeners.length - 1) {
-      cb(null, data);
-      return;
-    }
-    var listener = listeners[i++];
-    if (listener.one) {
-      listeners.splice(i--, 1);
-    }
-    listener.handler.call(listener.ctx || this, data, trigger);
-  }
-
-  return this;
+function observable (options) {
+  return new Observable(options);
 }
 
 var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
@@ -591,6 +502,7 @@ function View (options, data) {
       }
     }
   }
+
   this.trigger(EVENT.init, data);
   if (!this.el) {
     this.el = document.createElement('div');
@@ -603,14 +515,8 @@ inherits(View, Observable);
 
 define(View.prototype, {
   setAttr: function (attributeName, value) {
-    if (this.el[attributeName] != null) {
-      if (this.el[attributeName] !== value) {
-        this.el[attributeName] = value;
-      }
-    } else {
-      if (this.el.getAttribute(attributeName) !== value) {
-        this.el.setAttribute(attributeName);
-      }
+    if (this.el[attributeName] !== value) {
+      this.el[attributeName] = value;
     }
 
     return this;
@@ -690,7 +596,7 @@ define(View.prototype, {
 
     return this;
   },
-  appendChild: function (child) {
+  addChild: function (child) {
     if (child.views) {
       child.parent = this;
       return this.setChildren(child.views);
@@ -714,10 +620,7 @@ define(View.prototype, {
 
     return this;
   },
-  addChild: function (child) {
-    return this.appendChild(child);
-  },
-  insertBefore: function (child, before) {
+  addBefore: function (child, before) {
     var sorting = false;
 
     if (child.parent) {
@@ -738,10 +641,7 @@ define(View.prototype, {
 
     return this;
   },
-  addBefore: function (child, before) {
-    return this.insertBefore(child, before);
-  },
-  insertAfter: function (child, after) {
+  addAfter: function (child, after) {
     var afterEl = after.el || after;
     var nextAfterEl = afterEl.nextSibling;
 
@@ -750,9 +650,6 @@ define(View.prototype, {
     } else {
       this.addChild(child);
     }
-  },
-  addAfter: function (child, after) {
-    return this.insertAfter(child, after);
   },
   setChildren: function (views) {
     if (views.views) {
@@ -831,14 +728,10 @@ var EVENT$1 = 'init inited update updated destroy'.split(' ').reduce(function (o
   obj[key] = key;
   return obj;
 }, {});
-var ASYNCEVENT = 'preremove'.split(' ').reduce(function (obj, key) {
-  obj[key] = key;
-  return obj;
-}, {});
 
-function ViewList (options, data) {
+function ViewList (options) {
   if (!(this instanceof ViewList)) {
-    return new ViewList(options, data);
+    return new ViewList(options);
   }
 
   Observable.call(this);
@@ -852,38 +745,32 @@ function ViewList (options, data) {
     for (var key in options) {
       if (EVENT$1[key]) {
         this.on(key, options[key]);
-      } else if (ASYNCEVENT[key]) {
-        this.onAsync(key, options[key]);
       } else {
         this[key] = options[key];
       }
     }
   }
-  this.trigger(EVENT$1.init, data);
-  this.trigger(EVENT$1.inited, data);
-
-  data && this.update(data);
+  this.trigger(EVENT$1.init);
+  this.trigger(EVENT$1.inited);
 }
 
 inherits(ViewList, Observable);
 
 define(ViewList.prototype, {
   update: function (data) {
-    var self = this;
+    this.trigger(EVENT$1.update, data);
 
-    self.trigger(EVENT$1.update, data);
-
-    var viewList = self;
+    var viewList = this;
     var views = new Array(data.length);
     var lookup = {};
-    var currentViews = self.views;
-    var currentLookup = self.lookup;
-    var key = self.key;
+    var currentViews = this.views;
+    var currentLookup = this.lookup;
+    var key = this.key;
 
     for (var i = 0; i < data.length; i++) {
       var item = data[i];
       var id = key && item[key];
-      var ViewClass = self.View || self.view || View;
+      var ViewClass = this.View || this.view || View;
       var view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();
 
       if (key) lookup[id] = view;
@@ -891,30 +778,22 @@ define(ViewList.prototype, {
       views[i] = view;
       view.update(item);
     }
-    var removing = [];
     if (key) {
       for (var id in currentLookup) {
         if (!lookup[id]) {
-          removing.push(currentLookup[id]);
+          currentLookup[id].destroy();
         }
       }
     } else {
       for (var i = views.length; i < currentViews.length; i++) {
-        removing.push(views[i]);
+        currentViews[i].destroy();
       }
     }
-    if (self.parent) {
-      self.parent.setChildren(views.concat(removing));
-    }
-    this.triggerAsync(ASYNCEVENT.preremove, function () {
-      for (var i = 0; i < removing.length; i++) {
-        removing[i].destroy();
-      }
-    }, removing);
-    self.views = views;
-    self.lookup = lookup;
+    this.views = views;
+    this.lookup = lookup;
+    if (this.parent) this.parent.setChildren(views);
 
-    self.trigger(EVENT$1.updated);
+    this.trigger(EVENT$1.updated);
   },
   destroy: function () {
     this.trigger(EVENT$1.destroy);
@@ -975,9 +854,6 @@ var animations = [];
 var ticking;
 
 function Animation (options) {
-  if (!(this instanceof Animation)) {
-    return new Animation(options);
-  }
   Observable.call(this);
 
   var delay = options.delay || 0;
@@ -1025,7 +901,9 @@ define(Animation.prototype, {
   }
 });
 
-var animation = Animation;
+function animation (options) {
+  return new Animation(options);
+}
 
 function tick () {
   var now = Date.now();
@@ -1065,28 +943,29 @@ function tick () {
 }
 
 function renderer (handler) {
+  var nextRender = noOp;
   var nextData = null;
   var rendering = false;
-  var needRender = false;
 
-  return function requestRender (data) {
+  return function needRender (data) {
     if (rendering) {
-      needRender = true;
+      nextRender = needRender;
       nextData = data;
+      data = data;
       return;
     }
     rendering = true;
-    needRender = false;
-    nextData = null;
-    
     handler(function () {
       rendering = false;
-      if (needRender) {
-        requestRender(nextData);
-      }
+      var _nextRender = nextRender;
+      var _nextData = nextData;
+      nextRender = noOp;
+      nextData = null;
+      _nextRender(_nextData);
     }, data);
   }
 }
+function noOp () {};
 
 var has3d;
 
@@ -1158,6 +1037,7 @@ exports.viewList = viewList;
 exports.Animation = Animation;
 exports.animation = animation;
 exports.Observable = Observable;
+exports.observable = observable;
 exports.each = each;
 exports.shuffle = shuffle;
 exports.inherits = inherits;
