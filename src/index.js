@@ -5,7 +5,7 @@ export * from './prefix';
 export * from './view';
 export * from './viewlist';
 export * from './animation';
-export * from './observable';
+export * from '@pakastin/observable';
 export * from './utils';
 export * from './renderer';
 export * from './translate';
