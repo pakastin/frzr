@@ -3,14 +3,18 @@ var EVENT = 'init inited update updated destroy'.split(' ').reduce(function (obj
   obj[key] = key;
   return obj;
 }, {});
+var ASYNCEVENT = 'preremove'.split(' ').reduce(function (obj, key) {
+  obj[key] = key;
+  return obj;
+}, {});
 
-import { Observable } from './observable';
+import { Observable } from '@pakastin/observable';
 import { View } from './view';
 import { define, extendable, inherits } from './utils';
 
-export function ViewList (options) {
+export function ViewList (options, data) {
   if (!(this instanceof ViewList)) {
-    return new ViewList(options);
+    return new ViewList(options, data);
   }
 
   Observable.call(this);
@@ -24,32 +28,38 @@ export function ViewList (options) {
     for (var key in options) {
       if (EVENT[key]) {
         this.on(key, options[key]);
+      } else if (ASYNCEVENT[key]) {
+        this.onAsync(key, options[key]);
       } else {
         this[key] = options[key];
       }
     }
   }
-  this.trigger(EVENT.init);
-  this.trigger(EVENT.inited);
+  this.trigger(EVENT.init, data);
+  this.trigger(EVENT.inited, data);
+
+  data && this.update(data);
 }
 
 inherits(ViewList, Observable);
 
 define(ViewList.prototype, {
   update: function (data) {
-    this.trigger(EVENT.update, data);
+    var self = this;
 
-    var viewList = this;
+    self.trigger(EVENT.update, data);
+
+    var viewList = self;
     var views = new Array(data.length);
     var lookup = {};
-    var currentViews = this.views;
-    var currentLookup = this.lookup;
-    var key = this.key;
+    var currentViews = self.views;
+    var currentLookup = self.lookup;
+    var key = self.key;
 
     for (var i = 0; i < data.length; i++) {
       var item = data[i];
       var id = key && item[key];
-      var ViewClass = this.View || this.view || View;
+      var ViewClass = self.View || self.view || View;
       var view = (key ? currentLookup[id] : currentViews[i]) || new ViewClass();
 
       if (key) lookup[id] = view;
@@ -57,22 +67,30 @@ define(ViewList.prototype, {
       views[i] = view;
       view.update(item);
     }
+    var removing = [];
     if (key) {
       for (var id in currentLookup) {
         if (!lookup[id]) {
-          currentLookup[id].destroy();
+          removing.push(currentLookup[id]);
         }
       }
     } else {
       for (var i = views.length; i < currentViews.length; i++) {
-        currentViews[i].destroy();
+        removing.push(views[i]);
       }
     }
-    this.views = views;
-    this.lookup = lookup;
-    if (this.parent) this.parent.setChildren(views);
+    if (self.parent) {
+      self.parent.setChildren(views.concat(removing));
+    }
+    this.triggerAsync(ASYNCEVENT.preremove, function () {
+      for (var i = 0; i < removing.length; i++) {
+        removing[i].destroy();
+      }
+    }, removing);
+    self.views = views;
+    self.lookup = lookup;
 
-    this.trigger(EVENT.updated);
+    self.trigger(EVENT.updated);
   },
   destroy: function () {
     this.trigger(EVENT.destroy);
