@@ -1,7 +1,7 @@
 
 import { el } from './el';
 import { define, extendable, inherits } from './utils';
-import { Observable } from '@pakastin/observable';
+import { Observable } from './observable';
 
 var EVENT = 'init inited mount mounted unmount unmounted sort sorted update updated destroy'.split(' ').reduce(function (obj, name) {
   obj[name] = name;
@@ -143,7 +143,7 @@ define(View.prototype, {
 
     return this;
   },
-  appendChild: function (child) {
+  addChild: function (child) {
     if (child.views) {
       child.parent = this;
       return this.setChildren(child.views);
@@ -167,10 +167,7 @@ define(View.prototype, {
 
     return this;
   },
-  addChild: function (child) {
-    return this.appendChild(child);
-  },
-  insertBefore: function (child, before) {
+  addBefore: function (child, before) {
     var sorting = false;
 
     if (child.parent) {
@@ -191,10 +188,7 @@ define(View.prototype, {
 
     return this;
   },
-  addBefore: function (child, before) {
-    return this.insertBefore(child, before);
-  },
-  insertAfter: function (child, after) {
+  addAfter: function (child, after) {
     var afterEl = after.el || after;
     var nextAfterEl = afterEl.nextSibling;
 
@@ -203,9 +197,6 @@ define(View.prototype, {
     } else {
       this.addChild(child);
     }
-  },
-  addAfter: function (child, after) {
-    return this.insertAfter(child, after);
   },
   setChildren: function (views) {
     if (views.views) {

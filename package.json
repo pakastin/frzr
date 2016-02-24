@@ -6,13 +6,12 @@
   "browser:": "dist/frzr.js",
   "main": "dist/frzr-server.js",
   "scripts": {
-    "dev": "builder",
+    "start": "builder",
     "deploy": "gh-pages -d dist",
     "build": "npm run test && npm run build-server-js",
-    "build-js": "rollup -n frzr -f umd -c .rollup.js -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
-    "build-server-js": "rollup -n frzr -f cjs -c .rollup.js -i src/server/index.js -o dist/frzr-server.js",
-    "test": "npm run build-js && npm run build-server-js && tape test/server.js && browserify test/index.js | tape-run",
-    "postpublish": "git push origin --tags"
+    "build-js": "rollup -n frzr -f umd -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
+    "build-server-js": "rollup -n frzr -f cjs -i src/server/index.js -o dist/frzr-server.js",
+    "test": "npm run build-js && npm run build-server-js && tape test/server.js && browserify test/index.js | tape-run"
   },
   "builder": {
     "exec": [
@@ -43,17 +42,12 @@
   },
   "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
-    "@pakastin/builder": "0.0.5",
-    "@pakastin/observable": "~0.1.1",
+    "@pakastin/builder": "0.0.1",
     "browserify": "~13.0.0",
-    "gh-pages": "~0.10.0",
-    "rollup": "~0.25.4",
-    "rollup-plugin-node-resolve": "~1.4.0",
+    "gh-pages": "~0.8.0",
+    "rollup": "~0.25.1",
     "tape": "~4.4.0",
-    "tape-run": "~2.1.3",
+    "tape-run": "~2.1.2",
     "uglify-js": "~2.6.1"
-  },
-  "dependencies": {
-    "@pakastin/observable": "~0.1.1"
   }
 }

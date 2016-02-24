@@ -1,5 +1,5 @@
 
-import { Observable } from '@pakastin/observable';
+import { Observable } from './observable';
 import { ease } from './easing';
 import { baf } from './baf';
 import { define, inherits } from './utils';
@@ -8,9 +8,6 @@ var animations = [];
 var ticking;
 
 export function Animation (options) {
-  if (!(this instanceof Animation)) {
-    return new Animation(options);
-  }
   Observable.call(this);
 
   var delay = options.delay || 0;
@@ -58,7 +55,9 @@ define(Animation.prototype, {
   }
 });
 
-export var animation = Animation;
+export function animation (options) {
+  return new Animation(options);
+}
 
 function tick () {
   var now = Date.now();
