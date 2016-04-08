@@ -1,18 +1,18 @@
 
 var cp = require('child_process');
 
-exec('npm', 'run', 'build');
+exec('npm', ['run', 'build']);
+exec('chokidar', ['src/**/*.js', '-c', 'npm run build']);
+exec('chokidar', ['dist/frzr.js', '-c', 'npm run uglify']);
 
-exec('chokidar', 'src/**/*.js', '-c', 'npm run build');
+function exec (cmd, args) {
+  var child = cp.spawn(cmd, args || [])
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
 
-function exec (cmd) {
-  var args = new Array(arguments.length - 1);
-
-  for (var i = 0; i < args.length; i++) {
-    args[i] = arguments[i + 1];
+  var next = new Array(arguments.length - 2);
+  for (var i = 0; i < next.length; i++) {
+    next[i] = arguments[i + 2];
   }
-
-  var childProcess = cp.spawn(cmd, args);
-  childProcess.stdout.pipe(process.stdout);
-  childProcess.stderr.pipe(process.stderr);
+  next.length && exec.apply(this, next);
 }

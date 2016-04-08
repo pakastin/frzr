@@ -1,38 +1,29 @@
 {
   "name": "frzr",
-  "version": "0.10.1",
-  "description": "FRZR view library",
+  "version": "0.2.6",
+  "description": "Turboboosted 2 KB view library",
+  "main": "dist/frzr.js",
   "jsnext:main": "src/index.js",
-  "browser:": "dist/frzr.js",
-  "main": "dist/frzr-server.js",
   "scripts": {
     "dev": "node watch",
-    "build": "npm run test && npm run build-server-js",
-    "build-js": "rollup -n frzr -f umd -i src/index.js -o dist/frzr.js && uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
-    "build-server-js": "rollup -n frzr -f cjs -i src/server/index.js -o dist/frzr-server.js",
-    "test": "npm run build-js && npm run build-server-js && tape test/server.js && browserify test/index.js | tape-run"
+    "deploy": "gh-pages -d dist",
+    "build": "npm run test && rollup -n frzr -f umd src/index.js -o dist/frzr.js && npm run uglify",
+    "uglify": "uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
+    "postversion": "git push --tags",
+    "prepublish": "npm test",
+    "postpublish": "npm run deploy",
+    "test": "rollup -n frzr -f cjs src/index.js -o test/frzr.js && browserify -t coverify test/test.js | tape-run | coverify"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pakastin/frzr.git"
-  },
-  "keywords": [
-    "frzr",
-    "view",
-    "library"
-  ],
   "author": "Juha Lindstedt",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/pakastin/frzr/issues"
-  },
-  "homepage": "https://github.com/pakastin/frzr#readme",
   "devDependencies": {
     "browserify": "~13.0.0",
     "chokidar-cli": "~1.2.0",
-    "gh-pages": "~0.10.0",
+    "coverify": "~1.4.1",
+    "frzr-dom": "0.0.1",
+    "gh-pages": "~0.11.0",
     "rollup": "~0.25.4",
-    "tape": "~4.4.0",
+    "tape": "~4.5.1",
     "tape-run": "~2.1.3",
     "uglify-js": "~2.6.2"
   }
