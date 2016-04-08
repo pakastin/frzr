@@ -12,6 +12,9 @@ npm install frzr
 - Development: https://pakastin.github.io/frzr/frzr.js (4.5 KB)
 - Production: https://pakastin.github.io/frzr/frzr.min.js (2 KB)
 
+## Using at server-side
+[FRZR-dom](http://github.com/pakastin/frzr-dom)
+
 ## el(tagName, (attributes), children...)
 Creates a HTML element:
 ```js
