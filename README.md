@@ -15,6 +15,9 @@ npm install frzr
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
 
+## Getting started
+http://codepen.io/collection/XKwVMG (more will be added soon..)
+
 ## el(tagName, (attributes), children...)
 Creates a HTML element:
 ```js
