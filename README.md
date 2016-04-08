@@ -1,4 +1,4 @@
-# *FRZR*
+# \*FRZR\*
 Turboboosted view library in 2 KB with 100 % test coverage.
 
 [![Build Status](https://travis-ci.org/pakastin/frzr.svg?branch=master)](https://travis-ci.org/pakastin/frzr)
