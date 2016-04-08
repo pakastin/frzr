@@ -18,6 +18,9 @@ npm install frzr
 ## Getting started
 http://codepen.io/collection/XKwVMG (more will be added soon..)
 
+## Performance
+http://pakastin.fi/perf
+
 ## el(tagName, (attributes), children...)
 Creates a HTML element:
 ```js
