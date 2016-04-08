@@ -11,10 +11,10 @@ export function svg (tagName) {
       continue;
     }
 
-    var isString = typeof arg === 'string';
+    var isPrimitive = typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean';
 
-    if ((i > 1) || isString || ((arg.el || arg) instanceof Node)) {
-      if (isString) {
+    if ((i > 1) || isPrimitive || ((arg.el || arg) instanceof Node)) {
+      if (isPrimitive) {
         mount(element, text(arg));
       } else {
         mount(element, arg);
