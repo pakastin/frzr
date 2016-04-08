@@ -1,5 +1,5 @@
 
-import { text, mount } from './index';
+import { text, mount, List } from './index';
 
 export function el (tagName) {
   var element = document.createElement(tagName);
@@ -13,7 +13,7 @@ export function el (tagName) {
 
     var isPrimitive = typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean';
 
-    if (isPrimitive || ((arg.el || arg) instanceof Node)) {
+    if (isPrimitive || ((arg.el || arg) instanceof Node) || (arg instanceof List)) {
       if (isPrimitive) {
         mount(element, text(arg));
       } else {

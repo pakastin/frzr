@@ -16,7 +16,7 @@ function el (tagName) {
 
     var isPrimitive = typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean';
 
-    if (isPrimitive || ((arg.el || arg) instanceof Node)) {
+    if (isPrimitive || ((arg.el || arg) instanceof Node) || (arg instanceof List)) {
       if (isPrimitive) {
         mount(element, text(arg));
       } else {
@@ -48,7 +48,7 @@ function svg (tagName) {
 
     var isPrimitive = typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean';
 
-    if (isPrimitive || ((arg.el || arg) instanceof Node)) {
+    if (isPrimitive || ((arg.el || arg) instanceof Node) || (arg instanceof List)) {
       if (isPrimitive) {
         mount(element, text(arg));
       } else {
