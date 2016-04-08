@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Turboboosted 2 KB view library",
   "main": "dist/frzr.js",
   "jsnext:main": "src/index.js",
