@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900,700,600,300,200,500">
+  </head>
+  <body>
+    <div class="container">
+      <div class="center">
+        <div id="logo">
+          <h1>*FRZR*</h1>
+          <p>TINY VIEW LIBRARY</p>
+        </div>
+        <div id="code">
+          <pre>
+var el = frzr.el;
+var mount = frzr.mount;
+
+function Login (opts) {
+  this.el = el('form', { class: 'login' },
+    this.email = el('input', { type: 'email' }),
+    this.pass = el('input', { type: 'password' }),
+    this.submit = el('button', 'Sign in')
+  );
+  this.el.onsubmit = opts.onsubmit;
+}
+
+var login = new Login({
+  onsubmit: function (e) {
+    var email = login.email.value;
+    var pass = login.pass.value;
+
+    console.log(email, pass);
+
+    return false;
+  }
+});
+
+mount(document.body, login);</pre>
+        </div>
+        <div class="footnotes">
+          <p>
+            <a href="https://github.com/pakastin/frzr">GITHUB</a>
+            <a href="https://pakastin.github.io/frzr/frzr.min.js" target="_blank">PRODUCTION</a>
+            <a href="https://pakastin.github.io/frzr/frzr.js" target="_blank">DEVELOPMENT</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      var $code = document.getElementById('code');
+      var $lineNumbers = document.createElement('pre');
+
+      var $lines = $code.querySelector('pre');
+      var lines = $lines.textContent.split('\n');
+      var digits = ('' + lines.length).length;
+      var zeros = '';
+
+      $lines.style.paddingLeft = (1 + digits / 2) + 'rem';
+      $lineNumbers.className = 'linenumbers';
+
+      for (var i = 0; i < digits; i++) {
+        zeros += '0';
+      }
+
+      for (var i = 0; i < lines.length; i++) {
+        $lineNumbers.textContent += (zeros + i).slice(-digits) + '\n';
+      }
+      $code.insertBefore($lineNumbers, $code.firstChild);
+    </script>
+  </body>
+</html>
