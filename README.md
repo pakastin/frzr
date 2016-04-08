@@ -72,6 +72,7 @@ Item.prototype.remove = function (doRemove) {
   setTimeout(doRemove, 1000); // remove after 1 second
 }
 ```
+By defining a second 'key' parameter you can reorder DOM elements. The third parameter just gets sent to the Component constructor.
 ## mount(target, child)
 You can mount HTML elements/components to HTML elements/components.
 ```js
