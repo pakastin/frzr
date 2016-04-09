@@ -21,7 +21,7 @@ http://codepen.io/collection/XKwVMG (more will be added soon..)
 ## Performance
 http://pakastin.fi/perf
 
-## el(tagName, (attributes), children...)
+## el(tagName, (attributes), ...children)
 Creates a HTML element:
 ```js
 var p = el('p', { textContent: 'Hello world!' });
@@ -38,7 +38,7 @@ var p = el('p', 'Hello world!' );
 var div = el('div', p);
 ```
 
-## svg(tagName, attributes, children...)
+## svg(tagName, attributes, ...children)
 Works like `el`, but creates a SVG element:
 ```js
 var circle = svg('circle', { cx: 50, cy: 50, r: 50 });
