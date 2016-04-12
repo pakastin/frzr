@@ -87,9 +87,7 @@ mountBefore(document.body, svg, div);
 ## unmount(target, child)
 Unmounts element/component from element/component.
 ```js
-Item.prototype.unmount = function () {
-  console.log('unmounted');
-}
+unmount(document.body, svg);
 ```
 
 ## setChildren(target, [child])
