@@ -80,22 +80,12 @@ mount(document.body, p);
 mount(document.body, div);
 mount(div, p);
 ```
-If a component gets mounted, Component.mount/Component.reorder gets called, if present:
-```js
-Item.prototype.mount = function () {
-  console.log('mounted');
-}
-Item.prototype.reorder = function () {
-  // was already in the DOM when asked to mount
-  console.log('reordered');
-}
-```
 ## mountBefore(target, child, before)
 ```js
 mountBefore(document.body, svg, div);
 ```
 ## unmount(target, child)
-Unmounts element/component from element/component. Component.unmount gets called, if present: 
+Unmounts element/component from element/component.
 ```js
 Item.prototype.unmount = function () {
   console.log('unmounted');
