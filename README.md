@@ -66,12 +66,6 @@ f.mount(document.body, list);
 list.update([1, 2, 3]); // <body><p>1</p><p>2</p><p>3</p></body>
 list.update([2, 3, 4, 5]); // <body><p>2</p><p>3</p><p>4</p><p>5</p></body>
 ```
-You can delay removing the elements by defining a `remove`-method to a component:
-```js
-Item.prototype.remove = function (doRemove) {
-  setTimeout(doRemove, 1000); // remove after 1 second
-}
-```
 By defining a second 'key' parameter you can reorder DOM elements. The third parameter just gets sent to the Component constructor.
 ## mount(target, child)
 You can mount HTML elements/components to HTML elements/components.
