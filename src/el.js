@@ -9,17 +9,9 @@ export function el (tagName) {
 
     if (arg == null) {
       continue;
-    }
-
-    var isPrimitive = typeof arg === 'string' || typeof arg === 'number' || typeof arg === 'boolean';
-
-    if (isPrimitive || ((arg.el || arg) instanceof Node) || (arg instanceof List)) {
-      if (isPrimitive) {
-        mount(element, text(arg));
-      } else {
-        mount(element, arg);
-      }
-    } else {
+    } else if (mount(element, arg)) {
+      continue;
+    } else if (typeof arg === 'object') {
       for (var attr in arg) {
         if (element[attr] != null) {
           element[attr] = arg[attr];

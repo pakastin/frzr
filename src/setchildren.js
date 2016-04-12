@@ -1,15 +1,15 @@
 
-import { mount, mountBefore } from './index';
+import { mount, mountBefore, unmount } from './index';
 
 export function setChildren (parent, children) {
-  var parentNode = parent.el || parent;
-  var traverse = parentNode.firstChild;
+  var parentEl = parent.el || parent;
+  var traverse = parentEl.firstChild;
 
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
-    var childNode = child.el || child;
+    var childEl = child.el || child;
 
-    if (childNode === traverse) {
+    if (traverse === childEl) {
       traverse = traverse.nextSibling;
       continue;
     }
@@ -24,9 +24,7 @@ export function setChildren (parent, children) {
   while (traverse) {
     var next = traverse.nextSibling;
 
-    if (!traverse.removing) {
-      parentNode.removeChild(traverse);
-    }
+    unmount(parentEl, traverse);
 
     traverse = next;
   }

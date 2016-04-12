@@ -7,86 +7,62 @@ export function list (View, key, initData) {
 
 export function List (View, key, initData) {
   this.View = View;
-  this.key = key;
+  this.views = [];
   this.initData = initData;
 
-  this.lookup = key != null ? {} : [];
-  this.views = [];
+  if (key) {
+    this.key = key;
+    this.lookup = {};
+  }
 }
 
-List.prototype.update = function (data, cb) {
+List.prototype.update = function (data) {
   var View = this.View;
-  var key = this.key;
-  var lookup = this.lookup;
   var views = this.views;
+  var parent = this.parent;
+  var key = this.key;
+  var initData = this.initData;
 
-  var newLookup = key ? {} : [];
+  if (key) {
+    var lookup = this.lookup;
+    var newLookup = {};
 
-  var added = [];
-  var updated = [];
-  var removed = [];
+    views.length = data.length;
 
-  views.length = data.length;
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var id = item[key];
+      var view = lookup[id] || new View(initData, item);
 
-  for (var i = 0; i < data.length; i++) {
-    var item = data[i];
-    var id = key != null ? item[key] : i;
-    var view = lookup[id];
+      views[i] = newLookup[id] = view;
 
-    if (!view) {
-      view = new View(this.initData, item);
-
-      added[added.length] = view;
-    } else {
-      updated[updated.length] = view;
+      view.update && view.update(item);
     }
 
-    view.update && view.update(item);
-    views[i] = view;
-
-    newLookup[id] = view;
-  }
-
-  for (var id in lookup) {
-    if (!newLookup[id]) {
-      var view = lookup[id];
-
-      view.el.removing = true;
-
-      removed[removed.length] = view;
+    for (var id in lookup) {
+      if (!newLookup[id]) {
+        parent && unmount(parent, lookup[id]);
+      }
     }
-  }
 
-  if (this.parent) {
-    setChildren(this.parent, views);
-  }
+    parent && setChildren(parent, views);
 
-  for (var i = 0; i < views.length; i++) {
-    var item = data[i];
-    var view = views[i];
-
-    view.updated && view.updated(item);
-  }
-
-  this.lookup = newLookup;
-
-  cb && cb(added, updated, removed);
-
-  for (var i = 0; i < removed.length; i++) {
-    var view = removed[i];
-    
-    if (view.remove) {
-      this.parent && scheduleRemove(this.parent, view);
-    } else {
-      this.parent && unmount(this.parent, view);
+    this.lookup = newLookup;
+  } else {
+    for (var i = data.length; i < views.length; i++) {
+      unmount(parent, views[i]);
     }
+
+    views.length = data.length;
+
+    for (var i = 0; i < data.length; i++) {
+      var item = data[i];
+      var view = views[i] || new View(initData, item);
+
+      view.update && view.update(item);
+      views[i] = view;
+    }
+
+    parent && setChildren(parent, views);
   }
-
-  return this;
-}
-
-function scheduleRemove (parent, child) {
-  child.remove(function () {
-    unmount(parent, child);
-  });
 }

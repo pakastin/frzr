@@ -2,54 +2,47 @@
 import { setChildren, List } from './index';
 
 export function mount (parent, child) {
-  var parentNode = parent.el || parent;
-  var childNode = child.el || child;
+  var parentEl = parent.el || parent;
+  var childEl = child.el || child;
 
-  if (child instanceof List) {
-    child.parent = parent;
-    setChildren(parent, child.views);
-    return;
-  }
-  if (child.el) {
-    parentNode.appendChild(childNode);
+  if (childEl instanceof Node) {
+    parentEl.appendChild(childEl);
 
-    if (child.parent) {
-      child.reorder && child.reorder();
-    } else {
-      child.mount && child.mount();
+  } else if (isPrimitive(childEl)) {
+    mount(parentEl, document.createTextNode(childEl));
+
+  } else if (child instanceof Array) {
+    for (var i = 0; i < child.length; i++) {
+      mount(parentEl, child[i]);
     }
+
+  } else if (child instanceof List) {
     child.parent = parent;
+    setChildren(parentEl, child.views);
+
   } else {
-    parentNode.appendChild(childNode);
+    return false;
   }
+  return true;
 }
 
 export function mountBefore (parent, child, before) {
-  var parentNode = parent.el || parent;
-  var childNode = child.el || child;
-  var beforeNode = before.el || before;
+  var parentEl = parent.el || parent;
+  var childEl = child.el || child;
+  var beforeEl = before.el || before;
 
-  parentNode.insertBefore(childNode, beforeNode);
-
-  if (child.el) {
-    if (child.parent) {
-      child.reorder && child.reorder();
-    } else {
-      child.mount && child.mount();
-    }
-
-    child.parent = parent;
-  }
+  parentEl.insertBefore(childEl, beforeEl);
+  child.parent = parent;
 }
 
 export function unmount (parent, child) {
-  var parentNode = parent.el || parent;
-  var childNode = child.el || child;
+  var parentEl = parent.el || parent;
+  var childEl = child.el || child;
 
-  parentNode.removeChild(childNode);
+  parentEl.removeChild(childEl);
+  child.parent = null;
+}
 
-  if (child.el) {
-    child.parent = null;
-    child.unmount && child.unmount();
-  }
+function isPrimitive (check) {
+  return typeof check === 'string' || check === 'number' || check === 'boolean';
 }

@@ -91,18 +91,13 @@ test('list creation with key', function (t) {
 });
 
 test('list update', function (t) {
-  t.plan(5);
-
-  var called = {};
+  t.plan(1);
 
   var Item = function (initData) {
     this.el = frzr.el('p');
   }
   Item.prototype.update = function (data) {
     this.el.textContent = data;
-  }
-  Item.prototype.updated = function () {
-    called.updated = true;
   }
 
   var list = frzr.list(Item);
@@ -111,35 +106,22 @@ test('list update', function (t) {
 
   list.update([ 5, 4, 6 ]);
 
-  list.update([ 3, 1 ], function (added, updated, removed) {
-    t.equals(added.length, 0, 'added count');
-    t.equals(updated.length, 2, 'updated count');
-    t.equals(removed.length, 1, 'removed count');
-  });
+  list.update([ 3, 1 ]);
 
   list.update([ 1, 2, 3 ]);
 
   t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
-  t.ok(called.updated, 'called "updated"');
 });
 
 test('list update with key', function (t) {
-  t.plan(6);
+  t.plan(1);
 
-  var called = {};
-
-  var Item = function (initData, data) {
+  var Item = function (initData) {
     this.el = frzr.el('p');
+  }
+
+  Item.prototype.update = function (data) {
     this.el.textContent = data._id;
-  }
-
-  Item.prototype.remove = function (next) {
-    called.remove = true;
-    next();
-  }
-
-  Item.prototype.reorder = function () {
-    called.reorder = true;
   }
 
   var list = frzr.list(Item, '_id');
@@ -161,31 +143,16 @@ test('list update with key', function (t) {
     { _id: 1 },
     { _id: 2 },
     { _id: 3 }
-  ], function (added, updated, removed) {
-    t.equals(added.length, 2, 'added count');
-    t.equals(updated.length, 1, 'updated count');
-    t.equals(removed.length, 1, 'removed count');
-  });
+  ]);
 
   t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
-  t.ok(called.reorder, 'called "reorder"');
-  t.ok(called.remove, 'called "remove"');
 });
 
-test('special cases', function (t) {
-  t.plan(4);
+test('coverage special cases', function (t) {
+  t.plan(1);
 
   var Item = function () {
-    this.el = frzr.el('p', { textContent: 'Hello world!' });
-  }
-  Item.prototype.mount = function () {
-    t.pass();
-  }
-  Item.prototype.reorder = function () {
-    t.pass();
-  }
-  Item.prototype.unmount = function () {
-    t.pass();
+    this.el = frzr.el('p', [ 'Hello ', frzr.text('world'), '!' ] );
   }
 
   var item = new Item();
@@ -195,4 +162,7 @@ test('special cases', function (t) {
   frzr.unmount(document.body, item);
   frzr.mount(document.body, item);
   frzr.unmount(document.body, item.el);
+  frzr.setChildren(document.body, []);
+
+  t.equals(document.body.innerHTML, '');
 });
