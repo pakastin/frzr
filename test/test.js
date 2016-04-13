@@ -91,7 +91,7 @@ test('list creation with key', function (t) {
 });
 
 test('list update', function (t) {
-  t.plan(1);
+  t.plan(5);
 
   var Item = function (initData) {
     this.el = frzr.el('p');
@@ -106,21 +106,27 @@ test('list update', function (t) {
 
   list.update([ 5, 4, 6 ]);
 
-  list.update([ 3, 1 ]);
+  list.update([ 3, 1 ], function (added, updated, removed) {
+    t.equals(added.length, 0);
+    t.equals(updated.length, 2);
+    t.equals(removed.length, 1);
+  });
 
-  list.update([ 1, 2, 3 ]);
+  list.update([ 1, 2, 3 ], function (added, updated, removed) {
+    t.equals(added.length, 1);
+  });
 
   t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
 });
 
 test('list update with key', function (t) {
-  t.plan(1);
+  t.plan(5);
 
   var Item = function (initData) {
     this.el = frzr.el('p');
   }
 
-  Item.prototype.update = function (data) {
+  Item.prototype.update = function (data, cb) {
     this.el.textContent = data._id;
   }
 
@@ -137,13 +143,19 @@ test('list update with key', function (t) {
   list.update([
     { _id: 4 },
     { _id: 2 }
-  ]);
+  ], function (added, updated, removed) {
+    t.equals(added.length, 0);
+    t.equals(updated.length, 2);
+    t.equals(removed.length, 1);
+  });
 
   list.update([
     { _id: 1 },
     { _id: 2 },
     { _id: 3 }
-  ]);
+  ], function (added, updated, removed) {
+    t.equals(added.length, 1);
+  });
 
   t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
 });

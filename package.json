@@ -12,7 +12,8 @@
     "postversion": "git push --tags",
     "prepublish": "npm test",
     "postpublish": "npm run deploy",
-    "test": "rollup -n frzr -f cjs src/index.js -o test/frzr.js && browserify -t coverify test/test.js | tape-run | coverify"
+    "test": "rollup -n frzr -f cjs src/index.js -o test/frzr.js && browserify -t coverify test/test.js | tape-run | coverify",
+    "justtest": "browserify -t coverify test/test.js | tape-run | coverify"
   },
   "author": "Juha Lindstedt",
   "license": "ISC",
