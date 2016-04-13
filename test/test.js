@@ -120,7 +120,7 @@ test('list update', function (t) {
 });
 
 test('list update with key', function (t) {
-  t.plan(5);
+  t.plan(7);
 
   var Item = function (initData) {
     this.el = frzr.el('p');
@@ -154,7 +154,9 @@ test('list update with key', function (t) {
     { _id: 2 },
     { _id: 3 }
   ], function (added, updated, removed) {
-    t.equals(added.length, 1);
+    t.equals(added.length, 2);
+    t.equals(updated.length, 1);
+    t.equals(removed.length, 1);
   });
 
   t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');

@@ -11,9 +11,9 @@ export function mount (parent, child) {
   } else if (isPrimitive(childEl)) {
     mount(parentEl, document.createTextNode(childEl));
 
-  } else if (child instanceof Array) {
-    for (var i = 0; i < child.length; i++) {
-      mount(parentEl, child[i]);
+  } else if (childEl instanceof Array) {
+    for (var i = 0; i < childEl.length; i++) {
+      mount(parentEl, childEl[i]);
     }
 
   } else if (child instanceof List) {
