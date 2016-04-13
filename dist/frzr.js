@@ -52,14 +52,15 @@
     return element;
   }
 
-  function list (View, key, initData) {
-    return new List(View, key, initData);
+  function list (View, key, initData, skipRender) {
+    return new List(View, key, initData, skipRender);
   }
 
-  function List (View, key, initData) {
+  function List (View, key, initData, skipRender) {
     this.View = View;
     this.views = [];
     this.initData = initData;
+    this.skipRender = skipRender;
 
     if (key) {
       this.key = key;
@@ -73,6 +74,7 @@
     var parent = this.parent;
     var key = this.key;
     var initData = this.initData;
+    var skipRender = this.skipRender;
 
     if (cb) {
       var added = [];
@@ -106,7 +108,7 @@
       for (var id in lookup) {
         if (!newLookup[id]) {
           cb && removed.push(lookup[id]);
-          parent && unmount(parent, lookup[id]);
+          !skipRender && parent && unmount(parent, lookup[id]);
         }
       }
 
@@ -115,7 +117,7 @@
       for (var i = data.length; i < views.length; i++) {
         var view = views[i];
 
-        unmount(parent, view);
+        !skipRender && parent && unmount(parent, view);
         cb && removed.push(view);
       }
 
@@ -137,7 +139,7 @@
       }
     }
 
-    parent && setChildren(parent, views);
+    !skipRender && parent && setChildren(parent, views);
     cb && cb(added, updated, removed);
   }
 

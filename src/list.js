@@ -1,14 +1,15 @@
 
 import { mount, unmount, setChildren } from './index';
 
-export function list (View, key, initData) {
-  return new List(View, key, initData);
+export function list (View, key, initData, skipRender) {
+  return new List(View, key, initData, skipRender);
 }
 
-export function List (View, key, initData) {
+export function List (View, key, initData, skipRender) {
   this.View = View;
   this.views = [];
   this.initData = initData;
+  this.skipRender = skipRender;
 
   if (key) {
     this.key = key;
@@ -22,6 +23,7 @@ List.prototype.update = function (data, cb) {
   var parent = this.parent;
   var key = this.key;
   var initData = this.initData;
+  var skipRender = this.skipRender;
 
   if (cb) {
     var added = [];
@@ -55,7 +57,7 @@ List.prototype.update = function (data, cb) {
     for (var id in lookup) {
       if (!newLookup[id]) {
         cb && removed.push(lookup[id]);
-        parent && unmount(parent, lookup[id]);
+        !skipRender && parent && unmount(parent, lookup[id]);
       }
     }
 
@@ -64,7 +66,7 @@ List.prototype.update = function (data, cb) {
     for (var i = data.length; i < views.length; i++) {
       var view = views[i];
 
-      unmount(parent, view);
+      !skipRender && parent && unmount(parent, view);
       cb && removed.push(view);
     }
 
@@ -86,6 +88,6 @@ List.prototype.update = function (data, cb) {
     }
   }
 
-  parent && setChildren(parent, views);
+  !skipRender && parent && setChildren(parent, views);
   cb && cb(added, updated, removed);
 }
