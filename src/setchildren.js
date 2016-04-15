@@ -14,11 +14,7 @@ export function setChildren (parent, children) {
       continue;
     }
 
-    if (traverse) {
-      mountBefore(parent, child, traverse);
-    } else {
-      mount(parent, child);
-    }
+    mount(parent, child, traverse);
   }
 
   while (traverse) {
