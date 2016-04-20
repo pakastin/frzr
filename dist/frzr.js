@@ -94,7 +94,7 @@
         var view = lookup[id];
 
         if (!view) {
-          view = new View(initData, item);
+          view = new View(initData, item, i);
           cb && added.push(view);
         } else {
           cb && updated.push(view);
@@ -102,7 +102,7 @@
 
         views[i] = newLookup[id] = view;
 
-        view.update && view.update(item);
+        view.update && view.update(item, i);
       }
 
       for (var id in lookup) {
@@ -128,13 +128,13 @@
         var view = views[i];
 
         if (!view) {
-          view = new View(initData, item);
+          view = new View(initData, item, i);
           cb && added.push(view);
         } else {
           cb && updated.push(view);
         }
 
-        view.update && view.update(item);
+        view.update && view.update(item, i);
         views[i] = view;
       }
     }
