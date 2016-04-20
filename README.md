@@ -22,8 +22,8 @@ http://survivejs.com/blog/frzr-interview/
 http://codepen.io/collection/XKwVMG (more will be added soon..)
 
 ## Performance
-http://lhorie.github.io/frzr-dbmon/frzr
-http://pakastin.fi/perf
+- http://lhorie.github.io/frzr-dbmon/frzr
+- http://pakastin.fi/perf
 
 ## el(tagName, (attributes), ...children)
 Creates a HTML element:
