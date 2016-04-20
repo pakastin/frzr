@@ -54,20 +54,24 @@ List.prototype.update = function (data, cb) {
       view.update && view.update(item, i);
     }
 
-    for (var id in lookup) {
-      if (!newLookup[id]) {
-        cb && removed.push(lookup[id]);
-        !skipRender && parent && unmount(parent, lookup[id]);
+    if (cb) {
+      for (var id in lookup) {
+        if (!newLookup[id]) {
+          removed.push(lookup[id]);
+          !skipRender && parent && unmount(parent, lookup[id]);
+        }
       }
     }
 
     this.lookup = newLookup;
   } else {
-    for (var i = data.length; i < views.length; i++) {
-      var view = views[i];
+    if (cb) {
+      for (var i = data.length; i < views.length; i++) {
+        var view = views[i];
 
-      !skipRender && parent && unmount(parent, view);
-      cb && removed.push(view);
+        !skipRender && parent && unmount(parent, view);
+        removed.push(view);
+      }
     }
 
     views.length = data.length;
