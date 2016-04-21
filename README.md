@@ -15,15 +15,15 @@ npm install frzr
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
 
-## SurviveJS interview:
-http://survivejs.com/blog/frzr-interview/
-
 ## Getting started
 http://codepen.io/collection/XKwVMG (more will be added soon..)
 
 ## Performance
 - http://mathieuancelin.github.io/js-repaint-perfs/
 - http://pakastin.fi/perf
+
+## SurviveJS interview:
+http://survivejs.com/blog/frzr-interview/
 
 ## el(tagName, (attributes), ...children)
 Creates a HTML element:
