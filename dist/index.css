@@ -7,7 +7,7 @@ html, body {
   height: 100%;
 }
 body {
-  font-family: 'Source Code Pro';
+  font-family: 'Source Code Pro', monospace;
   font-size: .875rem;
   text-align: center;
 }
@@ -37,6 +37,7 @@ a:hover {
 }
 pre {
   font: inherit;
+  font-family: 'Roboto Mono', monospace;
   color: #fff;
   text-align: left;
 }
@@ -53,6 +54,7 @@ pre {
 .footnotes {
   padding: 1rem;
   font-size: .75rem;
+  letter-spacing: .025rem;
 }
 #logo {
   padding: 1rem;
