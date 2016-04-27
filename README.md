@@ -22,7 +22,7 @@ http://codepen.io/collection/XKwVMG (more will be added soon..)
 - http://mathieuancelin.github.io/js-repaint-perfs/
 - http://pakastin.fi/perf
 
-## Video from HelsinkiJS
+## HelsinkiJS talk
 http://youtu.be/0nh2EK1xveg
 
 ## SurviveJS interview:
