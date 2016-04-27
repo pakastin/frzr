@@ -9,9 +9,9 @@ npm install frzr
 ```
 
 ## Download:
-- cdnjs: https://cdnjs.com/libraries/frzr
 - Development: https://pakastin.github.io/frzr/frzr.js (4.5 KB)
 - Production: https://pakastin.github.io/frzr/frzr.min.js (2 KB)
+- cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
