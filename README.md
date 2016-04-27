@@ -18,7 +18,7 @@ npm install frzr
 ## Getting started
 http://codepen.io/collection/XKwVMG (more will be added soon..)
 
-## FRZR calendar
+## Calendar project example
 https://github.com/pakastin/frzr-calendar
 
 ## Performance
