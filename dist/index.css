@@ -37,7 +37,6 @@ a:hover {
 }
 pre {
   font: inherit;
-  font-family: 'Roboto Mono', monospace;
   color: #fff;
   text-align: left;
 }
@@ -54,7 +53,10 @@ pre {
 .footnotes {
   padding: 1rem;
   font-size: .75rem;
-  letter-spacing: .025rem;
+  text-transform: uppercase;
+}
+.footnotes a {
+  letter-spacing: .0125rem;
 }
 #logo {
   padding: 1rem;
