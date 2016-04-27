@@ -22,6 +22,9 @@ http://codepen.io/collection/XKwVMG (more will be added soon..)
 - http://mathieuancelin.github.io/js-repaint-perfs/
 - http://pakastin.fi/perf
 
+## Video from HelsinkiJS
+http://youtu.be/0nh2EK1xveg
+
 ## SurviveJS interview:
 http://survivejs.com/blog/frzr-interview/
 
