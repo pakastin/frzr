@@ -158,7 +158,7 @@
       } else {
         parentEl.appendChild(childEl);
       }
-      
+
       if (child.el !== child) {
         child.parent = parent;
       }
@@ -182,6 +182,22 @@
   }
 
   var mountBefore = mount;
+
+  function replace (parent, child, replace) {
+    var parentEl = parent.el || parent;
+    var childEl = child.el || child;
+    var replaceEl = replace.el || replace;
+
+    parentEl.replaceChild(childEl, replaceEl);
+
+    if (childEl !== child) {
+      child.parent = parent;
+    }
+
+    if (replaceEl !== replace) {
+      replace.parent = null;
+    }
+  }
 
   function unmount (parent, child) {
     var parentEl = parent.el || parent;
@@ -230,6 +246,7 @@
   exports.List = List;
   exports.mount = mount;
   exports.mountBefore = mountBefore;
+  exports.replace = replace;
   exports.unmount = unmount;
   exports.setChildren = setChildren;
 
