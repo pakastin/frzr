@@ -12,7 +12,7 @@ export function mount (parent, child, before) {
     } else {
       parentEl.appendChild(childEl);
     }
-    
+
     if (child.el !== child) {
       child.parent = parent;
     }
@@ -36,6 +36,22 @@ export function mount (parent, child, before) {
 }
 
 export var mountBefore = mount;
+
+export function replace (parent, child, replace) {
+  var parentEl = parent.el || parent;
+  var childEl = child.el || child;
+  var replaceEl = replace.el || replace;
+
+  parentEl.replaceChild(childEl, replaceEl);
+
+  if (childEl !== child) {
+    child.parent = parent;
+  }
+
+  if (replaceEl !== replace) {
+    replace.parent = null;
+  }
+}
 
 export function unmount (parent, child) {
   var parentEl = parent.el || parent;

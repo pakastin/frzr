@@ -168,8 +168,15 @@ test('coverage special cases', function (t) {
   var Item = function () {
     this.el = frzr.el('p', [ 'Hello ', frzr.text('world'), '!' ] );
   }
+  var TextItem = function (data) {
+    this.el = frzr.text(data);
+  }
 
   var item = new Item();
+  var someText = new TextItem('something');
+
+  frzr.mount(item, someText);
+  frzr.replace(item, new TextItem('something else'), someText);
 
   frzr.mountBefore(document.body, item, document.body.firstChild);
   frzr.mount(document.body, item);
