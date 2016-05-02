@@ -159,7 +159,7 @@ function mount (parent, child, before) {
       child.parent = parent;
     }
 
-  } else if (isPrimitive(childEl)) {
+  } else if (typeof childEl === 'string' || typeof childEl === 'number') {
     mount(parentEl, document.createTextNode(childEl), before);
 
   } else if (childEl instanceof Array) {
@@ -204,10 +204,6 @@ function unmount (parent, child) {
   if (childEl !== child) {
     child.parent = null;
   }
-}
-
-function isPrimitive (check) {
-  return typeof check === 'string' || check === 'number' || check === 'boolean';
 }
 
 function setChildren (parent, children) {

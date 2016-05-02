@@ -18,6 +18,14 @@ test('element with text element and custom attribute', function (t) {
   t.equals(hello.outerHTML, '<p custom="a">Hello world!</p>');
 });
 
+test('element with text element (number) and custom attribute', function (t) {
+  t.plan(1);
+
+  var hello = frzr.el('p', { custom: 'a' }, 1);
+
+  t.equals(hello.outerHTML, '<p custom="a">1</p>');
+});
+
 test('element mounting', function (t) {
   t.plan(1);
 
