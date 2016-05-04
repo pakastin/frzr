@@ -13,10 +13,10 @@ export function el (tagName) {
       continue;
     } else if (typeof arg === 'object') {
       for (var attr in arg) {
-        if (element[attr] != null) {
-          element[attr] = arg[attr];
-        } else {
+        if (element[attr] == null || attr === 'style') {
           element.setAttribute(attr, arg[attr]);
+        } else {
+          element[attr] = arg[attr];
         }
       }
     }
