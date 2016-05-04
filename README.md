@@ -82,7 +82,7 @@ class Item {
     this.el.textContent = text;
   }
 }
-var item = new Item();
+const item = new Item();
 item.update('Hello world!');
 f.mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
