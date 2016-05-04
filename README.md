@@ -72,6 +72,20 @@ var item = new Item();
 item.update('Hello world!');
 f.mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
+You can also use ES6 classes:
+```js
+class Item {
+  constructor () {
+    this.el = el('p');
+  }
+  update (text) {
+    this.el.textContent = text;
+  }
+}
+var item = new Item();
+item.update('Hello world!');
+f.mount(document.body, item); // <body><p>Hello world!</p></body>
+```
 ## new List(Component, (key), (initData));
 Automatically inserts, removes and even reorders components. Previous example makes a lot more sense now:
 ```js
