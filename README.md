@@ -35,7 +35,7 @@ http://youtu.be/0nh2EK1xveg
 ## SurviveJS interview:
 http://survivejs.com/blog/frzr-interview/
 
-## el(tagName, (attributes), ...children)
+## el(tagName, (attributes), (...children))
 Creates a HTML element:
 ```js
 var p = el('p', { textContent: 'Hello world!' });
@@ -52,7 +52,7 @@ var p = el('p', 'Hello world!' );
 var div = el('div', p);
 ```
 
-## svg(tagName, attributes, ...children)
+## svg(tagName, (attributes), (...children))
 Works like `el`, but creates a SVG element:
 ```js
 var circle = svg('circle', { cx: 50, cy: 50, r: 50 });
@@ -72,7 +72,7 @@ var item = new Item();
 item.update('Hello world!');
 f.mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
-## new List(Component, key, initData);
+## new List(Component, (key), (initData));
 Automatically inserts, removes and even reorders components. Previous example makes a lot more sense now:
 ```js
 var list = new List(Item);
