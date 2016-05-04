@@ -70,7 +70,7 @@ Item.prototype.update = function (text) {
 }
 var item = new Item();
 item.update('Hello world!');
-f.mount(document.body, item); // <body><p>Hello world!</p></body>
+mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
 You can also use ES6 classes:
 ```js
@@ -84,13 +84,13 @@ class Item {
 }
 const item = new Item();
 item.update('Hello world!');
-f.mount(document.body, item); // <body><p>Hello world!</p></body>
+mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
 ## new List(Component, (key), (initData));
 Automatically inserts, removes and even reorders components. Previous example makes a lot more sense now:
 ```js
 var list = new List(Item);
-f.mount(document.body, list);
+mount(document.body, list);
 list.update([1, 2, 3]); // <body><p>1</p><p>2</p><p>3</p></body>
 list.update([2, 3, 4, 5]); // <body><p>2</p><p>3</p><p>4</p><p>5</p></body>
 ```
