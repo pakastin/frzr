@@ -2,12 +2,12 @@
 import { mount, mountBefore, unmount } from './index';
 
 export function setChildren (parent, children) {
-  var parentEl = parent.el || parent;
+  var parentEl = parent.el || parent;
   var traverse = parentEl.firstChild;
 
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
-    var childEl = child.el || child;
+    var childEl = child.el || child;
 
     if (traverse === childEl) {
       traverse = traverse.nextSibling;
@@ -20,7 +20,7 @@ export function setChildren (parent, children) {
   while (traverse) {
     var next = traverse.nextSibling;
 
-    unmount(parentEl, traverse);
+    unmount(parent, traverse.view || traverse);
 
     traverse = next;
   }

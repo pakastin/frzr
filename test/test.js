@@ -99,13 +99,22 @@ module.exports = function (frzr) {
   });
 
   test('list update', function (t) {
-    t.plan(5);
+    t.plan(7);
+
+    var mounted = false;
+    var unmounted = false;
 
     var Item = function (initData) {
       this.el = frzr.el('p');
     }
     Item.prototype.update = function (data) {
       this.el.textContent = data;
+    }
+    Item.prototype.mounted = function () {
+      mounted = true;
+    }
+    Item.prototype.unmounted = function () {
+      unmounted = true;
     }
 
     var list = frzr.list(Item);
@@ -125,6 +134,8 @@ module.exports = function (frzr) {
     });
 
     t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
+    t.equals(mounted, true);
+    t.equals(unmounted, true);
   });
 
   test('list update with key', function (t) {
@@ -171,7 +182,16 @@ module.exports = function (frzr) {
   });
 
   test('coverage special cases', function (t) {
-    t.plan(1);
+    t.plan(7);
+
+    var mounting = false;
+    var mounted = false;
+
+    var unmounting = false;
+    var unmounted = false;
+
+    var remounting = false;
+    var remounted = false;
 
     var Item = function () {
       this.el = frzr.el('p', [ 'Hello ', frzr.text('world'), '!' ] );
@@ -179,12 +199,36 @@ module.exports = function (frzr) {
     var TextItem = function (data) {
       this.el = frzr.text(data);
     }
+    TextItem.prototype.mounting = function () {
+      mounting = true;
+    }
+    TextItem.prototype.unmounting = function () {
+      unmounting = true;
+    }
+    TextItem.prototype.mounted = function () {
+      mounted = true;
+    }
+    TextItem.prototype.unmounted = function () {
+      unmounted = true;
+    }
+    TextItem.prototype.remounting = function () {
+      remounting = true;
+    }
+    TextItem.prototype.remounted = function () {
+      remounted = true;
+    }
 
     var item = new Item();
     var someText = new TextItem('something');
+    var someOtherText = new TextItem('something else');
 
     frzr.mount(item, someText);
-    frzr.replace(item, new TextItem('something else'), someText);
+    frzr.replace(item, someOtherText, someText);
+    frzr.mount(item, someText);
+    frzr.replace(item, someText, someOtherText);
+    frzr.mount(item, someText);
+    frzr.mount(item, someText);
+    frzr.unmount(item, someText);
 
     frzr.mountBefore(document.body, item, document.body.firstChild);
     frzr.mount(document.body, item);
@@ -194,5 +238,11 @@ module.exports = function (frzr) {
     frzr.setChildren(document.body, []);
 
     t.equals(document.body.innerHTML, '');
+    t.equals(mounting, true, 'mounting');
+    t.equals(mounted, true, 'mounted');
+    t.equals(unmounting, true, 'unmounting');
+    t.equals(unmounted, true, 'unmounted');
+    t.equals(remounting, true, 'remounting');
+    t.equals(remounted, true, 'remounted');
   });
 }
