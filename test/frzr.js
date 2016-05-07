@@ -8,8 +8,6 @@ var customElements;
 var customAttributes;
 
 function el (tagName) {
-  var arguments$1 = arguments;
-
   if (customElements) {
     var customElement = customElements[tagName];
 
@@ -20,8 +18,8 @@ function el (tagName) {
 
   var element = document.createElement(tagName);
 
-  for (var i = 1; i < arguments$1.length; i++) {
-    var arg = arguments$1[i];
+  for (var i = 1; i < arguments.length; i++) {
+    var arg = arguments[i];
 
     if (arg == null) {
       continue;
@@ -71,12 +69,10 @@ function unregisterAttribute (attr) {
 }
 
 function svg (tagName) {
-  var arguments$1 = arguments;
-
   var element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 
-  for (var i = 1; i < arguments$1.length; i++) {
-    var arg = arguments$1[i];
+  for (var i = 1; i < arguments.length; i++) {
+    var arg = arguments[i];
 
     if (arg == null) {
       continue;
@@ -96,7 +92,7 @@ function list (View, key, initData, skipRender) {
   return new List(View, key, initData, skipRender);
 }
 
-var List = function List (View, key, initData, skipRender) {
+function List (View, key, initData, skipRender) {
   this.View = View;
   this.views = [];
   this.initData = initData;
@@ -106,9 +102,9 @@ var List = function List (View, key, initData, skipRender) {
     this.key = key;
     this.lookup = {};
   }
-};
+}
 
-List.prototype.update = function update (data, cb) {
+List.prototype.update = function (data, cb) {
   var View = this.View;
   var views = this.views;
   var parent = this.parent;
@@ -185,7 +181,7 @@ List.prototype.update = function update (data, cb) {
 
   !skipRender && parent && setChildren(parent, views);
   cb && cb(added, updated, removed);
-};
+}
 
 function mount (parent, child, before) {
   var parentEl = parent.el || parent;
