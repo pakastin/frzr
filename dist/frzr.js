@@ -8,11 +8,24 @@
     return document.createTextNode(str);
   }
 
+  var customElements;
+  var customAttributes;
+
   function el (tagName) {
+    var arguments$1 = arguments;
+
+    if (customElements) {
+      var customElement = customElements[tagName];
+
+      if (customElement) {
+        return customElement.apply(this, arguments);
+      }
+    }
+
     var element = document.createElement(tagName);
 
-    for (var i = 1; i < arguments.length; i++) {
-      var arg = arguments[i];
+    for (var i = 1; i < arguments$1.length; i++) {
+      var arg = arguments$1[i];
 
       if (arg == null) {
         continue;
@@ -20,6 +33,13 @@
         continue;
       } else if (typeof arg === 'object') {
         for (var attr in arg) {
+          if (customAttributes) {
+            var customAttribute = customAttributes[attr];
+            if (customAttribute) {
+              customAttribute(element, arg[attr]);
+              continue;
+            }
+          }
           if (element[attr] == null || attr === 'style') {
             element.setAttribute(attr, arg[attr]);
           } else {
@@ -32,11 +52,35 @@
     return element;
   }
 
+  function registerElement (tagName, handler) {
+    customElements || (customElements = {});
+    customElements[tagName] = handler;
+  }
+
+  function registerAttribute (attr, handler) {
+    customAttributes || (customAttributes = {});
+    customAttributes[attr] = handler;
+  }
+
+  function unregisterElement (tagName) {
+    if (customElements && customElements[tagName]) {
+      delete customElements[tagName];
+    }
+  }
+
+  function unregisterAttribute (attr) {
+    if (customAttributes && customAttributes[attr]) {
+      delete customAttributes[attr];
+    }
+  }
+
   function svg (tagName) {
+    var arguments$1 = arguments;
+
     var element = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 
-    for (var i = 1; i < arguments.length; i++) {
-      var arg = arguments[i];
+    for (var i = 1; i < arguments$1.length; i++) {
+      var arg = arguments$1[i];
 
       if (arg == null) {
         continue;
@@ -56,7 +100,7 @@
     return new List(View, key, initData, skipRender);
   }
 
-  function List (View, key, initData, skipRender) {
+  var List = function List (View, key, initData, skipRender) {
     this.View = View;
     this.views = [];
     this.initData = initData;
@@ -66,9 +110,9 @@
       this.key = key;
       this.lookup = {};
     }
-  }
+  };
 
-  List.prototype.update = function (data, cb) {
+  List.prototype.update = function update (data, cb) {
     var View = this.View;
     var views = this.views;
     var parent = this.parent;
@@ -145,19 +189,17 @@
 
     !skipRender && parent && setChildren(parent, views);
     cb && cb(added, updated, removed);
-  }
+  };
 
   function mount (parent, child, before) {
     var parentEl = parent.el || parent;
     var childEl = child.el || child;
-    var childIsView = child.el !== child;
+    var childWasMounted = childEl.parentNode != null;
 
-    if (childIsView) {
-      if (child.parent) {
-        child.remounting && child.remounting();
-      } else {
-        child.mounting && child.mounting();
-      }
+    if (childWasMounted) {
+      child.remounting && child.remounting();
+    } else {
+      child.mounting && child.mounting();
     }
 
     if (childEl instanceof Node) {
@@ -168,12 +210,12 @@
         parentEl.appendChild(childEl);
       }
 
-      if (childIsView) {
-        if (child.parent) {
-          child.remounted && child.remounted();
-        } else {
-          child.mounted && child.mounted();
-        }
+      if (childWasMounted) {
+        child.remounted && child.remounted();
+      } else {
+        child.mounted && child.mounted();
+      }
+      if (childEl !== child) {
         childEl.view = child;
         child.parent = parent;
       }
@@ -202,34 +244,30 @@
     var parentEl = parent.el || parent;
     var childEl = child.el || child;
     var replaceEl = replace.el || replace;
-    var childIsView = child.el !== child;
-    var replaceIsView = replace.el !== replace;
+    var childWasMounted = childEl.parentNode != null;
 
-    if (replaceIsView) {
-      replace.unmounting && replace.unmounting();
-    }
+    replace.unmounting && replace.unmounting();
 
-    if (childIsView) {
-      if (child.parent) {
-        child.remounting && child.remounting();
-      } else {
-        child.mounting && child.mounting();
-      }
+    if (childWasMounted) {
+      child.remounting && child.remounting();
+    } else {
+      child.mounting && child.mounting();
     }
 
     parentEl.replaceChild(childEl, replaceEl);
 
-    if (replaceIsView) {
-      replace.unmounted && replace.unmounted();
+    replace.unmounted && replace.unmounted();
+
+    if (replaceEl !== replace) {
       replace.parent = null;
     }
 
-    if (childIsView) {
-      if (child.parent) {
-        child.remounted && child.remounted();
-      } else {
-        child.mounted && child.mounted();
-      }
+    if (childWasMounted) {
+      child.remounted && child.remounted();
+    } else {
+      child.mounted && child.mounted();
+    }
+    if (childEl !== child) {
       childEl.view = child;
       child.parent = parent;
     }
@@ -238,16 +276,14 @@
   function unmount (parent, child) {
     var parentEl = parent.el || parent;
     var childEl = child.el || child;
-    var childIsView = child.el !== child;
 
-    if (childIsView) {
-      child.unmounting && child.unmounting();
-    }
+    child.unmounting && child.unmounting();
 
     parentEl.removeChild(childEl);
 
-    if (childIsView) {
-      child.unmounted && child.unmounted();
+    child.unmounted && child.unmounted();
+
+    if (childEl !== child) {
       child.parent = null;
     }
   }
@@ -279,6 +315,10 @@
 
   exports.text = text;
   exports.el = el;
+  exports.registerElement = registerElement;
+  exports.registerAttribute = registerAttribute;
+  exports.unregisterElement = unregisterElement;
+  exports.unregisterAttribute = unregisterAttribute;
   exports.svg = svg;
   exports.list = list;
   exports.List = List;

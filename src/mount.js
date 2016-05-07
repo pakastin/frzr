@@ -4,14 +4,12 @@ import { setChildren, List } from './index';
 export function mount (parent, child, before) {
   var parentEl = parent.el || parent;
   var childEl = child.el || child;
-  var childIsView = child.el !== child;
+  var childWasMounted = childEl.parentNode != null;
 
-  if (childIsView) {
-    if (child.parent) {
-      child.remounting && child.remounting();
-    } else {
-      child.mounting && child.mounting();
-    }
+  if (childWasMounted) {
+    child.remounting && child.remounting();
+  } else {
+    child.mounting && child.mounting();
   }
 
   if (childEl instanceof Node) {
@@ -22,12 +20,12 @@ export function mount (parent, child, before) {
       parentEl.appendChild(childEl);
     }
 
-    if (childIsView) {
-      if (child.parent) {
-        child.remounted && child.remounted();
-      } else {
-        child.mounted && child.mounted();
-      }
+    if (childWasMounted) {
+      child.remounted && child.remounted();
+    } else {
+      child.mounted && child.mounted();
+    }
+    if (childEl !== child) {
       childEl.view = child;
       child.parent = parent;
     }
@@ -56,34 +54,30 @@ export function replace (parent, child, replace) {
   var parentEl = parent.el || parent;
   var childEl = child.el || child;
   var replaceEl = replace.el || replace;
-  var childIsView = child.el !== child;
-  var replaceIsView = replace.el !== replace;
+  var childWasMounted = childEl.parentNode != null;
 
-  if (replaceIsView) {
-    replace.unmounting && replace.unmounting();
-  }
+  replace.unmounting && replace.unmounting();
 
-  if (childIsView) {
-    if (child.parent) {
-      child.remounting && child.remounting();
-    } else {
-      child.mounting && child.mounting();
-    }
+  if (childWasMounted) {
+    child.remounting && child.remounting();
+  } else {
+    child.mounting && child.mounting();
   }
 
   parentEl.replaceChild(childEl, replaceEl);
 
-  if (replaceIsView) {
-    replace.unmounted && replace.unmounted();
+  replace.unmounted && replace.unmounted();
+
+  if (replaceEl !== replace) {
     replace.parent = null;
   }
 
-  if (childIsView) {
-    if (child.parent) {
-      child.remounted && child.remounted();
-    } else {
-      child.mounted && child.mounted();
-    }
+  if (childWasMounted) {
+    child.remounted && child.remounted();
+  } else {
+    child.mounted && child.mounted();
+  }
+  if (childEl !== child) {
     childEl.view = child;
     child.parent = parent;
   }
@@ -92,16 +86,14 @@ export function replace (parent, child, replace) {
 export function unmount (parent, child) {
   var parentEl = parent.el || parent;
   var childEl = child.el || child;
-  var childIsView = child.el !== child;
 
-  if (childIsView) {
-    child.unmounting && child.unmounting();
-  }
+  child.unmounting && child.unmounting();
 
   parentEl.removeChild(childEl);
 
-  if (childIsView) {
-    child.unmounted && child.unmounted();
+  child.unmounted && child.unmounted();
+
+  if (childEl !== child) {
     child.parent = null;
   }
 }

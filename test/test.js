@@ -10,6 +10,24 @@ module.exports = function (frzr) {
     t.equals(hello.outerHTML, '<p class="hello">Hello world!</p>');
   });
 
+  test('custom element creation with custom attribute', function (t) {
+    t.plan(2);
+
+    frzr.registerElement('frzr', function (tagName, text) {
+      return frzr.el('div', { class: 'frzr', textContent: text, frzr: 'works' });
+    });
+    frzr.registerAttribute('frzr', function (el, value) {
+      t.equals(value, 'works');
+    });
+
+    var hello = frzr.el('frzr', 'Hello world!');
+
+    t.equals(hello.outerHTML, '<div class="frzr">Hello world!</div>');
+
+    frzr.unregisterElement('frzr');
+    frzr.unregisterAttribute('frzr');
+  });
+
   test('element with text element and custom attribute', function (t) {
     t.plan(1);
 
