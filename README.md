@@ -17,8 +17,8 @@ npm install frzr
 - cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Latest updates
-- v0.17.0: https://github.com/pakastin/frzr/releases/tag/v0.17.0
 - v0.18.0: https://github.com/pakastin/frzr/releases/tag/v0.18.0
+- v0.17.0: https://github.com/pakastin/frzr/releases/tag/v0.17.0
 
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
