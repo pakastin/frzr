@@ -38,10 +38,11 @@
               continue;
             }
           }
-          if (element[attr] == null || attr === 'style') {
-            element.setAttribute(attr, arg[attr]);
+          var value = arg[attr];
+          if (attr === 'style' || (element[attr] == null && typeof value != 'function')) {
+            element.setAttribute(attr, value);
           } else {
-            element[attr] = arg[attr];
+            element[attr] = value;
           }
         }
       }
