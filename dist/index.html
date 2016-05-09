@@ -2,66 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta property="og:title" content="*FRZR*">
-    <meta property="og:description" content="Turboboosted 2 KB view library">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://frzr.js.org">
-    <meta property="og:image" content="https://frzr.js.org/img/fb.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@pakastin">
-    <meta name="twitter:creator" content="@pakastin">
-    <meta name="twitter:title" content="*FRZR*">
-    <meta name="twitter:description" content="Turboboosted 2 KB view library.">
-    <meta name="twitter:image" content="https://frzr.js.org/img/twitter.jpg">
-    <title>*FRZR* – tiny view library</title>
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,900|Roboto+Mono:400">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>FRZR - Hello FRZR</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro:400,600">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/prism.css">
+    <link rel="stylesheet" href="css/main.css">
   </head>
   <body>
-    <div class="container">
-      <div class="center">
-        <div id="logo">
-          <h1>*FRZR*</h1>
-          <p>TINY VIEW LIBRARY</p>
-        </div>
-        <div id="code">
-          <pre>
-var el = frzr.el;
-var mount = frzr.mount;
-
-function Login (opts) {
-  this.el = el('form', { class: 'login' },
-    this.email = el('input', { type: 'email' }),
-    this.pass = el('input', { type: 'password' }),
-    this.submit = el('button', 'Sign in')
-  );
-  this.el.onsubmit = opts.onsubmit;
-}
-
-var login = new Login({
-  onsubmit: function (e) {
-    var email = login.email.value;
-    var pass = login.pass.value;
-
-    console.log(email, pass);
-
-    return false;
-  }
-});
-
-mount(document.body, login);</pre>
-        </div>
-        <div class="footnotes">
-          <p>
-            <a href="https://github.com/pakastin/frzr">Github</a> &middot;
-            <a href="https://codepen.io/collection/XKwVMG/" target="_blank">Getting started</a> &middot;
-            <a href="https://cdnjs.com/libraries/frzr" target="_blank">cdnjs</a> &middot;
-            <a href="https://pakastin.github.io/frzr/frzr.min.js" target="_blank">Production</a> &middot; 
-            <a href="https://pakastin.github.io/frzr/frzr.js" target="_blank">Development</a>
-          </p>
-        </div>
-      </div>
-    </div>
-    <script src="index.js"></script>
+    <script src="js/prism.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
