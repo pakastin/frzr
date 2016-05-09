@@ -282,6 +282,10 @@
     );
   };
   Topbar.prototype.update = function update (section, subsection) {
+    if (!sections[section]) {
+      this.current.textContent = '404';
+      return;
+    }
     this.current.textContent = sections[section];
   };
 
@@ -310,7 +314,8 @@
       el('h3', 'Easy components'),
       el('p', "It's really easy to create components with FRZR"),
       el('code-html', '...'),
-      el('p', 'Work in progress...')
+      el('p', 'Work in progress...'),
+      el('p', el('a', { href: '#/hello'}, "Ok, so there's almost nothing here yet. Take me back home please."))
     ]
   };
 
@@ -325,7 +330,11 @@
   Content.prototype.update = function update (section, subsection) {
     if (!content$1[section]) {
       setChildren(this.el, [
-        el('404 - not found')
+        el('h2', 'Sorry'),
+        el('p', 'Nothing here :('),
+        el('p',
+          el('a', { href: 'https://github.com/pakastin/frzr/tree/new-website/website/js', target: '_blank' }, 'Maybe you can find out why is that?')
+        )
       ]);
       return;
     }
@@ -378,7 +387,7 @@
   function onHash () {
     var hash = location.hash.slice(2).split('/');
     var section = hash[0];
-    api.trigger('section', section);
+    api.trigger('section', section || 'hello');
   }
 
 }());

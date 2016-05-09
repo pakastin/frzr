@@ -20,6 +20,10 @@ export class Topbar {
     );
   }
   update (section, subsection) {
+    if (!sections[section]) {
+      this.current.textContent = '404';
+      return;
+    }
     this.current.textContent = sections[section];
   }
 }

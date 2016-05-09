@@ -9,7 +9,11 @@ export class Content {
   update (section, subsection) {
     if (!content[section]) {
       setChildren(this.el, [
-        el('404 - not found')
+        el('h2', 'Sorry'),
+        el('p', 'Nothing here :('),
+        el('p',
+          el('a', { href: 'https://github.com/pakastin/frzr/tree/new-website/website/js', target: '_blank' }, 'Maybe you can find out why is that?')
+        )
       ]);
       return;
     }

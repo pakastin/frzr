@@ -48,5 +48,5 @@ onHash();
 function onHash () {
   var hash = location.hash.slice(2).split('/');
   var section = hash[0];
-  api.trigger('section', section);
+  api.trigger('section', section || 'hello');
 }
