@@ -11,13 +11,16 @@ var sections = {
 export class Topbar {
   constructor () {
     this.el = el('div', { class: 'topbar' },
-      el('div', { class: 'topbar-menu' },
+      this.menu = el('div', { class: 'topbar-menu' },
         el('div', { class: 'topbar-menuitem' },
           el('i', { class: 'fa fa-bars' }),
           this.current = el('p')
         )
       )
     );
+    this.menu.onclick = () => {
+      api.trigger('topbar open');
+    }
   }
   update (section, subsection) {
     if (!sections[section]) {

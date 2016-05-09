@@ -1,7 +1,8 @@
 
 import { Topbar } from './topbar';
 import { Content } from './content';
-import { el, mount, registerElement } from '../../src/index';
+import { OverlayTopbar } from './overlay-topbar';
+import { el, mount, unmount, registerElement, setChildren } from '../../src/index';
 import { api } from './api';
 
 function code (lang) {
@@ -21,6 +22,7 @@ var logo = el('h1',
 );
 var topbar = new Topbar();
 var content = new Content();
+var overlayTopbar = new OverlayTopbar();
 
 var container = el('div', { class: 'container' },
   logo,
@@ -35,6 +37,21 @@ logo.onclick = () => {
 api.on('section', function (section) {
   topbar.update(section);
   content.update(section);
+});
+
+api.on('topbar open', function () {
+  overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
+  mount(document.body, overlayTopbar);
+  topbar.el.style.opacity = 0;
+});
+
+api.on('topbar close', function () {
+  overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
+  overlayTopbar.close();
+});
+api.on('topbar closed', function () {
+  unmount(document.body, overlayTopbar);
+  topbar.el.style.opacity = 1;
 });
 
 api.trigger('section', 'hello');

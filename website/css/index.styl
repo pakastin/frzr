@@ -6,7 +6,6 @@
 }
 
 body {
-  margin: .5rem;
   font-family: Source Code Pro, monospace;
   font-size: calc(.875rem - 1px);
   color: #333;
@@ -64,8 +63,56 @@ pre.code {
 }
 
 .container {
-  margin: 0 auto;
+  margin: .5rem auto;
   max-width: 40rem;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  .bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, .9);
+  }
+  h1 {
+    position: relative;
+  }
+  .topbar {
+    position: relative;
+    display: inline-block;
+    height: auto;
+    background: none;
+
+    &.opened {
+      background-color: #4a90e2;
+    }
+  }
+  .topbar-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #4a90e2;
+  }
+  .topbar-container {
+    display: inline-block;
+    overflow: hidden;
+  }
+  .topbar-menuitem {
+    position: relative;
+    padding: .75rem 1rem;
+    &:not(:nth-child(1)) {
+      margin-top: -.5rem;
+    }
+  }
 }
 
 h1 {
@@ -97,6 +144,10 @@ b {
     background-color: #fff;
     color: #4a90e2;
     box-shadow: inset 0 0 0 .25rem #4a90e2;
+  }
+
+  i, p {
+    line-height: 1.5rem;
   }
 
   i + p {

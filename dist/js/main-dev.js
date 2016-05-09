@@ -273,13 +273,16 @@
 
   var Topbar = function Topbar () {
     this.el = el('div', { class: 'topbar' },
-      el('div', { class: 'topbar-menu' },
+      this.menu = el('div', { class: 'topbar-menu' },
         el('div', { class: 'topbar-menuitem' },
           el('i', { class: 'fa fa-bars' }),
           this.current = el('p')
         )
       )
     );
+    this.menu.onclick = function () {
+      api.trigger('topbar open');
+    }
   };
   Topbar.prototype.update = function update (section, subsection) {
     if (!sections[section]) {
@@ -343,6 +346,96 @@
     setChildren(this.el, currentContent);
   };
 
+  var inOutQuart = 'cubic-bezier(0.645, 0.045, 0.355, 1.000)';
+
+  var OverlayTopbar = function OverlayTopbar () {
+    this.el = el('div', { class: 'overlay' },
+      this.bg = el('div', { class: 'bg' }),
+      el('div', { class: 'container' },
+        this.h1 = el('h1',
+          el('b', 'FRZR'),
+          ' - tiny view library'
+        ),
+        el('div', { class: 'topbar' },
+          this.topbarBg = el('div', { class: 'topbar-bg' }),
+          el('div', { class: 'topbar-container' },
+            this.menu = el('div', { class: 'topbar-menu' },
+              el('div', { onclick: goto$1('hello'), class: 'topbar-menuitem' },
+                el('p', 'Hello')
+              ),
+              el('div', { onclick: goto$1('features'), class: 'topbar-menuitem' },
+                el('p', 'Features')
+              ),
+              el('div', { onclick: goto$1('api'), class: 'topbar-menuitem' },
+                el('p', 'API docs')
+              ),
+              el('div', { onclick: goto$1('download'), class: 'topbar-menuitem' },
+                el('p', 'Download')
+              ),
+              el('div', { onclick: goto$1('source'), class: 'topbar-menuitem' },
+                el('p', 'Source')
+              )
+            )
+          )
+        )
+      )
+    );
+    this.el.onclick = function () {
+      api.trigger('topbar close');
+    }
+  };
+  OverlayTopbar.prototype.mounted = function mounted () {
+    var this$1 = this;
+
+      var topbarBCR = this.topbarBCR;
+    var menuBCR = this.menu.getBoundingClientRect();
+    var scale = [topbarBCR.width / menuBCR.width, topbarBCR.height / menuBCR.height].join(',');
+    var translate = [0, -menuBCR.height].join('px,');
+
+    this.topbarBg.style.height = menuBCR.height + 'px';
+
+    this.menu.style.transition = '';
+    this.menu.style.transform = 'translate(' + translate + 'px)';
+
+    this.bg.style.transition = '';
+    this.bg.style.opacity = 0;
+
+    this.topbarBg.style.transition = '';
+    this.topbarBg.style.transform = 'scale(' + scale + ')';
+    this.topbarBg.style.transformOrigin = '0 0';
+
+    requestAnimationFrame(function () {
+      this$1.bg.style.transition = "opacity .3s " + inOutQuart;
+      this$1.bg.style.opacity = 1;
+
+      this$1.topbarBg.style.transition = ".3s transform " + inOutQuart;
+      this$1.menu.style.transition = ".3s transform " + inOutQuart;
+
+      this$1.topbarBg.style.transform = '';
+      this$1.menu.style.transform = '';
+    });
+  };
+  OverlayTopbar.prototype.close = function close$1 () {
+    var topbarBCR = this.topbarBCR;
+    var menuBCR = this.menu.getBoundingClientRect();
+    var scale = [topbarBCR.width / menuBCR.width, topbarBCR.height / menuBCR.height].join(',');
+    var translate = [0, -menuBCR.height].join('px,');
+
+    this.bg.style.opacity = 0;
+    this.topbarBg.style.transform = 'scale(' + scale + ')'
+    this.menu.style.transform = 'translate(' + translate + 'px)';
+
+    setTimeout(function () {
+      api.trigger('topbar closed');
+    }, 300);
+  };
+
+  function goto$1 (section) {
+    return function () {
+      location.hash = '#/' + section;
+    }
+  }
+
   function code (lang) {
     return function (tagName, content) {
       return el('pre', { class: 'code' },
@@ -360,6 +453,7 @@
   );
   var topbar = new Topbar();
   var content = new Content();
+  var overlayTopbar = new OverlayTopbar();
 
   var container = el('div', { class: 'container' },
     logo,
@@ -374,6 +468,21 @@
   api.on('section', function (section) {
     topbar.update(section);
     content.update(section);
+  });
+
+  api.on('topbar open', function () {
+    overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
+    mount(document.body, overlayTopbar);
+    topbar.el.style.opacity = 0;
+  });
+
+  api.on('topbar close', function () {
+    overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
+    overlayTopbar.close();
+  });
+  api.on('topbar closed', function () {
+    unmount(document.body, overlayTopbar);
+    topbar.el.style.opacity = 1;
   });
 
   api.trigger('section', 'hello');
