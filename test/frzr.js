@@ -197,7 +197,7 @@ function mount (parent, child, before) {
 
   if (childEl instanceof Node) {
     if (before) {
-      var beforeEl = before;
+      var beforeEl = before.el || before;
       parentEl.insertBefore(childEl, beforeEl);
     } else {
       parentEl.appendChild(childEl);
