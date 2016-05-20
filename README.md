@@ -64,7 +64,7 @@ var canvas = svg('svg', { width: 100, height: 100 }, circle);
 ```
 
 ## Creating components
-Components are just POJF (plain old JavaScript functions):
+Components (or Views) are just POJF (plain old JavaScript functions):
 ```js
 function Item () {
   this.el = el('p');
