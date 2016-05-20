@@ -90,7 +90,7 @@ const item = new Item();
 item.update('Hello world!');
 mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
-## new List(Component, (key), (initData));
+## new List(View, (key), (initData), (skipRender));
 Automatically inserts, removes and even reorders components. Previous example makes a lot more sense now:
 ```js
 var list = new List(Item);
@@ -98,7 +98,7 @@ mount(document.body, list);
 list.update([1, 2, 3]); // <body><p>1</p><p>2</p><p>3</p></body>
 list.update([2, 3, 4, 5]); // <body><p>2</p><p>3</p><p>4</p><p>5</p></body>
 ```
-By defining a second `key` parameter you can reorder DOM elements. The third `initData` parameter just gets sent to the Component constructor.
+By defining a second `key` parameter you can reorder DOM elements. The third `initData` parameter just gets sent to the Component constructor. The fourth `skipRender` parameter skips the DOM update, if you want to implement a custom method.
 ## mount(target, child)
 You can mount HTML elements/components to HTML elements/components.
 ```js
