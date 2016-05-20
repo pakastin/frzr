@@ -90,6 +90,7 @@ const item = new Item();
 item.update('Hello world!');
 mount(document.body, item); // <body><p>Hello world!</p></body>
 ```
+There are also some lifecycle "events" covered [here](https://github.com/pakastin/frzr/releases/tag/v0.17.0).
 ## new List(View, (key), (initData), (skipRender));
 Automatically inserts, removes and even reorders components. Previous example makes a lot more sense now:
 ```js
