@@ -55,7 +55,7 @@ var p = el('p', 'Hello world!' );
 ```js
 var div = el('div', p);
 ```
-
+It's also possible the register custom elements and attributes, covered [here](https://github.com/pakastin/frzr/releases/tag/v0.18.0).
 ## svg(tagName, (attributes), (...children))
 Works like `el`, but creates a SVG element:
 ```js
