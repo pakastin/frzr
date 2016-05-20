@@ -42,11 +42,10 @@ export class OverlayTopbar {
         )
       )
     );
-    this.el.onclick = () => {
-      api.trigger('topbar close');
-    }
   }
   mounted () {
+    this.registerEvents();
+
     var topbarBCR = this.topbarBCR;
     var menuBCR = this.menu.getBoundingClientRect();
     var scale = [topbarBCR.width / menuBCR.width, topbarBCR.height / menuBCR.height].join(',');
@@ -75,6 +74,20 @@ export class OverlayTopbar {
       this.menu.style.transform = '';
     });
   }
+  unmounted () {
+    this.unregisterEvents();
+  }
+  registerEvents () {
+    this.el.addEventListener('click', onClose);
+
+    this.unregisterEvents = () => {
+      this.el.removeEventListener('click', onClose);
+    };
+
+    function onClose () {
+      api.trigger('topbar close');
+    }
+  }
   close () {
     var topbarBCR = this.topbarBCR;
     var menuBCR = this.menu.getBoundingClientRect();
@@ -89,10 +102,6 @@ export class OverlayTopbar {
       api.trigger('topbar closed');
     }, 300);
   }
-}
-
-function close () {
-  api.trigger('topbar close');
 }
 
 function goto (section) {

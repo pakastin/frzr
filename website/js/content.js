@@ -10,7 +10,7 @@ export class Content {
     if (!content[section]) {
       setChildren(this.el, [
         el('h2', 'Sorry'),
-        el('p', 'Nothing here :('),
+        el('p', 'Nothing here (yet?) :('),
         el('p',
           el('a', { href: 'https://github.com/pakastin/frzr/tree/new-website/website/js', target: '_blank' }, 'Maybe you can find out why is that?')
         )

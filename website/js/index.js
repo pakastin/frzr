@@ -49,6 +49,7 @@ api.on('topbar close', function () {
   overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
   overlayTopbar.close();
 });
+
 api.on('topbar closed', function () {
   unmount(document.body, overlayTopbar);
   topbar.el.style.opacity = 1;

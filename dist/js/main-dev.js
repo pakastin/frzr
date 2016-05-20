@@ -334,7 +334,7 @@
     if (!content$1[section]) {
       setChildren(this.el, [
         el('h2', 'Sorry'),
-        el('p', 'Nothing here :('),
+        el('p', 'Nothing here (yet?) :('),
         el('p',
           el('a', { href: 'https://github.com/pakastin/frzr/tree/new-website/website/js', target: '_blank' }, 'Maybe you can find out why is that?')
         )
@@ -380,14 +380,13 @@
         )
       )
     );
-    this.el.onclick = function () {
-      api.trigger('topbar close');
-    }
   };
   OverlayTopbar.prototype.mounted = function mounted () {
     var this$1 = this;
 
-      var topbarBCR = this.topbarBCR;
+      this.registerEvents();
+
+    var topbarBCR = this.topbarBCR;
     var menuBCR = this.menu.getBoundingClientRect();
     var scale = [topbarBCR.width / menuBCR.width, topbarBCR.height / menuBCR.height].join(',');
     var translate = [0, -menuBCR.height].join('px,');
@@ -415,7 +414,23 @@
       this$1.menu.style.transform = '';
     });
   };
-  OverlayTopbar.prototype.close = function close$1 () {
+  OverlayTopbar.prototype.unmounted = function unmounted () {
+    this.unregisterEvents();
+  };
+  OverlayTopbar.prototype.registerEvents = function registerEvents () {
+    var this$1 = this;
+
+      this.el.addEventListener('click', onClose);
+
+    this.unregisterEvents = function () {
+      this$1.el.removeEventListener('click', onClose);
+    };
+
+    function onClose () {
+      api.trigger('topbar close');
+    }
+  };
+  OverlayTopbar.prototype.close = function close () {
     var topbarBCR = this.topbarBCR;
     var menuBCR = this.menu.getBoundingClientRect();
     var scale = [topbarBCR.width / menuBCR.width, topbarBCR.height / menuBCR.height].join(',');
@@ -480,6 +495,7 @@
     overlayTopbar.topbarBCR = topbar.el.getBoundingClientRect();
     overlayTopbar.close();
   });
+
   api.on('topbar closed', function () {
     unmount(document.body, overlayTopbar);
     topbar.el.style.opacity = 1;
