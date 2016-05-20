@@ -1,11 +1,15 @@
 
 import { el } from '../../src/index';
-
 import { api } from './api';
+
+import { notReady } from './notready';
 
 var sections = {
   hello: 'Hello',
-  features: 'Features'
+  features: 'Features',
+  api: 'API docs',
+  download: 'Download',
+  source: 'Source'
 };
 
 export class Topbar {

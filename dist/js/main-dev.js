@@ -266,9 +266,17 @@
     }
   }
 
+  var notReady = 'api download source'.split(' ').reduce(function (lookup, section) {
+    lookup[section] = true;
+    return lookup;
+  }, {});
+
   var sections = {
     hello: 'Hello',
-    features: 'Features'
+    features: 'Features',
+    api: 'API docs',
+    download: 'Download',
+    source: 'Source'
   };
 
   var Topbar = function Topbar () {
@@ -331,6 +339,16 @@
     this.el = el('div', { class: 'content' });
   };
   Content.prototype.update = function update (section, subsection) {
+    if (notReady[section]) {
+      setChildren(this.el, [
+        el('h2', 'Sorry'),
+        el('p', 'This section is not ready yet..'),
+        el('p',
+          el('a', { href: '#/hello' }, 'Ok, could you please take me back to home then :/')
+        )
+      ]);
+      return;
+    }
     if (!content$1[section]) {
       setChildren(this.el, [
         el('h2', 'Sorry'),
