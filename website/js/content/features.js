@@ -30,7 +30,7 @@ mount(document.body, hello);
     el('h3', 'Easy components'),
     el('p', "It's really easy to create components with FRZR"),
     el('code-html', '...'),
-    el('p', 'Work in progress...'),
+    el('h2', 'Work in progress...'),
     el('p', el('a', { href: '#/hello'}, "Ok, so there's almost nothing here yet. Take me back home please."))
   ]
 };
