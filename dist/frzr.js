@@ -274,6 +274,8 @@
     var parentEl = parent.el || parent;
     var childEl = child.el || child;
 
+    setChildren(childEl, []);
+
     child.unmounting && child.unmounting();
 
     parentEl.removeChild(childEl);
