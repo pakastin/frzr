@@ -284,10 +284,11 @@ function unmount (parent, child) {
 function destroy (child) {
   var childEl = child.el || child;
   var parent = childEl.parentNode;
+  var parentView = parent.view || parent;
 
   child.destroying && child.destroying(child);
   notifyDown(child, 'destroying');
-  parent && unmount(parent, child);
+  parent && unmount(parentView, child);
   child.destroyed && child.destroyed(child);
   notifyDown(child, 'destroyed');
 }
