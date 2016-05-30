@@ -274,8 +274,6 @@
     var parentEl = parent.el || parent;
     var childEl = child.el || child;
 
-    setChildren(childEl, []);
-
     child.unmounting && child.unmounting();
 
     parentEl.removeChild(childEl);
@@ -284,6 +282,33 @@
 
     if (childEl !== child) {
       child.parent = null;
+    }
+  }
+
+  function destroy (child) {
+    var childEl = child.el || child;
+    var parent = childEl.parentNode;
+
+    child.destroying && child.destroying(child);
+    notifyDown(child, 'destroying');
+    parent && unmount(parent, child);
+    child.destroyed && child.destroyed(child);
+    notifyDown(child, 'destroyed');
+  }
+
+  function notifyDown (child, eventName, originalChild) {
+    var childEl = child.el || child;
+    var traverse = childEl.firstChild;
+
+    while (traverse) {
+      var next = traverse.nextSibling;
+      var view = traverse.view || traverse;
+      var event = view[eventName];
+
+      event && event(originalChild || child);
+      notifyDown(traverse, eventName, originalChild || child);
+
+      traverse = next;
     }
   }
 
@@ -325,6 +350,8 @@
   exports.mountBefore = mountBefore;
   exports.replace = replace;
   exports.unmount = unmount;
+  exports.destroy = destroy;
+  exports.notifyDown = notifyDown;
   exports.setChildren = setChildren;
 
 }));

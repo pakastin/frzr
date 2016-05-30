@@ -1,5 +1,5 @@
 
-import { setChildren, List } from './index';
+import { setChildren, List, notifyDown } from './index';
 
 export function mount (parent, child, before) {
   var parentEl = parent.el || parent;
@@ -87,8 +87,6 @@ export function unmount (parent, child) {
   var parentEl = parent.el || parent;
   var childEl = child.el || child;
 
-  setChildren(childEl, []);
-
   child.unmounting && child.unmounting();
 
   parentEl.removeChild(childEl);
@@ -98,4 +96,15 @@ export function unmount (parent, child) {
   if (childEl !== child) {
     child.parent = null;
   }
+}
+
+export function destroy (child) {
+  var childEl = child.el || child;
+  var parent = childEl.parentNode;
+
+  child.destroying && child.destroying(child);
+  notifyDown(child, 'destroying');
+  parent && unmount(parent, child);
+  child.destroyed && child.destroyed(child);
+  notifyDown(child, 'destroyed');
 }

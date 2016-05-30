@@ -4,7 +4,7 @@ var cp = require('child_process');
 exec('npm', ['run', 'build']);
 exec('chokidar', ['src/**/*.js', '-c', 'npm run build']);
 exec('chokidar', ['dist/frzr.js', '-c', 'npm run uglify']);
-exec('chokidar', ['test/test.js', 'npm run justtest']);
+exec('chokidar', ['test/test.js', '-c', 'npm run justtest']);
 
 function exec (cmd, args) {
   var child = cp.spawn(cmd, args || [])
