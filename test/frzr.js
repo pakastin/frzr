@@ -146,7 +146,7 @@ List.prototype.update = function (data, cb) {
       for (var id in lookup) {
         if (!newLookup[id]) {
           removed.push(lookup[id]);
-          !skipRender && parent && unmount(parent, lookup[id]);
+          !skipRender && parent && destroy(lookup[id]);
         }
       }
     }
@@ -157,7 +157,7 @@ List.prototype.update = function (data, cb) {
       for (var i = data.length; i < views.length; i++) {
         var view = views[i];
 
-        !skipRender && parent && unmount(parent, view);
+        !skipRender && parent && destroy(view);
         removed.push(view);
       }
     }
@@ -302,7 +302,7 @@ function notifyDown (child, eventName, originalChild) {
     var view = traverse.view || traverse;
     var event = view[eventName];
 
-    event && event(originalChild || child);
+    event && event.call(view, originalChild || child);
     notifyDown(traverse, eventName, originalChild || child);
 
     traverse = next;

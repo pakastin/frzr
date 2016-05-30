@@ -8,7 +8,7 @@ export function notifyDown (child, eventName, originalChild) {
     var view = traverse.view || traverse;
     var event = view[eventName];
 
-    event && event(originalChild || child);
+    event && event.call(view, originalChild || child);
     notifyDown(traverse, eventName, originalChild || child);
 
     traverse = next;
