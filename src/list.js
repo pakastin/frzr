@@ -1,5 +1,5 @@
 
-import { mount, unmount, setChildren } from './index';
+import { mount, destroy, setChildren } from './index';
 
 export function list (View, key, initData, skipRender) {
   return new List(View, key, initData, skipRender);
@@ -58,7 +58,7 @@ List.prototype.update = function (data, cb) {
       for (var id in lookup) {
         if (!newLookup[id]) {
           removed.push(lookup[id]);
-          !skipRender && parent && unmount(parent, lookup[id]);
+          !skipRender && parent && destroy(lookup[id]);
         }
       }
     }
@@ -69,7 +69,7 @@ List.prototype.update = function (data, cb) {
       for (var i = data.length; i < views.length; i++) {
         var view = views[i];
 
-        !skipRender && parent && unmount(parent, view);
+        !skipRender && parent && destroy(view);
         removed.push(view);
       }
     }

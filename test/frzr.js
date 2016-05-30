@@ -146,7 +146,7 @@ List.prototype.update = function (data, cb) {
       for (var id in lookup) {
         if (!newLookup[id]) {
           removed.push(lookup[id]);
-          !skipRender && parent && unmount(parent, lookup[id]);
+          !skipRender && parent && destroy(lookup[id]);
         }
       }
     }
@@ -157,7 +157,7 @@ List.prototype.update = function (data, cb) {
       for (var i = data.length; i < views.length; i++) {
         var view = views[i];
 
-        !skipRender && parent && unmount(parent, view);
+        !skipRender && parent && destroy(view);
         removed.push(view);
       }
     }
@@ -281,6 +281,34 @@ function unmount (parent, child) {
   }
 }
 
+function destroy (child) {
+  var childEl = child.el || child;
+  var parent = childEl.parentNode;
+  var parentView = parent.view || parent;
+
+  child.destroying && child.destroying(child);
+  notifyDown(child, 'destroying');
+  parent && unmount(parentView, child);
+  child.destroyed && child.destroyed(child);
+  notifyDown(child, 'destroyed');
+}
+
+function notifyDown (child, eventName, originalChild) {
+  var childEl = child.el || child;
+  var traverse = childEl.firstChild;
+
+  while (traverse) {
+    var next = traverse.nextSibling;
+    var view = traverse.view || traverse;
+    var event = view[eventName];
+
+    event && event.call(view, originalChild || child);
+    notifyDown(traverse, eventName, originalChild || child);
+
+    traverse = next;
+  }
+}
+
 function setChildren (parent, children) {
   var parentEl = parent.el || parent;
   var traverse = parentEl.firstChild;
@@ -319,4 +347,6 @@ exports.mount = mount;
 exports.mountBefore = mountBefore;
 exports.replace = replace;
 exports.unmount = unmount;
+exports.destroy = destroy;
+exports.notifyDown = notifyDown;
 exports.setChildren = setChildren;

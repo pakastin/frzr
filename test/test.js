@@ -199,6 +199,39 @@ module.exports = function (frzr) {
     t.equals(document.body.innerHTML, '<p>1</p><p>2</p><p>3</p>');
   });
 
+  test('destroy', function (t) {
+    t.plan(4);
+
+    var Test2 = function () {
+      this.el = frzr.el('p');
+    }
+    var Test = function () {
+      this.el = frzr.el('div',
+        this.test = new Test2()
+      );
+    }
+    var destroying, destroying2, destroyed, destroyed2;
+    Test.prototype.destroying = function () {
+      destroying = true;
+    }
+    Test2.prototype.destroying = function () {
+      destroying2 = true;
+    }
+    Test.prototype.destroyed = function () {
+      destroyed = true;
+    }
+    Test2.prototype.destroyed = function () {
+      destroyed2 = true;
+    }
+    var test = new Test();
+    frzr.mount(document.body, test);
+    frzr.destroy(test);
+    t.equals(destroying, true, 'destroying Test');
+    t.equals(destroying2, true, 'destroying Test2');
+    t.equals(destroyed, true, 'destroyed Test');
+    t.equals(destroyed2, true, 'destroyed Test2');
+  });
+
   test('coverage special cases', function (t) {
     t.plan(7);
 
