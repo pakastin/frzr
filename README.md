@@ -47,7 +47,7 @@ var p = el('p', { textContent: 'Hello world!' });
 ```
 You can also define children:
 ```js
-var div = el('div', p);
+var div = el('div', null, p);
 ```
 You can also skip attributes:
 ```js
