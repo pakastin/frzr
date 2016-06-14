@@ -49,7 +49,7 @@ You can also define children:
 ```js
 var div = el('div', null, p);
 ```
-You can also skip attributes:
+You can also omit attributes:
 ```js
 var p = el('p', 'Hello world!' );
 ```
