@@ -244,8 +244,10 @@ module.exports = function (frzr) {
     var remounting = false;
     var remounted = false;
 
+    var p = frzr.el.extend('p');
+
     var Item = function () {
-      this.el = frzr.el('p', [ 'Hello ', frzr.text('world'), '!' ] );
+      this.el = p([ 'Hello ', frzr.text('world'), '!' ] );
     }
     var TextItem = function (data) {
       this.el = frzr.text(data);
