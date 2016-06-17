@@ -44,6 +44,18 @@ export function el (tagName) {
   return element;
 }
 
+el.extend = function (tagName) {
+  return function () {
+    var args = new Array(arguments.length);
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+
+    return el.apply(this, [tagName].concat(args));
+  }
+}
+
 export function registerElement (tagName, handler) {
   customElements || (customElements = {});
   customElements[tagName] = handler;
