@@ -16,7 +16,16 @@ function el (tagName) {
     }
   }
 
-  var element = document.createElement(tagName);
+  if (typeof tagName === 'function') {
+    var args = new Array(arguments.length);
+    args[0] = this;
+    for (var i = 1; i < arguments.length; i++) {
+      args[i] = arguments[i];
+    }
+    return new (Function.prototype.bind.apply(tagName, args));
+  } else {
+    var element = document.createElement(tagName);
+  }
 
   for (var i = 1; i < arguments.length; i++) {
     var arg = arguments[i];
