@@ -26,37 +26,36 @@
         </div>
         <div id="code">
           <pre>
-var el = frzr.el;
-var mount = frzr.mount;
+import { el, mount } from 'frzr';
 
-function Login (opts) {
-  this.el = el('form', { class: 'login' },
-    this.email = el('input', { type: 'email' }),
-    this.pass = el('input', { type: 'password' }),
-    this.submit = el('button', 'Sign in')
-  );
-  this.el.onsubmit = opts.onsubmit;
+class Login {
+  constructor (opts) {
+    this.el = el('form', { class: 'login' },
+      this.email = el('input', { type: 'email' }),
+      this.pass = el('input', { type: 'password' }),
+      this.submit = el('button', 'Sign in')
+    );
+  }
+  mounted () {
+    this.el.onsubmit = e => {
+      e.preventDefault();
+
+      var email = this.email.value;
+      var pass = this.pass.value;
+
+      console.log(email, pass);
+    }
+  }
 }
 
-var login = new Login({
-  onsubmit: function (e) {
-    var email = login.email.value;
-    var pass = login.pass.value;
-
-    console.log(email, pass);
-
-    return false;
-  }
-});
-
-mount(document.body, login);</pre>
+mount(document.body, new Login());</pre>
         </div>
         <div class="footnotes">
           <p>
             <a href="https://github.com/pakastin/frzr">Github</a> &middot;
             <a href="https://codepen.io/collection/XKwVMG/" target="_blank">Getting started</a> &middot;
             <a href="https://cdnjs.com/libraries/frzr" target="_blank">cdnjs</a> &middot;
-            <a href="https://pakastin.github.io/frzr/frzr.min.js" target="_blank">Production</a> &middot; 
+            <a href="https://pakastin.github.io/frzr/frzr.min.js" target="_blank">Production</a> &middot;
             <a href="https://pakastin.github.io/frzr/frzr.js" target="_blank">Development</a>
           </p>
         </div>
