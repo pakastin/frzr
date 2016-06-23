@@ -38,6 +38,9 @@ export function mount (parent, child, before) {
       mount(parentEl, childEl[i], before);
     }
 
+  } else if (typeof childEl === 'function') {
+    mount(parentEl, new childEl());
+
   } else if (child instanceof List) {
     child.parent = parent;
     setChildren(parentEl, child.views);
