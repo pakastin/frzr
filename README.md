@@ -25,6 +25,9 @@ npm install frzr
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
 
+## Using with JSX
+https://gist.github.com/fson/576eda4a5401fd078c18101cdda558e0#file-todo-js
+
 ## Getting started
 http://codepen.io/collection/XKwVMG (more will be added soon..)
 
