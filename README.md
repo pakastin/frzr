@@ -17,10 +17,11 @@ npm install frzr
 - cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Latest updates
-- [v0.20.0: el.extend(tagName)](https://github.com/pakastin/frzr/releases/tag/v0.20.0)
-- [v0.19.0: Destroy method + notifyDown helper](https://github.com/pakastin/frzr/releases/tag/v0.19.0)
-- [v0.18.0: custom elements & custom attributes](https://github.com/pakastin/frzr/releases/tag/v0.18.0)
-- [v0.17.0: lifecycle "events"](https://github.com/pakastin/frzr/releases/tag/v0.17.0)
+- [v0.21: JSX component support!](https://github.com/pakastin/frzr/releases/tag/v0.21.0)
+- [v0.20: el.extend(tagName)](https://github.com/pakastin/frzr/releases/tag/v0.20.0)
+- [v0.19: Destroy method + notifyDown helper](https://github.com/pakastin/frzr/releases/tag/v0.19.0)
+- [v0.18: custom elements & custom attributes](https://github.com/pakastin/frzr/releases/tag/v0.18.0)
+- [v0.17: lifecycle "events"](https://github.com/pakastin/frzr/releases/tag/v0.17.0)
 
 ## Using at server-side
 [FRZR-dom](http://github.com/pakastin/frzr-dom)
