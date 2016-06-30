@@ -66,16 +66,22 @@ module.exports = function (frzr) {
   });
 
   test('svg creation', function (t) {
-    t.plan(1);
+    t.plan(2);
 
     var circle = frzr.svg('circle', { cx: 0, cy: 0, r: 10 });
-    var line = frzr.svg('line', { x1: 0, y1: 0, x2: 10, y2: 0 });
+    var line = frzr.svg('line', { onclick: onClick, x1: 0, y1: 0, x2: 10, y2: 0 });
     var text = frzr.svg('text', 'Testing');
     var svg = frzr.svg('svg', { width: 100, height: 100 }, circle, line, text);
 
     frzr.setChildren(document.body, [svg]);
 
+    line.onclick();
+
     t.equals(document.body.innerHTML, '<svg width="100" height="100"><circle cx="0" cy="0" r="10"></circle><line x1="0" y1="0" x2="10" y2="0"></line><text>Testing</text></svg>');
+
+    function onClick () {
+      t.pass();
+    }
   });
 
   test('list creation', function (t) {

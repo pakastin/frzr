@@ -13,7 +13,13 @@ export function svg (tagName) {
       continue;
     } else if (typeof arg === 'object') {
       for (var attr in arg) {
-        element.setAttribute(attr, arg[attr]);
+        var value = arg[attr];
+
+        if (typeof value === 'function') {
+          element[attr] = value;
+        } else {
+          element.setAttribute(attr, value);
+        }
       }
     }
   }
