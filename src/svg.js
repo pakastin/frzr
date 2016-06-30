@@ -26,3 +26,15 @@ export function svg (tagName) {
 
   return element;
 }
+
+svg.extend = function (tagName) {
+  return function () {
+    var args = new Array(arguments.length);
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+
+    return svg.apply(this, [tagName].concat(args));
+  }
+}

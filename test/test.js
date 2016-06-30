@@ -68,7 +68,9 @@ module.exports = function (frzr) {
   test('svg creation', function (t) {
     t.plan(2);
 
-    var circle = frzr.svg('circle', { cx: 0, cy: 0, r: 10 });
+    var Circle = frzr.svg.extend('circle');
+
+    var circle = Circle({ cx: 0, cy: 0, r: 10 });
     var line = frzr.svg('line', { onclick: onClick, x1: 0, y1: 0, x2: 10, y2: 0 });
     var text = frzr.svg('text', 'Testing');
     var svg = frzr.svg('svg', { width: 100, height: 100 }, circle, line, text);

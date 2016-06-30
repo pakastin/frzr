@@ -120,6 +120,18 @@
     return element;
   }
 
+  svg.extend = function (tagName) {
+    return function () {
+      var args = new Array(arguments.length);
+
+      for (var i = 0; i < args.length; i++) {
+        args[i] = arguments[i];
+      }
+
+      return svg.apply(this, [tagName].concat(args));
+    }
+  }
+
   function list (View, key, initData, skipRender) {
     return new List(View, key, initData, skipRender);
   }
