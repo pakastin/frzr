@@ -128,3 +128,6 @@ This cleverly replaces target's children. Children already in the DOM automatica
 ```js
 setChildren(document.body, [p, svg]);
 ```
+
+## virtual-dom version
+If you like virtual dom updates better, check out [RZR](https://github.com/pakastin/rzr). You can also mix & match!
