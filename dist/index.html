@@ -29,7 +29,7 @@
 import { el, mount } from 'frzr';
 
 class Login {
-  constructor (opts) {
+  constructor () {
     this.el = el('form', { class: 'login' },
       this.email = el('input', { type: 'email' }),
       this.pass = el('input', { type: 'password' }),
@@ -48,7 +48,7 @@ class Login {
   }
 }
 
-mount(document.body, new Login());</pre>
+mount(document.body, el(Login));</pre>
         </div>
         <div class="footnotes">
           <p>
