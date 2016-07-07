@@ -35,6 +35,9 @@ http://codepen.io/collection/XKwVMG (more will be added soon..)
 ## Calendar project example
 https://github.com/pakastin/frzr-calendar
 
+## Creating a table
+https://jsfiddle.net/mhLq0p9r/1/
+
 ## Performance
 - http://mathieuancelin.github.io/js-repaint-perfs/
 - http://pakastin.fi/perf
