@@ -240,43 +240,6 @@ module.exports = function (frzr) {
     t.equals(destroyed2, true, 'destroyed Test2');
   });
 
-  test('conditionalChild', function (t) {
-    t.plan(2);
-
-    var parent = {};
-    var a = 1;
-
-    function A () {
-      this.el = frzr.el('a');
-    }
-
-    A.prototype.update = function (data) {
-      t.equals(data, 1);
-    }
-
-    frzr.setChildren(document.body, [
-      frzr.conditionalChild(parent, 'a', A, a),
-      frzr.conditionalChild(parent, 'b', B, b)
-    ]);
-
-    a = null;
-
-    var b = 2;
-
-    function B () {
-      this.el = frzr.el('b');
-    }
-
-    B.prototype.update = function (data) {
-      t.equals(data, 2);
-    }
-
-    frzr.setChildren(document.body, [
-      frzr.conditionalChild(document.body, 'a', A, a),
-      frzr.conditionalChild(document.body, 'b', B, b)
-    ]);
-  });
-
   test('coverage special cases', function (t) {
     t.plan(7);
 

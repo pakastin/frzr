@@ -380,16 +380,6 @@
     }
   }
 
-  function conditionalChild (parent, name, View, data) {
-    if (data) {
-      var child = parent[name] || (parent[name] = el(View));
-      child.update && child.update(data);
-      return child;
-    } else {
-      parent[name] = null;
-    }
-  }
-
   exports.text = text;
   exports.el = el;
   exports.registerElement = registerElement;
@@ -406,6 +396,5 @@
   exports.destroy = destroy;
   exports.notifyDown = notifyDown;
   exports.setChildren = setChildren;
-  exports.conditionalChild = conditionalChild;
 
 }));
