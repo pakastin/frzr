@@ -12,8 +12,8 @@ npm install frzr
 ```
 
 ## Download:
-- Development: https://pakastin.github.io/frzr/frzr.js (8 KB before, 2.5 KB after GZIP)
-- Production: https://pakastin.github.io/frzr/frzr.min.js (3 KB before, 2 KB after GZIP)
+- Development: https://pakastin.github.io/frzr/frzr.js (10 KB before, 3 KB after GZIP)
+- Production: https://pakastin.github.io/frzr/frzr.min.js (4 KB before, 2 KB after GZIP)
 - cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Latest updates
