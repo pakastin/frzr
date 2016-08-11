@@ -17,7 +17,7 @@ npm install frzr
 - cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Latest updates
-- [v0.22: List no longer part of the build if not used (when tree shaking is in use)]
+- v0.22: List no longer part of the build if not used (when tree shaking is in use)
 - [v0.21: JSX component support!](https://github.com/pakastin/frzr/releases/tag/v0.21.0)
 - [v0.20: el.extend(tagName)](https://github.com/pakastin/frzr/releases/tag/v0.20.0)
 - [v0.19: Destroy method + notifyDown helper](https://github.com/pakastin/frzr/releases/tag/v0.19.0)
