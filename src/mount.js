@@ -1,5 +1,5 @@
 
-import { setChildren, List, notifyDown } from './index';
+import { text, setChildren, notifyDown } from './index';
 
 export function mount (parent, child, before) {
   var parentEl = parent.el || parent;
@@ -31,14 +31,14 @@ export function mount (parent, child, before) {
     }
 
   } else if (typeof childEl === 'string' || typeof childEl === 'number') {
-    mount(parentEl, document.createTextNode(childEl), before);
+    mount(parentEl, text(childEl), before);
 
   } else if (childEl instanceof Array) {
     for (var i = 0; i < childEl.length; i++) {
       mount(parentEl, childEl[i], before);
     }
 
-  } else if (child instanceof List) {
+  } else if (child.views) {
     child.parent = parent;
     setChildren(parentEl, child.views);
 

@@ -253,14 +253,14 @@ function mount (parent, child, before) {
     }
 
   } else if (typeof childEl === 'string' || typeof childEl === 'number') {
-    mount(parentEl, document.createTextNode(childEl), before);
+    mount(parentEl, text(childEl), before);
 
   } else if (childEl instanceof Array) {
     for (var i = 0; i < childEl.length; i++) {
       mount(parentEl, childEl[i], before);
     }
 
-  } else if (child instanceof List) {
+  } else if (child.views) {
     child.parent = parent;
     setChildren(parentEl, child.views);
 
@@ -354,6 +354,9 @@ function setChildren (parent, children) {
 
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
+    if (!child) {
+      continue;
+    }
     var childEl = child.el || child;
 
     if (traverse === childEl) {
@@ -373,6 +376,16 @@ function setChildren (parent, children) {
   }
 }
 
+function conditionalChild (parent, name, View, data) {
+  if (data) {
+    var child = parent[name] || (parent[name] = el(View));
+    child.update && child.update(data);
+    return child;
+  } else {
+    parent[name] = null;
+  }
+}
+
 exports.text = text;
 exports.el = el;
 exports.registerElement = registerElement;
@@ -389,3 +402,4 @@ exports.unmount = unmount;
 exports.destroy = destroy;
 exports.notifyDown = notifyDown;
 exports.setChildren = setChildren;
+exports.conditionalChild = conditionalChild;

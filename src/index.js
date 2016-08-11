@@ -6,3 +6,4 @@ export * from './list';
 export * from './mount';
 export * from './notify';
 export * from './setchildren';
+export * from './conditionalchild';

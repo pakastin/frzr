@@ -1,5 +1,5 @@
 
-import { text, mount, List } from './index';
+import { mount } from './index';
 
 var customElements;
 var customAttributes;
