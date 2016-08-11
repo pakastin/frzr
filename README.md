@@ -17,6 +17,7 @@ npm install frzr
 - cdnjs: https://cdnjs.com/libraries/frzr
 
 ## Latest updates
+- [v0.21.3: conditionalChildren](https://github.com/pakastin/frzr/releases/tag/v0.21.3)
 - [v0.21: JSX component support!](https://github.com/pakastin/frzr/releases/tag/v0.21.0)
 - [v0.20: el.extend(tagName)](https://github.com/pakastin/frzr/releases/tag/v0.20.0)
 - [v0.19: Destroy method + notifyDown helper](https://github.com/pakastin/frzr/releases/tag/v0.19.0)
