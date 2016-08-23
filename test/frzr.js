@@ -11,8 +11,14 @@ function el (tagName) {
   if (customElements) {
     var customElement = customElements[tagName];
 
+    var args = new Array(arguments);
+
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i];
+    }
+
     if (customElement) {
-      return customElement.apply(this, arguments);
+      return customElement.apply(this, args);
     }
   }
 
