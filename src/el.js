@@ -60,14 +60,31 @@ export function el (tagName) {
 }
 
 el.extend = function (tagName) {
-  return function () {
-    var args = new Array(arguments.length);
+  return function (a, b, c, d, e, f) {
+    var len = arguments.length;
 
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
+    switch (len) {
+      case 0: return el(tagName);
+      case 1: return el(tagName, a);
+      case 2: return el(tagName, a, b);
+      case 3: return el(tagName, a, b, c);
+      case 4: return el(tagName, a, b, c, d);
+      case 5: return el(tagName, a, b, c, d, e);
+      case 6: return el(tagName, a, b, c, d, e, f);
     }
 
-    return el.apply(this, [tagName].concat(args));
+    var args = new Array(len + 1);
+    var arg, i = 0;
+
+    args[0] = tagName;
+
+    while (i < len) {
+        // args[1] = arguments[0] and so on
+        arg = arguments[i++];
+        args[i] = arg;
+    }
+
+    return el.apply(this, args);
   }
 }
 
