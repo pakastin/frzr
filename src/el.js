@@ -8,7 +8,7 @@ export function el (tagName) {
   if (customElements) {
     var customElement = customElements[tagName];
 
-    var args = new Array(arguments);
+    var args = new Array(arguments.length);
 
     for (var i = 0; i < args.length; i++) {
       args[i] = arguments[i];
