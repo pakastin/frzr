@@ -19,7 +19,7 @@ export function mount (parent, child, before) {
 
   } else if (type === Array) {
     for (var i = 0; i < child.length; i++) {
-      mount(parentEl, child[i], before);
+      mount(parent, child[i], before);
     }
     return true;
   }
