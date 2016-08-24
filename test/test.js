@@ -240,6 +240,21 @@ module.exports = function (frzr) {
     t.equals(destroyed2, true, 'destroyed Test2');
   });
 
+  test('create extended el with any number of arguments', function (t) {
+    t.plan(8);
+
+    var p = frzr.el.extend('p');
+
+    t.equals(p().childNodes.length, 0);
+    t.equals(p('a').childNodes.length, 1);
+    t.equals(p('a', 'b').childNodes.length, 2);
+    t.equals(p('a', 'b', 'c').childNodes.length, 3);
+    t.equals(p('a', 'b', 'c', 'd').childNodes.length, 4);
+    t.equals(p('a', 'b', 'c', 'd', 'e').childNodes.length, 5);
+    t.equals(p('a', 'b', 'c', 'd', 'e', 'f').childNodes.length, 6);
+    t.equals(p('a', 'b', 'c', 'd', 'e', 'f', 'g').childNodes.length, 7);
+  });
+
   test('coverage special cases', function (t) {
     t.plan(7);
 
