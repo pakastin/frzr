@@ -1,6 +1,6 @@
 {
   "name": "frzr",
-  "version": "0.22.0",
+  "version": "0.22.3",
   "description": "Turboboosted 2 KB view library",
   "main": "dist/frzr.js",
   "jsnext:main": "src/index.js",
@@ -19,14 +19,14 @@
   "author": "Juha Lindstedt",
   "license": "ISC",
   "devDependencies": {
-    "browserify": "~13.0.0",
+    "browserify": "~13.1.0",
     "chokidar-cli": "~1.2.0",
     "coverify": "~1.4.1",
-    "frzr-dom": "0.0.9",
+    "frzr-dom": "0.1.2",
     "gh-pages": "~0.11.0",
-    "rollup": "~0.26.3",
-    "tape": "~4.5.1",
-    "tape-run": "~2.1.3",
-    "uglify-js": "~2.6.2"
+    "rollup": "~0.34.10",
+    "tape": "~4.6.0",
+    "tape-run": "~2.1.4",
+    "uglify-js": "~2.7.3"
   }
 }
