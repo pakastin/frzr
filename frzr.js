@@ -250,8 +250,29 @@ List.prototype.update = function (data, cb) {
   cb && cb(added, updated, removed);
 }
 
+function append (parent, child, before) {
+  if (before) {
+    parent.insertBefore(child, before.el || before);
+  } else {
+    parent.appendChild(child);
+  }
+}
+
 function mount (parent, child, before) {
   var parentEl = parent.el || parent;
+  var type = child && child.constructor;
+
+  if (type === String || type === Number) {
+    append(parentEl, text(child), before);
+    return true;
+
+  } else if (type === Array) {
+    for (var i = 0; i < child.length; i++) {
+      mount(parent, child[i], before);
+    }
+    return true;
+  }
+
   var childEl = child.el || child;
   var childWasMounted = childEl.parentNode != null;
 
@@ -261,30 +282,18 @@ function mount (parent, child, before) {
     child.mounting && child.mounting();
   }
 
-  if (childEl instanceof Node) {
-    if (before) {
-      var beforeEl = before.el || before;
-      parentEl.insertBefore(childEl, beforeEl);
-    } else {
-      parentEl.appendChild(childEl);
-    }
+  if (childEl.nodeType) {
+    append(parentEl, childEl, before);
 
-    if (childWasMounted) {
-      child.remounted && child.remounted();
-    } else {
-      child.mounted && child.mounted();
-    }
     if (childEl !== child) {
+      if (childWasMounted) {
+        child.remounted && child.remounted();
+      } else {
+        child.mounted && child.mounted();
+      }
+
       childEl.view = child;
       child.parent = parent;
-    }
-
-  } else if (typeof childEl === 'string' || typeof childEl === 'number') {
-    mount(parentEl, text(childEl), before);
-
-  } else if (childEl instanceof Array) {
-    for (var i = 0; i < childEl.length; i++) {
-      mount(parentEl, childEl[i], before);
     }
 
   } else if (child.views) {
