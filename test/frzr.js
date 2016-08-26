@@ -3,7 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 function text (str) {
-  return document.createTextNode(str);
+  return document.createTextNode(str || '');
 }
 
 var customElements;

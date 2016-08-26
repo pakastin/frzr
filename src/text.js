@@ -1,4 +1,4 @@
 
 export function text (str) {
-  return document.createTextNode(str);
+  return document.createTextNode(str || '');
 }
