@@ -5,7 +5,7 @@
 }(this, (function (exports) { 'use strict';
 
 function text (str) {
-  return document.createTextNode(str);
+  return document.createTextNode(str || '');
 }
 
 var customElements;
