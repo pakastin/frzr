@@ -44,7 +44,6 @@ https://jsfiddle.net/mhLq0p9r/1/
 
 ## Performance
 - http://mathieuancelin.github.io/js-repaint-perfs/
-- http://pakastin.fi/perf
 
 ## HelsinkiJS talk
 http://youtu.be/0nh2EK1xveg
