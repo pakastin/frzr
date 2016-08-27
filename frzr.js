@@ -11,54 +11,54 @@ function text (str) {
 var customElements;
 var customAttributes;
 
-function el (tagName) {
-  if (customElements) {
+var slice = Array.prototype.slice;
+
+function el (tagName, a, b, c) {
+  var len = arguments.length;
+
+  if (customElements && tagName in customElements) {
     var customElement = customElements[tagName];
 
-    var args = new Array(arguments.length);
-
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i];
-    }
-
-    if (customElement) {
-      return customElement.apply(this, args);
-    }
+    return len === 1 ? customElement(tagName)
+         : len === 2 ? customElement(tagName, a)
+         : len === 3 ? customElement(tagName, a, b)
+         : len === 4 ? customElement(tagName, a, b, c)
+         :             customElement.apply(this, slice.call(arguments));
   }
 
   if (typeof tagName === 'function') {
-    var args = new Array(arguments.length);
-    args[0] = this;
-    for (var i = 1; i < arguments.length; i++) {
-      args[i] = arguments[i];
-    }
-    return new (Function.prototype.bind.apply(tagName, args));
-  } else {
-    var element = document.createElement(tagName);
+    return len === 1 ? new tagName()
+         : len === 2 ? new tagName(a)
+         : len === 3 ? new tagName(a, b)
+         : len === 4 ? new tagName(a, b, c)
+         :             new (tagName.bind.apply(tagName, slice.call(arguments)));
   }
 
-  for (var i = 1; i < arguments.length; i++) {
-    var arg = arguments[i];
+  var element = document.createElement(tagName);
+  var isEmpty = true;
 
-    if (arg == null) {
+  for (var i = 1; i < len; i++) {
+    var arg = arguments[i];
+    if (arg == null) continue;
+
+    if (isEmpty && (typeof arg === 'string' || typeof arg === 'number')) {
+      element.textContent = arg;
+      isEmpty = false;
       continue;
-    } else if (mount(element, arg)) {
+    }
+
+    if (mount(element, arg)) {
+      isEmpty = false;
       continue;
-    } else if (typeof arg === 'object') {
-      for (var attr in arg) {
-        if (customAttributes) {
-          var customAttribute = customAttributes[attr];
-          if (customAttribute) {
-            customAttribute(element, arg[attr]);
-            continue;
-          }
-        }
-        var value = arg[attr];
-        if (attr === 'style' || (element[attr] == null && typeof value != 'function')) {
-          element.setAttribute(attr, value);
-        } else {
-          element[attr] = value;
-        }
+    }
+
+    for (var attr in arg) {
+      if (attr in element && attr !== 'style') {
+        element[attr] = arg[attr];
+      } else if (customAttributes && attr in customAttributes) {
+        customAttributes[attr](element, arg[attr]);
+      } else {
+        element.setAttribute(attr, arg[attr]);
       }
     }
   }
@@ -67,42 +67,15 @@ function el (tagName) {
 }
 
 el.extend = function (tagName) {
-  return function (a, b, c, d, e, f) {
-    var len = arguments.length;
-
-    switch (len) {
-      case 0: return el(tagName);
-      case 1: return el(tagName, a);
-      case 2: return el(tagName, a, b);
-      case 3: return el(tagName, a, b, c);
-      case 4: return el(tagName, a, b, c, d);
-      case 5: return el(tagName, a, b, c, d, e);
-      case 6: return el(tagName, a, b, c, d, e, f);
-    }
-
-    var args = new Array(len + 1);
-    var arg, i = 0;
-
-    args[0] = tagName;
-
-    while (i < len) {
-        // args[1] = arguments[0] and so on
-        arg = arguments[i++];
-        args[i] = arg;
-    }
-
-    return el.apply(this, args);
-  }
+  return el.bind(this, tagName);
 }
 
 function registerElement (tagName, handler) {
-  customElements || (customElements = {});
-  customElements[tagName] = handler;
+  (customElements || (customElements = {}))[tagName] = handler;
 }
 
 function registerAttribute (attr, handler) {
-  customAttributes || (customAttributes = {});
-  customAttributes[attr] = handler;
+  (customAttributes || (customAttributes = {}))[attr] = handler;
 }
 
 function unregisterElement (tagName) {
