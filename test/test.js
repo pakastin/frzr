@@ -28,6 +28,22 @@ module.exports = function (frzr) {
     frzr.unregisterAttribute('frzr');
   });
 
+  test('custom element with multuple arguments', function (t) {
+    t.plan(5);
+
+    frzr.registerElement('frzr', function (tagName) {
+      return frzr.el('div', arguments.length);
+    });
+
+    t.equals(frzr.el('frzr').textContent, '1');
+    t.equals(frzr.el('frzr', 1).textContent, '2');
+    t.equals(frzr.el('frzr', 1, 2).textContent, '3');
+    t.equals(frzr.el('frzr', 1, 2, 3).textContent, '4');
+    t.equals(frzr.el('frzr', 1, 2, 3, 4).textContent, '5');
+
+    frzr.unregisterElement('frzr');
+  });
+
   test('element with text element and custom attribute', function (t) {
     t.plan(1);
 
@@ -320,5 +336,20 @@ module.exports = function (frzr) {
     t.equals(unmounted, true, 'unmounted');
     t.equals(remounting, true, 'remounting');
     t.equals(remounted, true, 'remounted');
+  });
+
+  test('components with multiple arguments', function(t) {
+    t.plan(5);
+
+    var Item = function() {
+      this.el = frzr.el('div');
+      this.count = arguments.length;
+    }
+
+    t.equals(frzr.el(Item).count, 0);
+    t.equals(frzr.el(Item, 1).count, 1);
+    t.equals(frzr.el(Item, 1, 2).count, 2);
+    t.equals(frzr.el(Item, 1, 2, 3).count, 3);
+    t.equals(frzr.el(Item, 1, 2, 3, 4).count, 4);
   });
 }
