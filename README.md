@@ -10,8 +10,8 @@ Turboboosted 2 KB view library with 100 % test coverage.
 ## Contributing:
 Issues/pull requests are more than welcome! Please use the `dev` branch for pull requests, thanks!
 
-## Next version of FRZR is called RE:DOM!
-It's still lacking tests and documentation, but will at some point probably replace FRZR. Check it out! https://redom.js.org
+## FRZR is now RE:DOM!
+Check it out! https://redom.js.org
 
 ## Install:
 ```
