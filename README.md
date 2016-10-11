@@ -7,9 +7,6 @@ Turboboosted 2 KB view library with 100 % test coverage.
 [![npm](https://img.shields.io/npm/l/frzr.svg?maxAge=2592000)](https://github.com/pakastin/frzr/blob/master/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/pakastin.svg?style=social&maxAge=2592000)](https://twitter.com/pakastin)
 
-## Contributing:
-Issues/pull requests are more than welcome! Please use the `dev` branch for pull requests, thanks!
-
 ## FRZR is now RE:DOM!
 Check it out! https://redom.js.org
 
