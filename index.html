@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <script type="module">
+      import { h } from './src/index.js';
+
+      const createHello = h('h1', 'Hello world!', hello => {
+        hello.update = text => hello.textContent = text;
+      });
+
+      const hello = createHello(document.body);
+
+      hello.update('Hi there!');
+    </script>
+  </body>
+</html>

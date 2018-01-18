@@ -1,32 +1,22 @@
 {
   "name": "frzr",
-  "version": "0.22.7",
-  "description": "Turboboosted 2 KB view library",
+  "version": "1.0.0",
+  "description": "Freezing cool JavaScript library",
   "main": "dist/frzr.js",
-  "jsnext:main": "src/index.js",
   "scripts": {
-    "dev": "node watch",
-    "deploy": "gh-pages -d dist",
-    "build": "npm run test && npm run build-js && npm run uglify",
-    "build-js": "rollup -n frzr -f umd src/index.js -o dist/frzr.js",
-    "uglify": "uglifyjs dist/frzr.js -cmo dist/frzr.min.js",
-    "postversion": "git push --tags",
-    "prepublish": "npm test",
-    "postpublish": "npm run deploy",
-    "test": "rollup -n frzr -f cjs src/index.js -o test/frzr.js && browserify -t coverify test/index.js | tape-run | coverify",
-    "justtest": "browserify -t coverify test/index.js | tape-run | coverify"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pakastin/frzr.git"
+  },
+  "keywords": [
+    "frzr"
+  ],
   "author": "Juha Lindstedt",
-  "license": "ISC",
-  "devDependencies": {
-    "browserify": "~13.1.0",
-    "chokidar-cli": "~1.2.0",
-    "coverify": "~1.4.1",
-    "frzr-dom": "0.1.2",
-    "gh-pages": "~0.11.0",
-    "rollup": "~0.34.10",
-    "tape": "~4.6.0",
-    "tape-run": "~2.1.4",
-    "uglify-js": "~2.7.3"
-  }
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pakastin/frzr/issues"
+  },
+  "homepage": "https://github.com/pakastin/frzr#readme"
 }
